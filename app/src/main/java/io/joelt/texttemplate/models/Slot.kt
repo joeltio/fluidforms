@@ -1,8 +1,7 @@
 package io.joelt.texttemplate.models
 
-interface Slot<T> {
+interface Slot {
     val placeholderText: String
-    var value: T
 
     fun valueToString(): String
     fun setValueFromString(s: String)
