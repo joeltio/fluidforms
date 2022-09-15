@@ -1,5 +1,8 @@
 package io.joelt.texttemplate.models
 
+import io.joelt.texttemplate.models.slots.Slot
+import io.joelt.texttemplate.models.slots.createSlot
+
 private val regex = Regex("\\{%\\s*(\\S*)\\s*%}")
 private tailrec fun parse(text: String, currentTag: String?, acc: MutableList<Either<String, Slot>>): List<Either<String, Slot>> {
     // Default case
@@ -22,9 +25,7 @@ private tailrec fun parse(text: String, currentTag: String?, acc: MutableList<Ei
 
     // The tag found is an end tag
     if (tag == "end") {
-        when (currentTag) {
-            "text" -> acc.add(Either.Right(PlainTextSlot(textBeforeTag)))
-        }
+        acc.add(Either.Right(createSlot(currentTag!!, textBeforeTag)))
         return parse(textAfterTag, null, acc)
     }
 
