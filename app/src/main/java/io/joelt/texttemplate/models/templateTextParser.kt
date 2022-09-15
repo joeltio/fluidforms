@@ -1,9 +1,13 @@
 package io.joelt.texttemplate.models
 
+import io.joelt.texttemplate.models.slots.END_TAG
 import io.joelt.texttemplate.models.slots.Slot
 import io.joelt.texttemplate.models.slots.createSlot
+import io.joelt.texttemplate.models.slots.createSlotString
+import java.lang.StringBuilder
 
 private val regex = Regex("\\{%\\s*(\\S*)\\s*%}")
+
 private tailrec fun parse(text: String, currentTag: String?, acc: MutableList<Either<String, Slot>>): List<Either<String, Slot>> {
     // Default case
     if (text == "") {
@@ -24,7 +28,7 @@ private tailrec fun parse(text: String, currentTag: String?, acc: MutableList<Ei
     val textAfterTag = text.substring(matchRange.last + 1)
 
     // The tag found is an end tag
-    if (tag == "end") {
+    if (tag == END_TAG) {
         acc.add(Either.Right(createSlot(currentTag!!, textBeforeTag)))
         return parse(textAfterTag, null, acc)
     }
@@ -37,3 +41,15 @@ private tailrec fun parse(text: String, currentTag: String?, acc: MutableList<Ei
 }
 
 fun String.toTemplateSlot(): List<Either<String, Slot>> = parse(this, null, mutableListOf())
+
+fun serializeTemplate(template: List<Either<String, Slot>>): String {
+    val sb = StringBuilder()
+    for (item in template) {
+        when (item) {
+            is Either.Left -> sb.append(item.value)
+            is Either.Right -> sb.append(createSlotString(item.value))
+        }
+    }
+
+    return sb.toString()
+}
