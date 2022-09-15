@@ -1,12 +1,7 @@
 package io.joelt.texttemplate.models
 
-import io.joelt.texttemplate.models.slots.END_TAG
-import io.joelt.texttemplate.models.slots.Slot
-import io.joelt.texttemplate.models.slots.createSlot
-import io.joelt.texttemplate.models.slots.createSlotString
+import io.joelt.texttemplate.models.slots.*
 import java.lang.StringBuilder
-
-private val regex = Regex("\\{%\\s*(\\S*)\\s*%}")
 
 private tailrec fun parse(text: String, currentTag: String?, acc: MutableList<Either<String, Slot>>): List<Either<String, Slot>> {
     // Default case
@@ -14,30 +9,20 @@ private tailrec fun parse(text: String, currentTag: String?, acc: MutableList<Ei
         return acc
     }
 
-    val match = regex.find(text)
-
-    // No tags found
-    if (match == null) {
-        acc.add(Either.Left(text))
-        return acc
-    }
-
-    val matchRange = match.groups[0]!!.range
-    val textBeforeTag = text.substring(0, matchRange.first)
-    val tag = match.groupValues[1]
-    val textAfterTag = text.substring(matchRange.last + 1)
-
-    // The tag found is an end tag
-    if (tag == END_TAG) {
-        acc.add(Either.Right(createSlot(currentTag!!, textBeforeTag)))
-        return parse(textAfterTag, null, acc)
+    val (textBeforeTag, tag, textAfterTag) = findSlotTag(text)
+    // No tags currently, add the string before the next start tag
+    if (currentTag == null && textBeforeTag != "") {
+        acc.add(Either.Left(textBeforeTag))
     }
 
     // Tag found is a start tag
-    if (matchRange.first != 0) {
-        acc.add(Either.Left(textBeforeTag))
+    if (tag != END_TAG) {
+        return parse(textAfterTag, tag, acc)
     }
-    return parse(textAfterTag, tag, acc)
+
+    // The tag found is an end tag
+    acc.add(Either.Right(createSlot(currentTag!!, textBeforeTag)))
+    return parse(textAfterTag, null, acc)
 }
 
 fun String.toTemplateSlot(): List<Either<String, Slot>> = parse(this, null, mutableListOf())
