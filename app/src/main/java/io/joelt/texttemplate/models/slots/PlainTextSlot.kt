@@ -1,4 +1,4 @@
-package io.joelt.texttemplate.models
+package io.joelt.texttemplate.models.slots
 
 class PlainTextSlot(var value: String) : Slot {
     override val placeholderText = "Text"

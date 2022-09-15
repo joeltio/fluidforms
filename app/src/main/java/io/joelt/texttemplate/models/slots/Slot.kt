@@ -1,4 +1,4 @@
-package io.joelt.texttemplate.models
+package io.joelt.texttemplate.models.slots
 
 interface Slot {
     val placeholderText: String

@@ -1,8 +1,8 @@
 package io.joelt.texttemplate
 
 import io.joelt.texttemplate.models.Either
-import io.joelt.texttemplate.models.PlainTextSlot
-import io.joelt.texttemplate.models.Slot
+import io.joelt.texttemplate.models.slots.PlainTextSlot
+import io.joelt.texttemplate.models.slots.Slot
 import io.joelt.texttemplate.models.toTemplateSlot
 import org.junit.Test
 
