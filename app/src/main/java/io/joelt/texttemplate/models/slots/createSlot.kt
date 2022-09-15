@@ -14,5 +14,5 @@ fun createSlotString(slot: Slot): String {
         else -> throw Exception("slot type not recognised")
     }
 
-    return "{% $tag %}${slot.valueToString()}{% $END_TAG %}"
+    return "{% $tag %}${slot.serializeToString()}{% $END_TAG %}"
 }
