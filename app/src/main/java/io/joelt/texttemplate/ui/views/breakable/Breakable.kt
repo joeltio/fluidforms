@@ -12,15 +12,15 @@ abstract class Breakable : ViewGroup {
 
     var measuredEnd = ViewPosition(0, 0)
     var rowMaxHeight = 0
-    protected var offset = ViewPosition(0, 0)
+    protected var leftOffset = 0
 
     fun measure(
         widthMeasureSpec: Int,
         heightMeasureSpec: Int,
-        offset: ViewPosition,
+        leftOffset: Int,
         rowMaxHeight: Int
     ) {
-        this.offset = offset
+        this.leftOffset = leftOffset
         this.rowMaxHeight = rowMaxHeight
         measure(widthMeasureSpec, heightMeasureSpec)
     }
