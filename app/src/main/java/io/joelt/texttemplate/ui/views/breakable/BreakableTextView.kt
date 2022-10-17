@@ -38,6 +38,22 @@ class BreakableTextView : Breakable {
         addView(tv2)
     }
 
+    private fun positionTv1Only() {
+        layoutCache.setViewAt(0, ViewPosition(leftOffset, 0))
+        layoutCache.measuredWidth = tv1.measuredWidth + leftOffset
+        layoutCache.measuredHeight = tv1.measuredHeight
+
+        tv2.visibility = View.GONE
+        setMeasuredOffsets(
+            ViewPosition(leftOffset + tv1.measuredWidth, 0),
+            max(rowMaxHeight, tv1.measuredHeight)
+        )
+        setMeasuredDimension(
+            layoutCache.measuredWidth,
+            layoutCache.measuredHeight
+        )
+    }
+
     @SuppressLint("DrawAllocation")
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val specWidthMode = MeasureSpec.getMode(widthMeasureSpec)
@@ -49,94 +65,63 @@ class BreakableTextView : Breakable {
         rootTextView.copyTo(tv1)
         rootTextView.copyTo(tv2)
 
-        if (specWidthMode == MeasureSpec.UNSPECIFIED) {
-            // Display the view normally
-            tv1.measure(widthMeasureSpec, heightMeasureSpec)
-            layoutCache.setViewAt(0, ViewPosition(leftOffset, 0))
-            layoutCache.measuredWidth = tv1.measuredWidth + leftOffset
-            layoutCache.measuredHeight = tv1.measuredHeight
-
-            tv2.visibility = View.GONE
-            setMeasuredOffsets(
-                ViewPosition(leftOffset + tv1.measuredWidth, 0),
-                max(rowMaxHeight, tv1.measuredHeight)
-            )
-            setMeasuredDimension(
-                layoutCache.measuredWidth,
-                layoutCache.measuredHeight
-            )
-            return
-        }
-
-        // Find out how big the view wants to be
+        // Now checking for two cases:
+        // 1. Width is unspecified
+        // 2. Width left is sufficient for the text view
         tv1.measure(
             MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
-            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
+            heightMeasureSpec
         )
 
         val widthLeft = specWidth - leftOffset
-        if (tv1.measuredWidth <= widthLeft) {
-            // The view can fit within the space, display normally
-            tv1.measure(
-                MeasureSpec.makeMeasureSpec(widthLeft, specWidthMode),
-                heightMeasureSpec
-            )
-
-            layoutCache.setViewAt(0, ViewPosition(leftOffset, 0))
-            layoutCache.measuredWidth = tv1.measuredWidth + leftOffset
-            layoutCache.measuredHeight = tv1.measuredHeight
-
-            tv2.visibility = View.GONE
-            setMeasuredOffsets(
-                ViewPosition(leftOffset + tv1.measuredWidth, 0),
-                max(rowMaxHeight, tv1.measuredHeight)
-            )
-            setMeasuredDimension(
-                layoutCache.measuredWidth,
-                layoutCache.measuredHeight
-            )
+        if (specWidthMode == MeasureSpec.UNSPECIFIED
+            || tv1.measuredWidth <= widthLeft) {
+            positionTv1Only()
             return
         }
 
-        // The text is going to overflow, see where to break the text
+        // Now dealing with the third case:
+        // 3. Width left is insufficient for the text view
+        // Break the text into the two text views
         val strIndex = breakText(tv1, widthLeft)
         tv1.text = tv1.text.subSequence(0, strIndex)
         tv2.text = tv2.text.subSequence(strIndex, tv2.text.length)
         tv2.visibility = View.VISIBLE
 
-        if (specHeightMode == MeasureSpec.UNSPECIFIED) {
-            tv1.measure(
-                MeasureSpec.makeMeasureSpec(widthLeft, specWidthMode),
-                heightMeasureSpec
-            )
-        } else {
-            tv1.measure(
-                MeasureSpec.makeMeasureSpec(widthLeft, specWidthMode),
-                MeasureSpec.makeMeasureSpec(specHeight, MeasureSpec.AT_MOST)
-            )
-        }
+        // Remeasure tv1 with the new text with at most the spec's height
+        val tv1HeightMode = if (specHeightMode != MeasureSpec.EXACTLY) {
+            specHeightMode
+        } else { MeasureSpec.AT_MOST }
+        tv1.measure(
+            MeasureSpec.makeMeasureSpec(widthLeft, specWidthMode),
+            tv1HeightMode
+        )
+
+        // Position tv1
         layoutCache.setViewAt(0, ViewPosition(leftOffset, 0))
 
-            rowMaxHeight = max(rowMaxHeight, tv1.measuredHeight)
-        // Move to the next row
-        if (specHeightMode == MeasureSpec.UNSPECIFIED) {
-            tv2.measure(
-                widthMeasureSpec,
-                heightMeasureSpec
-            )
-        } else {
-            val heightLeft = max(0, specHeight - tv1.measuredHeight)
-            tv2.measure(
-                widthMeasureSpec,
-                MeasureSpec.makeMeasureSpec(heightLeft, specHeightMode)
-            )
-        }
+        // Measure tv2 with the leftover height
+        rowMaxHeight = max(rowMaxHeight, tv1.measuredHeight)
+        val tv2Height = if (specHeightMode != MeasureSpec.UNSPECIFIED) {
+            max(0, specHeight - rowMaxHeight)
+        } else { 0 }
+        tv2.measure(
+            widthMeasureSpec,
+            MeasureSpec.makeMeasureSpec(tv2Height, specHeightMode)
+        )
+
+        // Position tv2
         layoutCache.setViewAt(1, ViewPosition(0, rowMaxHeight))
+
         layoutCache.measuredWidth = max(
             leftOffset + tv1.measuredWidth,
             tv2.measuredWidth
         )
         layoutCache.measuredHeight = rowMaxHeight + tv2.measuredHeight
+        setMeasuredDimension(
+            layoutCache.measuredWidth,
+            layoutCache.measuredHeight
+        )
 
         // Calculate measuredEnd
         val lastLine = tv2.lineCount - 1
@@ -146,10 +131,6 @@ class BreakableTextView : Breakable {
         setMeasuredOffsets(
             ViewPosition(lastLineWidth, rowMaxHeight + lastLineTop),
             tv2.measuredHeight - lastLineTop
-        )
-        setMeasuredDimension(
-            layoutCache.measuredWidth,
-            layoutCache.measuredHeight
         )
     }
 
