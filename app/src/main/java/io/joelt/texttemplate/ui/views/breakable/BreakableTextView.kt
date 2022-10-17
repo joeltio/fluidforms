@@ -10,27 +10,18 @@ import io.joelt.texttemplate.ui.views.ViewPosition
 import io.joelt.texttemplate.ui.views.ViewsLayout
 import kotlin.math.max
 
-private fun TextView.copyTo(view: TextView) {
-    view.text = this.text
-    view.setTextColor(this.currentTextColor)
-    view.background = this.background
-
-    if (this.layoutParams != null) {
-        view.layoutParams = this.layoutParams
-    }
-}
-
 class BreakableTextView : Breakable {
-    lateinit var rootTextView: TextView
+    private var rootTextView: TextView
     // The TextView on the same line as the offset
-    private lateinit var tv1: TextView
+    private var tv1: TextView
     // The TextView on next and subsequent lines
-    private lateinit var tv2: TextView
+    private var tv2: TextView
     private var layoutCache: ViewsLayout = ViewsLayout()
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+        rootTextView = TextView(context)
         tv1 = TextView(context)
         tv2 = TextView(context)
 
@@ -38,6 +29,31 @@ class BreakableTextView : Breakable {
         addView(tv2)
     }
 
+    // TextView properties
+    var text: CharSequence
+    get() {
+        return rootTextView.text
+    }
+    set(value) {
+        if (value != rootTextView.text) {
+            rootTextView.text = value
+            requestLayout()
+        }
+    }
+
+    fun setTextColor(color: Int) {
+        rootTextView.setTextColor(color)
+        tv1.setTextColor(color)
+        tv2.setTextColor(color)
+    }
+
+    override fun setBackgroundColor(color: Int) {
+        rootTextView.setBackgroundColor(color)
+        tv1.setBackgroundColor(color)
+        tv2.setBackgroundColor(color)
+    }
+
+    // onMeasure and onLayout
     private fun positionTv1Only() {
         layoutCache.setViewAt(0, ViewPosition(leftOffset, 0))
         layoutCache.measuredWidth = tv1.measuredWidth + leftOffset
@@ -61,9 +77,9 @@ class BreakableTextView : Breakable {
         val specHeightMode = MeasureSpec.getMode(heightMeasureSpec)
         val specHeight = MeasureSpec.getSize(heightMeasureSpec)
 
-        // Copy the attributes to the children text views
-        rootTextView.copyTo(tv1)
-        rootTextView.copyTo(tv2)
+        // Copy elements that will change the layout of the view to tv1 and tv2
+        tv1.text = rootTextView.text
+        tv2.text = rootTextView.text
 
         // Now checking for two cases:
         // 1. Width is unspecified
