@@ -86,14 +86,15 @@ fun layoutViewsWrap(
             view.measure(
                 widthMeasureSpec,
                 MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
-                offset,
+                offset.left,
                 rowMaxHeight
             )
             // Breakable views will be flushed to the left so that it can
             // put their broken views at the start of the next line
             viewsLayout.setViewAt(index, ViewPosition(0, offset.top))
 
-            offset = view.measuredEnd.copy()
+            offset = view.measuredEnd.copy(
+                top = offset.top + view.measuredEnd.top)
             // Update the rowMaxHeight
             rowMaxHeight = view.rowMaxHeight
             maxWidth = max(maxWidth, view.measuredWidth)
