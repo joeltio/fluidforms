@@ -28,9 +28,9 @@ class BreakableTextView : Breakable {
     private lateinit var tv2: TextView
     private var layoutCache: ViewsLayout = ViewsLayout()
 
-    constructor(context: Context) : super(context)
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+    constructor(context: Context) : this(context, null)
+    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
         tv1 = TextView(context)
         tv2 = TextView(context)
 

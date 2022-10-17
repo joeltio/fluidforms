@@ -7,8 +7,8 @@ import io.joelt.texttemplate.ui.views.ViewPosition
 
 abstract class Breakable : ViewGroup {
     constructor(context: Context) : super(context)
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     var measuredEnd = ViewPosition(0, 0)
     var rowMaxHeight = 0
