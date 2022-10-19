@@ -1,6 +1,6 @@
 package io.joelt.texttemplate.models.slots
 
-class PlainTextSlot(var value: String) : Slot() {
+data class PlainTextSlot(var value: String) : Slot() {
     override val placeholderStr = "Text"
     override fun valueToDisplayString(): String = value
     override fun serializeValue() = value
