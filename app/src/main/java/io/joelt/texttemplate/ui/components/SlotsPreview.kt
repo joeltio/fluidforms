@@ -12,6 +12,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import io.joelt.texttemplate.models.Either
 import io.joelt.texttemplate.models.Template
+import io.joelt.texttemplate.models.nextSlot
+import io.joelt.texttemplate.models.prevSlot
 import io.joelt.texttemplate.models.slots.Slot
 import io.joelt.texttemplate.ui.theme.TextTemplateTheme
 
@@ -85,7 +87,18 @@ private fun SlotsPreviewExample() {
 
             currentSlot?.let { slotIndex ->
                 val slot = (slots[slotIndex] as Either.Right).value
-                SlotEditField(slot = slot) {
+                val prevSlotIndex = slots.prevSlot(slotIndex)
+                val nextSlotIndex = slots.nextSlot(slotIndex)
+                var onLeft: (() -> Unit)? = { currentSlot = prevSlotIndex }
+                var onRight: (() -> Unit)? = { currentSlot = nextSlotIndex }
+                if (prevSlotIndex == -1) {
+                    onLeft = null
+                }
+                if (nextSlotIndex == -1) {
+                    onRight = null
+                }
+
+                SlotEditField(slot = slot, onLeft, onRight) {
                     val newSlots = slots.toMutableList()
                     newSlots[slotIndex] = Either.Right(it)
                     slots = newSlots.toList()
