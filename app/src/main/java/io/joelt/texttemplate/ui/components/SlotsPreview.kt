@@ -1,0 +1,96 @@
+package io.joelt.texttemplate.ui.components
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.text.ClickableText
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.tooling.preview.Preview
+import io.joelt.texttemplate.models.Either
+import io.joelt.texttemplate.models.Template
+import io.joelt.texttemplate.models.slots.Slot
+import io.joelt.texttemplate.ui.theme.TextTemplateTheme
+
+@Composable
+fun SlotsPreview(
+    slots: List<Either<String, Slot>>,
+    selectedSlotIndex: Int? = null,
+    style: TextStyle = TextStyle.Default,
+    onSlotClick: (slotIndex: Int) -> Unit
+) {
+    val annotatedString = buildAnnotatedString {
+        slots.forEachIndexed { slotIndex, it ->
+            when (it) {
+                is Either.Left -> {
+                    append(it.value)
+                }
+                is Either.Right -> {
+                    // Annotate the string with the slot so that it can be
+                    // retrieved later
+                    pushStringAnnotation("Slot", slotIndex.toString())
+                    append(createSlotText(
+                        it.value,
+                        selectedSlotIndex == slotIndex
+                    ))
+                    pop()
+                }
+            }
+        }
+    }
+
+    Column {
+        ClickableText(
+            text = annotatedString,
+            style = style,
+            onClick = { offset ->
+                annotatedString.getStringAnnotations(
+                    tag = "Slot", offset, offset
+                ).firstOrNull()?.let { annotation ->
+                    onSlotClick(annotation.item.toInt())
+                }
+            }
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun SlotsPreviewExample() {
+    val template = Template(
+        "My Sample Template",
+        """
+            Be kind to your {% text %}{% end %}-footed {% text %}{% end %}
+            For a duck may be somebody's {% text %}{% end %},
+            Be kind to your {% text %}{% end %} in {% text %}{% end %}
+            Where the weather is always {% text %}{% end %}.
+
+            You may think that this is the {% text %}{% end %},
+            Well it is.
+        """.trimIndent()
+    )
+
+    var slots by remember { mutableStateOf(template.slots) }
+    var currentSlot by remember {
+        mutableStateOf<Int?>(null)
+    }
+    TextTemplateTheme {
+        Column {
+            SlotsPreview(slots, currentSlot) {
+                currentSlot = it
+            }
+
+            currentSlot?.let { slotIndex ->
+                val slot = (slots[slotIndex] as Either.Right).value
+                SlotEditField(slot = slot) {
+                    val newSlots = slots.toMutableList()
+                    newSlots[slotIndex] = Either.Right(it)
+                    slots = newSlots.toList()
+                }
+            }
+        }
+    }
+}
