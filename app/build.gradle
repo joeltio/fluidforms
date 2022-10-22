@@ -37,7 +37,8 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion compose_version
+        // See https://developer.android.com/jetpack/androidx/releases/compose-compiler
+        kotlinCompilerExtensionVersion "1.3.2"
     }
     packagingOptions {
         resources {
@@ -48,14 +49,20 @@ android {
 }
 
 dependencies {
+    // See https://developer.android.com/studio/write/java8-support#library-desugaring-versions
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.2.0'
 
-    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
+
+    // Android Compose
+    // See https://developer.android.com/jetpack/androidx/releases/compose
     implementation "androidx.compose.ui:ui:$compose_version"
-    implementation "androidx.compose.material:material:$compose_version"
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.1'
-    implementation 'androidx.activity:activity-compose:1.3.1'
+    implementation "androidx.compose.material:material:$compose_version"
+    // See https://developer.android.com/jetpack/androidx/releases/activity
+    implementation 'androidx.activity:activity-compose:1.6.0'
+
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
