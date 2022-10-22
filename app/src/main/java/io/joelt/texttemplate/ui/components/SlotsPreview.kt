@@ -22,7 +22,7 @@ fun SlotsPreview(
     slots: List<Either<String, Slot>>,
     selectedSlotIndex: Int? = null,
     style: TextStyle = TextStyle.Default,
-    onSlotClick: (slotIndex: Int) -> Unit
+    onSlotClick: (slotIndex: Int) -> Unit = {}
 ) {
     val annotatedString = buildAnnotatedString {
         slots.forEachIndexed { slotIndex, it ->
