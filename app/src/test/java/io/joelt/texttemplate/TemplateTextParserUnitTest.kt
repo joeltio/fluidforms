@@ -44,6 +44,22 @@ class TemplateTextParserUnitTest {
     }
 
     @Test
+    fun parse_text_with_label() {
+        val parsed = "{% text | label=\"the label\" %} hello {% end %}".toTemplateSlot()
+        assertEquals(parsed.size, 1)
+        assertEquals((rValue(parsed[0]) as PlainTextSlot).value, " hello ")
+        assertEquals((rValue(parsed[0]) as PlainTextSlot).label, "the label")
+    }
+
+    @Test
+    fun parse_text_with_label_trims_whitespace() {
+        val parsed = "{%     text   |   label    =   \"  the label \"    %}hello{% end %}".toTemplateSlot()
+        assertEquals(parsed.size, 1)
+        assertEquals((rValue(parsed[0]) as PlainTextSlot).value, "hello")
+        assertEquals((rValue(parsed[0]) as PlainTextSlot).label, "  the label ")
+    }
+
+    @Test
     fun parse_text_trims_whitespace_in_tag() {
         val parsed = "{%            text      %}xyz{%end      %}".toTemplateSlot()
         assertEquals(parsed.size, 1)

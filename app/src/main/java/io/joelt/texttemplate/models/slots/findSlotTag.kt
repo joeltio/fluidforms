@@ -1,6 +1,6 @@
 package io.joelt.texttemplate.models.slots
 
-private val regex = Regex("\\{%\\s*(\\S*)\\s*%\\}")
+private val regex = Regex("\\{%\\s*(.*?)\\s*%\\}")
 
 fun findSlotTag(text: String): Triple<String, String?, String> {
     val match = regex.find(text) ?: return Triple(text, null, "")

@@ -1,13 +1,13 @@
 package io.joelt.texttemplate.models.slots
 
 abstract class Slot {
-    protected abstract val placeholderStr: String
+    var label = ""
     protected abstract fun valueToDisplayString(): String
     // Returns the placeholder if valueToDisplayString is empty
     fun toDisplayString(): String {
         val displayStr = valueToDisplayString()
         if (displayStr == "") {
-            return placeholderStr
+            return label
         }
         return displayStr
     }
