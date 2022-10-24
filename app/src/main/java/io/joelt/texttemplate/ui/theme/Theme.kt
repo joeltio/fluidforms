@@ -7,7 +7,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-val ColorScheme.onPrimarySecondary: Color
+val ColorScheme.onTertiarySecondary: Color
     get() = TransparentGreyMid
 val ColorScheme.highlightEnabled: Color
     get() = YellowHigh
