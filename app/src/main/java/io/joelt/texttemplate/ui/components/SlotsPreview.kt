@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import io.joelt.texttemplate.models.Either
 import io.joelt.texttemplate.models.Template
@@ -22,6 +23,7 @@ fun SlotsPreview(
     slots: List<Either<String, Slot>>,
     selectedSlotIndex: Int? = null,
     style: TextStyle = TextStyle.Default,
+    maxLines: Int = Int.MAX_VALUE,
     onSlotClick: (slotIndex: Int) -> Unit = {}
 ) {
     val annotatedString = buildAnnotatedString {
@@ -54,7 +56,9 @@ fun SlotsPreview(
                 ).firstOrNull()?.let { annotation ->
                     onSlotClick(annotation.item.toInt())
                 }
-            }
+            },
+            maxLines = maxLines,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }
