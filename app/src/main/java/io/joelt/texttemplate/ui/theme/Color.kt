@@ -7,7 +7,7 @@ val White = Color(0xFFFFFFFF)
 val SlightlyDarkerWhite = Color(0xFFFDFDFD)
 val MuchDarkerWhite = Color(0xFFEFEFEF)
 val TransparentGreyMid = Color(0x7FFFFFFF)
-val DarkBlueLow = Color(0xFF1E212B)
+val DarkBlueLow = Color(0xFF17203B)
 
 val BlueMid = Color(0xFF2F509A)
 val YellowHigh = Color(0xFFF3FF05)
