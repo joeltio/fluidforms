@@ -30,7 +30,10 @@ private val LightColorPalette = lightColorScheme(
     surfaceTint = SlightlyDarkerWhite,
     surface = SlightlyDarkerWhite,
     background = MuchDarkerWhite,
-    onBackground = Black
+    onBackground = Black,
+    secondary = BlueMid,
+    secondaryContainer = BluishWhite,
+    onSecondaryContainer = BlueMid
 )
 
 private val DarkColorPalette = LightColorPalette
