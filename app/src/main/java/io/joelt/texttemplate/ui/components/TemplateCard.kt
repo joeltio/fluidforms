@@ -56,6 +56,7 @@ fun TemplateCard(
 @Composable
 private fun TemplateCardExample() {
     val template = Template(
+        0,
         "My Template",
         """
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do

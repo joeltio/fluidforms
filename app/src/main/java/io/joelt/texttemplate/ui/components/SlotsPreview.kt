@@ -67,6 +67,7 @@ fun SlotsPreview(
 @Composable
 private fun SlotsPreviewExample() {
     val template = Template(
+        0,
         "My Sample Template",
         """
             Be kind to your {% text %}{% end %}-footed {% text %}{% end %}

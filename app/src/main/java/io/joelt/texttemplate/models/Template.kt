@@ -2,8 +2,8 @@ package io.joelt.texttemplate.models
 
 import io.joelt.texttemplate.models.slots.Slot
 
-data class Template(val name: String, val slots: List<Either<String, Slot>>) {
-    constructor(name: String, text: String): this(name, text.toTemplateSlot())
+data class Template(val id: Int = 0, val name: String, val slots: List<Either<String, Slot>>) {
+    constructor(id: Int = 0, name: String, text: String): this(id, name, text.toTemplateSlot())
 
     val text: String
         get() {
