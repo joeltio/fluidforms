@@ -5,6 +5,10 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.*
 import io.joelt.texttemplate.navigation.*
 
+fun NavHostController.navigateToTemplateEdit(templateId: Int) {
+    this.navigate("templates/$templateId/edit")
+}
+
 class TemplateEditScreen : Screen {
     override fun route(): String = "templates/{templateId}/edit"
 
