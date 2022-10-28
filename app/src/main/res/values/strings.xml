@@ -1,6 +1,8 @@
 <resources>
-    <string name="app_name">Text Template</string>
+    <string name="app_name">TextTemplate</string>
     <string name="navbar_templates">Templates</string>
     <string name="navbar_drafts">Drafts</string>
     <string name="navbar_archived">Archived</string>
+    <string name="navbar_settings">Settings</string>
+    <string name="navbar_back">Back</string>
 </resources>

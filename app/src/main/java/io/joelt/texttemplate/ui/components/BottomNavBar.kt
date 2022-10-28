@@ -2,13 +2,12 @@ package io.joelt.texttemplate.ui.components
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.NavHostController
 import io.joelt.texttemplate.R
+import io.joelt.texttemplate.navigation.atRoute
 
 private data class NavItem(
     val name: String,
@@ -17,7 +16,7 @@ private data class NavItem(
 )
 
 @Composable
-fun BottomNavBar(navController: NavController) {
+fun BottomNavBar(nav: NavHostController) {
     val items = listOf(
         NavItem(
             stringResource(id = R.string.navbar_templates),
@@ -36,12 +35,7 @@ fun BottomNavBar(navController: NavController) {
         )
     )
 
-    NavigationBar(
-
-    ) {
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute = navBackStackEntry?.destination?.route
-
+    NavigationBar {
         items.forEach { item ->
             NavigationBarItem(
                 icon = {
@@ -51,17 +45,9 @@ fun BottomNavBar(navController: NavController) {
                     )
                 },
                 label = { Text(text = item.name) },
-                selected = currentRoute == item.route,
+                selected = nav.atRoute(item.route),
                 onClick = {
-                    navController.navigate(item.route) {
-                        navController.graph.startDestinationRoute?.let { route ->
-                            popUpTo(route) {
-                                saveState = true
-                            }
-                        }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
+                    nav.navigate(item.route)
                 }
             )
         }
