@@ -4,36 +4,35 @@ import io.joelt.texttemplate.models.slots.Slot
 import java.time.LocalDateTime
 
 data class Draft(
-    val id: Int = 0,
+    val id: Long = 0,
+    val createdOn: LocalDateTime = LocalDateTime.now(),
+    val archived: Boolean = false,
     val name: String,
     val slots: List<Either<String, Slot>>,
     val lastEditedIndex: Int,
-    val lastEditedDateTime: LocalDateTime
+    val lastEditedOn: LocalDateTime
 ) {
     constructor(
-        id: Int = 0,
+        id: Long = 0,
+        createdOn: LocalDateTime = LocalDateTime.now(),
+        archived: Boolean = false,
         name: String,
         text: String,
         lastEditedIndex: Int,
-        lastEditedDateTime: LocalDateTime
-    ) : this(id, name, text.toTemplateSlot(), lastEditedIndex, lastEditedDateTime)
+        lastEditedOn: LocalDateTime
+    ) : this(id, createdOn, archived, name, text.toTemplateSlot(), lastEditedIndex, lastEditedOn)
 
-    constructor(template: Template, lastEditedIndex: Int, lastEditedDateTime: LocalDateTime) : this(
+    constructor(template: Template) : this(
         0,
+        LocalDateTime.now(),
+        false,
         template.name,
         template.text,
-        lastEditedIndex,
-        lastEditedDateTime
+        0,
+        LocalDateTime.now()
     )
 
-    fun saveCopyNow(
-        slots: List<Either<String, Slot>> = this.slots,
-        lastEditedIndex: Int = this.lastEditedIndex
-    ): Draft {
-        return this.copy(
-            slots = slots,
-            lastEditedIndex = lastEditedIndex,
-            lastEditedDateTime = LocalDateTime.now()
-        )
+    val text: String by lazy {
+        serializeTemplate(slots)
     }
 }

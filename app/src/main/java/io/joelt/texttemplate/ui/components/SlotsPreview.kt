@@ -67,9 +67,8 @@ fun SlotsPreview(
 @Composable
 private fun SlotsPreviewExample() {
     val template = Template(
-        0,
-        "My Sample Template",
-        """
+        name = "My Sample Template",
+        text = """
             Be kind to your {% text %}{% end %}-footed {% text %}{% end %}
             For a duck may be somebody's {% text %}{% end %},
             Be kind to your {% text %}{% end %} in {% text %}{% end %}
