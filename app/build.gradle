@@ -63,6 +63,11 @@ dependencies {
     annotationProcessor "androidx.room:room-compiler:$room_version"
     ksp "androidx.room:room-compiler:$room_version"
 
+    // Koin
+    implementation "io.insert-koin:koin-core:3.2.2"
+    implementation "io.insert-koin:koin-android:3.3.0"
+    implementation "io.insert-koin:koin-androidx-compose:3.3.0"
+
     // Android Compose
     // See https://developer.android.com/jetpack/androidx/releases/compose
     implementation "androidx.compose.ui:ui:$compose_version"
