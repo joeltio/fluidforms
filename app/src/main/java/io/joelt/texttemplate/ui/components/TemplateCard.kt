@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.joelt.texttemplate.models.Template
@@ -24,15 +25,18 @@ private val dateTimeFormat = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
 @Composable
 fun TemplateCard(
     template: Template,
+    modifier: Modifier = Modifier,
     dateTime: LocalDateTime? = null,
     onClick: () -> Unit = {}
 ) {
-    ElevatedCard(modifier = Modifier.padding(4.dp), onClick = onClick) {
+    ElevatedCard(modifier = modifier.padding(4.dp), onClick = onClick) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = template.name,
                 style = Typography.titleLarge,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
             SlotsPreview(
                 slots = template.slots,
