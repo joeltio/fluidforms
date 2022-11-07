@@ -8,7 +8,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import io.joelt.texttemplate.R
 import io.joelt.texttemplate.navigation.atRoute
-import io.joelt.texttemplate.navigation.navigateBottomNav
+import io.joelt.texttemplate.navigation.navigateClearStack
 
 private data class NavItem(
     val name: String,
@@ -48,7 +48,7 @@ fun BottomNavBar(nav: NavHostController) {
                 label = { Text(text = item.name) },
                 selected = nav.atRoute(item.route),
                 onClick = {
-                    nav.navigateBottomNav(item.route)
+                    nav.navigateClearStack(item.route)
                 }
             )
         }

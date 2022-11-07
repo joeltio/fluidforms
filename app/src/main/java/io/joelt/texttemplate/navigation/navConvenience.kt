@@ -1,6 +1,7 @@
 package io.joelt.texttemplate.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 
@@ -10,14 +11,8 @@ fun NavHostController.atRoute(dest: String): Boolean {
     return current == dest
 }
 
-fun NavHostController.navigateBottomNav(dest: String) {
+fun NavHostController.navigateClearStack(dest: String) {
     this.navigate(dest) {
-        this@navigateBottomNav.graph.startDestinationRoute?.let { route ->
-            popUpTo(route) {
-                saveState = true
-            }
-        }
-        launchSingleTop = true
-        restoreState = true
+        popUpTo(graph.findStartDestination().id)
     }
 }
