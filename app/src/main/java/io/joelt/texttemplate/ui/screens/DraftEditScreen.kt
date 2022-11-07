@@ -12,7 +12,6 @@ import androidx.navigation.*
 import io.joelt.texttemplate.navigation.*
 import io.joelt.texttemplate.ui.components.SlotsPreview
 import io.joelt.texttemplate.ui.viewmodels.DraftEditViewModel
-import io.joelt.texttemplate.ui.viewmodels.TemplatesViewModel
 import org.koin.androidx.compose.koinViewModel
 
 fun NavHostController.navigateToDraftEdit(draftId: Long) {
@@ -48,14 +47,14 @@ private fun DraftEditScreen(
     templateId: Long,
     viewModel: DraftEditViewModel = koinViewModel()
 ) {
-    if (draftId != 0L) {
-        viewModel.loadDraft(draftId)
-    } else if (templateId != 0L) {
-        viewModel.createDraft(templateId)
-    }
-
     val draft = viewModel.draft
     if (draft == null) {
+        if (draftId != 0L) {
+            viewModel.loadDraft(draftId)
+        } else if (templateId != 0L) {
+            viewModel.createDraft(templateId)
+        }
+
         Spacer(Modifier.height(32.dp))
         CircularProgressIndicator()
         return
