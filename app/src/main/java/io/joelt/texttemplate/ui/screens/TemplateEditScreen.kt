@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.*
 import io.joelt.texttemplate.navigation.*
 
-fun NavHostController.navigateToTemplateEdit(templateId: Int) {
+fun NavHostController.navigateToTemplateEdit(templateId: Long) {
     this.navigate("templates/$templateId/edit")
 }
 
