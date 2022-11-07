@@ -113,7 +113,7 @@ class DraftReadWriteTest {
     }
 
     @Test
-    fun updateDraftToArchived() = runTest {
+    fun updateDraftArchived() = runTest {
         val draft = createDraft()
 
         val draftId = repo.createDraft(draft)
@@ -123,5 +123,9 @@ class DraftReadWriteTest {
         repo.archiveDraft(draftId)
         assertEquals(repo.getDrafts(false).size, 0)
         assertEquals(repo.getDrafts(true).size, 1)
+
+        repo.unarchiveDraft(draftId)
+        assertEquals(repo.getDrafts(false).size, 1)
+        assertEquals(repo.getDrafts(true).size, 0)
     }
 }

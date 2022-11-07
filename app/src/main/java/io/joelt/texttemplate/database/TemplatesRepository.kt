@@ -23,6 +23,7 @@ interface TemplatesRepository {
 
     suspend fun updateDraft(draft: Draft)
     suspend fun archiveDraft(id: Long)
+    suspend fun unarchiveDraft(id: Long)
 
     suspend fun deleteDraft(id: Long)
 }

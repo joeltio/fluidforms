@@ -26,6 +26,9 @@ interface DraftDao {
     @Query("UPDATE draft SET archived = 1 WHERE id = :id")
     fun updateToArchived(id: Long)
 
+    @Query("UPDATE draft SET archived = 0 WHERE id = :id")
+    fun updateToUnarchived(id: Long)
+
     @Query("DELETE FROM draft WHERE id = :id")
     fun delete(id: Long)
 }

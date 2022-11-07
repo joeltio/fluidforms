@@ -66,6 +66,10 @@ class RoomRepository(
         draftDao().updateToArchived(id)
     }
 
+    override suspend fun unarchiveDraft(id: Long) = withDb {
+        draftDao().updateToUnarchived(id)
+    }
+
     override suspend fun deleteDraft(id: Long) = withDb {
         draftDao().delete(id)
     }
