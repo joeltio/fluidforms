@@ -2,11 +2,13 @@ package io.joelt.texttemplate.ui.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
@@ -18,15 +20,13 @@ import io.joelt.texttemplate.models.prevSlot
 import io.joelt.texttemplate.models.slots.Slot
 import io.joelt.texttemplate.ui.theme.TextTemplateTheme
 
-@Composable
-fun SlotsPreview(
+private const val SLOT_TAG = "Slot"
+
+private fun annotateSlots(
     slots: List<Either<String, Slot>>,
-    selectedSlotIndex: Int? = null,
-    style: TextStyle = TextStyle.Default,
-    maxLines: Int = Int.MAX_VALUE,
-    onSlotClick: (slotIndex: Int) -> Unit = {}
-) {
-    val annotatedString = buildAnnotatedString {
+    selectedIndex: Int?
+): AnnotatedString =
+    buildAnnotatedString {
         slots.forEachIndexed { slotIndex, it ->
             when (it) {
                 is Either.Left -> {
@@ -35,31 +35,55 @@ fun SlotsPreview(
                 is Either.Right -> {
                     // Annotate the string with the slot so that it can be
                     // retrieved later
-                    pushStringAnnotation("Slot", slotIndex.toString())
-                    append(createSlotText(
-                        it.value,
-                        selectedSlotIndex == slotIndex
-                    ))
+                    pushStringAnnotation(SLOT_TAG, slotIndex.toString())
+                    append(
+                        createSlotText(
+                            it.value,
+                            selectedIndex == slotIndex
+                        )
+                    )
                     pop()
                 }
             }
         }
     }
 
+@Composable
+fun SlotsPreview(
+    slots: List<Either<String, Slot>>,
+    selectedSlotIndex: Int? = null,
+    style: TextStyle = TextStyle.Default,
+    maxLines: Int = Int.MAX_VALUE,
+    onSlotClick: ((slotIndex: Int) -> Unit)? = null
+) {
+    val annotatedString = annotateSlots(slots, selectedSlotIndex)
     Column {
-        ClickableText(
-            text = annotatedString,
-            style = style,
-            onClick = { offset ->
-                annotatedString.getStringAnnotations(
-                    tag = "Slot", offset, offset
-                ).firstOrNull()?.let { annotation ->
-                    onSlotClick(annotation.item.toInt())
-                }
-            },
-            maxLines = maxLines,
-            overflow = TextOverflow.Ellipsis
-        )
+        // This is needed as ClickableText will not respond to parent clicks but
+        // Text will. For example, when this ClickableText is used in a row
+        // item, clicks events on the ClickableText will not propagate to the
+        // parent
+        if (onSlotClick == null) {
+            Text(
+                text = annotatedString,
+                style = style,
+                maxLines = maxLines,
+                overflow = TextOverflow.Ellipsis
+            )
+        } else {
+            ClickableText(
+                text = annotatedString,
+                style = style,
+                onClick = { offset ->
+                    annotatedString.getStringAnnotations(
+                        tag = SLOT_TAG, offset, offset
+                    ).firstOrNull()?.let { annotation ->
+                        onSlotClick(annotation.item.toInt())
+                    }
+                },
+                maxLines = maxLines,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
     }
 }
 
