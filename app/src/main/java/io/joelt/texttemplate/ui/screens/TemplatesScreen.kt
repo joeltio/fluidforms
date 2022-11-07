@@ -28,6 +28,6 @@ private fun TemplatesScreen(
     viewModel: TemplatesViewModel = koinViewModel()
 ) {
     TemplateList(templates = viewModel.templates) {
-        nav.navigateToTemplateEdit(it.id)
+        nav.navigateToCreateDraft(it.id)
     }
 }

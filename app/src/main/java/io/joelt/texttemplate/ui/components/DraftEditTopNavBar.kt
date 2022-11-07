@@ -1,5 +1,6 @@
 package io.joelt.texttemplate.ui.components
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.material.IconButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -16,9 +17,13 @@ fun DraftEditTopNavBar(nav: NavHostController) {
     val bgColor = MaterialTheme.colorScheme.tertiaryContainer
     val contentColor = MaterialTheme.colorScheme.onTertiaryContainer
 
+    BackHandler(enabled = true) {
+        nav.navigate("drafts")
+    }
+
     val backIconBtn = @Composable {
         IconButton(onClick = {
-            nav.popBackStack()
+            nav.navigate("drafts")
         }) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
@@ -27,6 +32,7 @@ fun DraftEditTopNavBar(nav: NavHostController) {
             )
         }
     }
+
     TopAppBar(
         title = {},
         navigationIcon = backIconBtn,
