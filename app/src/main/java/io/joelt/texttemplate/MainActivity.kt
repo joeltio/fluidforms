@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
                     ArchivedScreen(),
                     SettingsScreen(),
                     TemplateEditScreen(),
-                    TemplateCreateScreen(),
+                    DraftEditScreen(),
                 )
 
                 val navController = rememberNavController()

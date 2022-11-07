@@ -13,7 +13,7 @@ enum class ScaffoldType {
     HOME_SCREEN,
     SETTINGS_SCREEN,
     TEMPLATE_EDIT_SCREEN,
-    TEMPLATE_CREATE_SCREEN,
+    DRAFT_EDIT_SCREEN,
 }
 
 /**
@@ -46,8 +46,9 @@ class ScaffoldController(
             ScaffoldType.TEMPLATE_EDIT_SCREEN -> {
                 topBar = { TemplateEditTopNavBar(nav) }
             }
-            ScaffoldType.TEMPLATE_CREATE_SCREEN -> {
-                topBar = { TemplateCreateTopNavBar(nav) }
+            ScaffoldType.DRAFT_EDIT_SCREEN -> {
+                topBar = { DraftEditTopNavBar(nav) }
+                bottomBar = { DraftEditBottomAppBar(nav) }
             }
         }
 
