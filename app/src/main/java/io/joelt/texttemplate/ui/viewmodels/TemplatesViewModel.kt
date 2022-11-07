@@ -14,18 +14,14 @@ class TemplatesViewModel(
 ) : ViewModel() {
     var templates: List<Template>? by mutableStateOf(null)
         private set
-    var loading by mutableStateOf(false)
-        private set
 
     init {
         loadTemplates()
     }
 
     private fun loadTemplates() {
-        loading = true
         viewModelScope.launch {
             templates = repository.getTemplates()
-            loading = false
         }
     }
 }
