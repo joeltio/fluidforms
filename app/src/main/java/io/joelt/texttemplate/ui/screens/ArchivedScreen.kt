@@ -6,6 +6,9 @@ import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import io.joelt.texttemplate.navigation.*
+import io.joelt.texttemplate.ui.components.DraftList
+import io.joelt.texttemplate.ui.viewmodels.ArchivedViewModel
+import org.koin.androidx.compose.koinViewModel
 
 class ArchivedScreen : Screen {
     override fun route(): String = "archived"
@@ -20,6 +23,12 @@ class ArchivedScreen : Screen {
 }
 
 @Composable
-private fun ArchivedScreen(nav: NavHostController, scaffold: ScaffoldController) {
-    Text(text = "archived screen")
+private fun ArchivedScreen(
+    nav: NavHostController,
+    scaffold: ScaffoldController,
+    viewModel: ArchivedViewModel = koinViewModel()
+) {
+    DraftList(drafts = viewModel.archived) {
+        nav.navigateToDraftEdit(it.id)
+    }
 }

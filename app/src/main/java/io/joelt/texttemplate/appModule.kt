@@ -4,6 +4,7 @@ import androidx.room.Room
 import io.joelt.texttemplate.database.TemplatesRepository
 import io.joelt.texttemplate.database.room.AppDatabase
 import io.joelt.texttemplate.database.room.RoomRepository
+import io.joelt.texttemplate.ui.viewmodels.ArchivedViewModel
 import io.joelt.texttemplate.ui.viewmodels.DraftEditViewModel
 import io.joelt.texttemplate.ui.viewmodels.DraftsViewModel
 import io.joelt.texttemplate.ui.viewmodels.TemplatesViewModel
@@ -22,5 +23,6 @@ val appModule = module {
     single<TemplatesRepository> { RoomRepository(get()) }
     viewModel { TemplatesViewModel(get()) }
     viewModel { DraftsViewModel(get()) }
+    viewModel { ArchivedViewModel(get()) }
     viewModel { DraftEditViewModel(get()) }
 }
