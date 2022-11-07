@@ -5,6 +5,7 @@ import io.joelt.texttemplate.database.TemplatesRepository
 import io.joelt.texttemplate.database.room.AppDatabase
 import io.joelt.texttemplate.database.room.RoomRepository
 import io.joelt.texttemplate.ui.viewmodels.DraftEditViewModel
+import io.joelt.texttemplate.ui.viewmodels.DraftsViewModel
 import io.joelt.texttemplate.ui.viewmodels.TemplatesViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -20,5 +21,6 @@ val appModule = module {
     }
     single<TemplatesRepository> { RoomRepository(get()) }
     viewModel { TemplatesViewModel(get()) }
+    viewModel { DraftsViewModel(get()) }
     viewModel { DraftEditViewModel(get()) }
 }
