@@ -4,10 +4,7 @@ import androidx.room.Room
 import io.joelt.texttemplate.database.TemplatesRepository
 import io.joelt.texttemplate.database.room.AppDatabase
 import io.joelt.texttemplate.database.room.RoomRepository
-import io.joelt.texttemplate.ui.viewmodels.ArchivedViewModel
-import io.joelt.texttemplate.ui.viewmodels.DraftEditViewModel
-import io.joelt.texttemplate.ui.viewmodels.DraftsViewModel
-import io.joelt.texttemplate.ui.viewmodels.TemplatesViewModel
+import io.joelt.texttemplate.ui.viewmodels.*
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -25,4 +22,5 @@ val appModule = module {
     viewModel { DraftsViewModel(get()) }
     viewModel { ArchivedViewModel(get()) }
     viewModel { DraftEditViewModel(get()) }
+    viewModel { ArchivedViewViewModel(get()) }
 }

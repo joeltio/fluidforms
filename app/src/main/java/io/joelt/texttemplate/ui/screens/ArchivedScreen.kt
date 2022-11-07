@@ -1,6 +1,5 @@
 package io.joelt.texttemplate.ui.screens
 
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
@@ -29,6 +28,6 @@ private fun ArchivedScreen(
     viewModel: ArchivedViewModel = koinViewModel()
 ) {
     DraftList(drafts = viewModel.archived) {
-        nav.navigateToDraftEdit(it.id)
+        nav.navigateToArchivedEdit(it.id)
     }
 }

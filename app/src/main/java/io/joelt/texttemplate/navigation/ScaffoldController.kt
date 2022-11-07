@@ -14,6 +14,7 @@ enum class ScaffoldType {
     SETTINGS_SCREEN,
     TEMPLATE_EDIT_SCREEN,
     DRAFT_EDIT_SCREEN,
+    ARCHIVED_VIEW_SCREEN,
 }
 
 /**
@@ -49,6 +50,9 @@ class ScaffoldController(
             ScaffoldType.DRAFT_EDIT_SCREEN -> {
                 topBar = { DraftEditTopNavBar(nav) }
                 bottomBar = { DraftEditBottomAppBar(nav) }
+            }
+            ScaffoldType.ARCHIVED_VIEW_SCREEN -> {
+                topBar = { ArchivedViewTopNavBar(nav) }
             }
         }
 
