@@ -12,18 +12,26 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import io.joelt.texttemplate.R
 
+fun NavHostController.navigateBackToDrafts() {
+    navigate("drafts") {
+        this@navigateBackToDrafts.graph.startDestinationRoute?.let { route ->
+            popUpTo(route)
+        }
+    }
+}
+
 @Composable
 fun DraftEditTopNavBar(nav: NavHostController) {
     val bgColor = MaterialTheme.colorScheme.tertiaryContainer
     val contentColor = MaterialTheme.colorScheme.onTertiaryContainer
 
     BackHandler(enabled = true) {
-        nav.navigate("drafts")
+        nav.navigateBackToDrafts()
     }
 
     val backIconBtn = @Composable {
         IconButton(onClick = {
-            nav.navigate("drafts")
+            nav.navigateBackToDrafts()
         }) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
