@@ -14,12 +14,12 @@ class SettingsScreen : Screen {
 
     override fun makeComposable(backStackEntry: NavBackStackEntry): ScreenComposable =
         { nav, scaffold ->
+            scaffold.changeNavBars(ScaffoldType.SETTINGS_SCREEN)
             SettingsScreen(nav, scaffold)
         }
 }
 
 @Composable
 private fun SettingsScreen(nav: NavHostController, scaffold: ScaffoldController) {
-    scaffold.changeNavBars(ScaffoldType.SETTINGS_SCREEN)
     Text(text = "settings screen")
 }

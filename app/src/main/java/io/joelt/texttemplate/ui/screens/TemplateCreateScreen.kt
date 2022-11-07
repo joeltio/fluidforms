@@ -12,12 +12,12 @@ class TemplateCreateScreen : Screen {
 
     override fun makeComposable(backStackEntry: NavBackStackEntry): ScreenComposable =
         { nav, scaffold ->
+            scaffold.changeNavBars(ScaffoldType.TEMPLATE_CREATE_SCREEN)
             TemplateCreateScreen(nav, scaffold)
         }
 }
 
 @Composable
 private fun TemplateCreateScreen(nav: NavHostController, scaffold: ScaffoldController) {
-    scaffold.changeNavBars(ScaffoldType.TEMPLATE_CREATE_SCREEN)
     Text(text = "template create screen")
 }

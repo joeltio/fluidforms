@@ -14,12 +14,12 @@ class DraftsScreen : Screen {
 
     override fun makeComposable(backStackEntry: NavBackStackEntry): ScreenComposable =
         { nav, scaffold ->
+            scaffold.changeNavBars(ScaffoldType.HOME_SCREEN)
             DraftsScreen(nav, scaffold)
         }
 }
 
 @Composable
 private fun DraftsScreen(nav: NavHostController, scaffold: ScaffoldController) {
-    scaffold.changeNavBars(ScaffoldType.HOME_SCREEN)
     Text(text = "drafts screen")
 }

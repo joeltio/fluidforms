@@ -14,12 +14,12 @@ class ArchivedScreen : Screen {
 
     override fun makeComposable(backStackEntry: NavBackStackEntry): ScreenComposable =
         { nav, scaffold ->
+            scaffold.changeNavBars(ScaffoldType.HOME_SCREEN)
             ArchivedScreen(nav, scaffold)
         }
 }
 
 @Composable
 private fun ArchivedScreen(nav: NavHostController, scaffold: ScaffoldController) {
-    scaffold.changeNavBars(ScaffoldType.HOME_SCREEN)
     Text(text = "archived screen")
 }

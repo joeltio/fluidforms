@@ -18,6 +18,7 @@ class TemplateEditScreen : Screen {
 
     override fun makeComposable(backStackEntry: NavBackStackEntry): ScreenComposable =
         { nav, scaffold ->
+            scaffold.changeNavBars(ScaffoldType.TEMPLATE_EDIT_SCREEN)
             val templateId = backStackEntry.arguments!!.getInt("templateId")
             TemplateEditScreen(nav, scaffold, templateId)
         }
@@ -25,6 +26,5 @@ class TemplateEditScreen : Screen {
 
 @Composable
 private fun TemplateEditScreen(nav: NavHostController, scaffold: ScaffoldController, templateId: Int) {
-    scaffold.changeNavBars(ScaffoldType.TEMPLATE_EDIT_SCREEN)
     Text(text = "template edit screen for template with id $templateId")
 }

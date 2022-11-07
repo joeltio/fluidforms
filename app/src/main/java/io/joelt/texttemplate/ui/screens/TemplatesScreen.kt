@@ -16,6 +16,7 @@ class TemplatesScreen : Screen {
 
     override fun makeComposable(backStackEntry: NavBackStackEntry): ScreenComposable =
         { nav, scaffold ->
+            scaffold.changeNavBars(ScaffoldType.HOME_SCREEN)
             TemplatesScreen(nav, scaffold)
         }
 }
@@ -26,8 +27,6 @@ private fun TemplatesScreen(
     scaffold: ScaffoldController,
     viewModel: TemplatesViewModel = koinViewModel()
 ) {
-    scaffold.changeNavBars(ScaffoldType.HOME_SCREEN)
-
     TemplateList(templates = viewModel.templates) {
         nav.navigateToTemplateEdit(it.id)
     }
