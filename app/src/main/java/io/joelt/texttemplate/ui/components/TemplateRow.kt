@@ -13,6 +13,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.joelt.texttemplate.models.Either
+import io.joelt.texttemplate.models.genTemplates
 import io.joelt.texttemplate.models.slots.Slot
 import io.joelt.texttemplate.models.toTemplateSlot
 import io.joelt.texttemplate.ui.theme.TextTemplateTheme
@@ -62,26 +63,12 @@ fun TemplateRow(
 @Preview(showBackground = true)
 @Composable
 private fun TemplateRowExample() {
-    val name = "My Template"
-    val slots = """
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-        eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-        ad minim veniam, quis nostrud exercitation ullamco laboris
-        {% text | label="Name" %}nisi ut aliquip ex{% end %} ea commodo
-        consequat. Duis aute irure dolor in reprehenderit in voluptate velit
-        esse cillum dolore eu
-        {% text | label="Location" %}fugiat nulla pariatur.{% end %}
-    """.trimIndent().replace("\n", " ").toTemplateSlot()
-
     TextTemplateTheme {
         Column {
-            TemplateRow(name, slots) {}
-            Divider()
-            TemplateRow(name, slots, dateTime = LocalDateTime.now()) {}
-            Divider()
-            TemplateRow(name, slots, dateTime = LocalDateTime.now()) {}
-            Divider()
-            TemplateRow(name, slots, dateTime = LocalDateTime.now()) {}
+            genTemplates(4).forEach {
+                TemplateRow(it.name, it.slots)
+                Divider()
+            }
         }
     }
 }

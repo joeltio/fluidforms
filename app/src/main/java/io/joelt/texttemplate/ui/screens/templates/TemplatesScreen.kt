@@ -1,15 +1,19 @@
 package io.joelt.texttemplate.ui.screens.templates
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import io.joelt.texttemplate.models.Template
+import io.joelt.texttemplate.models.genTemplates
 import io.joelt.texttemplate.navigation.*
 import io.joelt.texttemplate.ui.components.TemplateList
 import io.joelt.texttemplate.ui.screens.BottomNavBar
 import io.joelt.texttemplate.ui.screens.TopNavBar
 import io.joelt.texttemplate.ui.screens.draft_edit.navigateToCreateDraft
+import io.joelt.texttemplate.ui.theme.TextTemplateTheme
 import org.koin.androidx.compose.koinViewModel
 
 class TemplatesScreen : Screen {
@@ -17,7 +21,7 @@ class TemplatesScreen : Screen {
     override val arguments: List<NamedNavArgument> = emptyList()
     override fun scaffold(nav: NavHostController) = ScaffoldOptions(
         topBar = { TopNavBar(nav) },
-        bottomBar = { BottomNavBar(nav) }
+        bottomBar = { BottomNavBar(nav) },
     )
 
     @Composable
@@ -41,5 +45,17 @@ private fun TemplatesScreen(
 ) {
     TemplatesScreenContent(templates = viewModel.templates) {
         nav.navigateToCreateDraft(it.id)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun TemplatesScreenPreview() {
+    val screen = TemplatesScreen()
+    val nav = rememberNavController()
+    TextTemplateTheme {
+        ScaffoldWithOptions(scaffoldOptions = screen.scaffold(nav)) {
+            TemplatesScreenContent(templates = genTemplates(10)) {}
+        }
     }
 }
