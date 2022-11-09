@@ -9,6 +9,10 @@ fun NavHostController.navigateToTemplateEdit(templateId: Long) {
     this.navigate("templates/$templateId/edit")
 }
 
+fun NavHostController.navigateToCreateTemplate() {
+    this.navigate("templates/0/edit")
+}
+
 class TemplateEditScreen : Screen {
     override val route: String = "templates/{templateId}/edit"
     override val arguments: List<NamedNavArgument> = listOf(

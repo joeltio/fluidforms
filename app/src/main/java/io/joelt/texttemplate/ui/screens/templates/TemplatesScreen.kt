@@ -1,11 +1,17 @@
 package io.joelt.texttemplate.ui.screens.templates
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import io.joelt.texttemplate.R
 import io.joelt.texttemplate.models.Template
 import io.joelt.texttemplate.models.genTemplates
 import io.joelt.texttemplate.navigation.*
@@ -13,6 +19,7 @@ import io.joelt.texttemplate.ui.components.TemplateList
 import io.joelt.texttemplate.ui.screens.BottomNavBar
 import io.joelt.texttemplate.ui.screens.TopNavBar
 import io.joelt.texttemplate.ui.screens.draft_edit.navigateToCreateDraft
+import io.joelt.texttemplate.ui.screens.template_edit.navigateToCreateTemplate
 import io.joelt.texttemplate.ui.theme.TextTemplateTheme
 import org.koin.androidx.compose.koinViewModel
 
@@ -22,6 +29,14 @@ class TemplatesScreen : Screen {
     override fun scaffold(nav: NavHostController) = ScaffoldOptions(
         topBar = { TopNavBar(nav) },
         bottomBar = { BottomNavBar(nav) },
+        floatingActionButton = {
+            FloatingActionButton(onClick = { nav.navigateToCreateTemplate() }) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(id = R.string.add_template)
+                )
+            }
+        }
     )
 
     @Composable
