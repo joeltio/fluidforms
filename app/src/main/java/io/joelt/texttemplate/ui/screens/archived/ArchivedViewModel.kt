@@ -1,4 +1,4 @@
-package io.joelt.texttemplate.ui.viewmodels
+package io.joelt.texttemplate.ui.screens.archived
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -9,15 +9,19 @@ import io.joelt.texttemplate.models.Draft
 import io.joelt.texttemplate.database.TemplatesRepository
 import kotlinx.coroutines.launch
 
-class ArchivedViewViewModel(
+class ArchivedViewModel(
     private val repository: TemplatesRepository
 ) : ViewModel() {
-    var archived: Draft? by mutableStateOf(null)
+    var archived: List<Draft>? by mutableStateOf(null)
         private set
 
-    fun loadArchived(archivedId: Long) {
+    init {
+        loadArchived()
+    }
+
+    private fun loadArchived() {
         viewModelScope.launch {
-            archived = repository.getDraft(archivedId)
+            archived = repository.getDrafts(true)
         }
     }
 }

@@ -1,4 +1,4 @@
-package io.joelt.texttemplate.ui.components
+package io.joelt.texttemplate.ui.screens
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable

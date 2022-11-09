@@ -1,4 +1,4 @@
-package io.joelt.texttemplate.ui.screens
+package io.joelt.texttemplate.ui.screens.template_edit
 
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -16,15 +16,14 @@ class TemplateEditScreen : Screen {
         navArgument("templateId") { type = NavType.LongType }
     )
 
-    override fun makeComposable(backStackEntry: NavBackStackEntry): ScreenComposable =
-        { nav, scaffold ->
-            scaffold.changeNavBars(ScaffoldType.TEMPLATE_EDIT_SCREEN)
+    @Composable
+    override fun Composable(backStackEntry: NavBackStackEntry, nav: NavHostController) {
             val templateId = backStackEntry.arguments!!.getLong("templateId")
-            TemplateEditScreen(nav, scaffold, templateId)
+            TemplateEditScreen(nav, templateId)
         }
 }
 
 @Composable
-private fun TemplateEditScreen(nav: NavHostController, scaffold: ScaffoldController, templateId: Long) {
+private fun TemplateEditScreen(nav: NavHostController, templateId: Long) {
     Text(text = "template edit screen for template with id $templateId")
 }

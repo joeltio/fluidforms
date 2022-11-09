@@ -4,7 +4,11 @@ import androidx.room.Room
 import io.joelt.texttemplate.database.TemplatesRepository
 import io.joelt.texttemplate.database.room.AppDatabase
 import io.joelt.texttemplate.database.room.RoomRepository
-import io.joelt.texttemplate.ui.viewmodels.*
+import io.joelt.texttemplate.ui.screens.archived.ArchivedViewModel
+import io.joelt.texttemplate.ui.screens.archived_view.ArchivedViewViewModel
+import io.joelt.texttemplate.ui.screens.draft_edit.DraftEditViewModel
+import io.joelt.texttemplate.ui.screens.drafts.DraftsViewModel
+import io.joelt.texttemplate.ui.screens.templates.TemplatesViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module

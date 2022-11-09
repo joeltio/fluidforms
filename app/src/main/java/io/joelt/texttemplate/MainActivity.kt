@@ -6,8 +6,13 @@ import androidx.activity.compose.setContent
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import io.joelt.texttemplate.navigation.scaffoldController
-import io.joelt.texttemplate.ui.screens.*
+import io.joelt.texttemplate.ui.screens.archived.ArchivedScreen
+import io.joelt.texttemplate.ui.screens.archived_view.ArchivedViewScreen
+import io.joelt.texttemplate.ui.screens.draft_edit.DraftEditScreen
+import io.joelt.texttemplate.ui.screens.drafts.DraftsScreen
+import io.joelt.texttemplate.ui.screens.settings.SettingsScreen
+import io.joelt.texttemplate.ui.screens.template_edit.TemplateEditScreen
+import io.joelt.texttemplate.ui.screens.templates.TemplatesScreen
 import io.joelt.texttemplate.ui.theme.TextTemplateTheme
 
 class MainActivity : ComponentActivity() {
@@ -26,15 +31,10 @@ class MainActivity : ComponentActivity() {
                 )
 
                 val navController = rememberNavController()
-                val scaffoldController = scaffoldController()
-                scaffoldController.Scaffold(navController) {
-                    NavHost(navController, startDestination = "templates") {
-                        screens.forEach { screen ->
-                            composable(screen.route(), arguments = screen.arguments()) {
-                                screen.makeComposable(it)(
-                                    navController, scaffoldController
-                                )
-                            }
+                NavHost(navController, startDestination = "templates") {
+                    screens.forEach { screen ->
+                        composable(screen.route(), arguments = screen.arguments()) {
+                            screen.Composable(it, navController)
                         }
                     }
                 }

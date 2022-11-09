@@ -1,4 +1,4 @@
-package io.joelt.texttemplate.ui.screens
+package io.joelt.texttemplate.ui.screens.draft_edit
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,7 +11,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.*
 import io.joelt.texttemplate.navigation.*
 import io.joelt.texttemplate.ui.components.SlotsPreview
-import io.joelt.texttemplate.ui.viewmodels.DraftEditViewModel
 import org.koin.androidx.compose.koinViewModel
 
 fun NavHostController.navigateToDraftEdit(draftId: Long) {
@@ -30,19 +29,17 @@ class DraftEditScreen : Screen {
         navArgument("templateId") { type = NavType.LongType }
     )
 
-    override fun makeComposable(backStackEntry: NavBackStackEntry): ScreenComposable =
-        { nav, scaffold ->
-            scaffold.changeNavBars(ScaffoldType.DRAFT_EDIT_SCREEN)
-            val draftId = backStackEntry.arguments!!.getLong("draftId")
-            val templateId = backStackEntry.arguments!!.getLong("templateId")
-            DraftEditScreen(nav, scaffold, draftId, templateId)
-        }
+    @Composable
+    override fun Composable(backStackEntry: NavBackStackEntry, nav: NavHostController) {
+        val draftId = backStackEntry.arguments!!.getLong("draftId")
+        val templateId = backStackEntry.arguments!!.getLong("templateId")
+        DraftEditScreen(nav, draftId, templateId)
+    }
 }
 
 @Composable
 private fun DraftEditScreen(
     nav: NavHostController,
-    scaffold: ScaffoldController,
     draftId: Long,
     templateId: Long,
     viewModel: DraftEditViewModel = koinViewModel()

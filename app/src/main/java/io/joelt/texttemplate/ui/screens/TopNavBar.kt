@@ -1,4 +1,4 @@
-package io.joelt.texttemplate.ui.components
+package io.joelt.texttemplate.ui.screens
 
 import androidx.compose.material.IconButton
 import androidx.compose.material.TopAppBar

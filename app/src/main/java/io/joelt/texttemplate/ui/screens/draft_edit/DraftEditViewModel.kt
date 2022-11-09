@@ -1,4 +1,4 @@
-package io.joelt.texttemplate.ui.viewmodels
+package io.joelt.texttemplate.ui.screens.draft_edit
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue

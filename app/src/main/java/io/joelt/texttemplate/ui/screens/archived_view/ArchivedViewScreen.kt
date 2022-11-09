@@ -1,4 +1,4 @@
-package io.joelt.texttemplate.ui.screens
+package io.joelt.texttemplate.ui.screens.archived_view
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,7 +11,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.*
 import io.joelt.texttemplate.navigation.*
 import io.joelt.texttemplate.ui.components.SlotsPreview
-import io.joelt.texttemplate.ui.viewmodels.ArchivedViewViewModel
 import org.koin.androidx.compose.koinViewModel
 
 fun NavHostController.navigateToArchivedEdit(archivedId: Long) {
@@ -25,18 +24,16 @@ class ArchivedViewScreen : Screen {
         navArgument("archivedId") { type = NavType.LongType },
     )
 
-    override fun makeComposable(backStackEntry: NavBackStackEntry): ScreenComposable =
-        { nav, scaffold ->
-            scaffold.changeNavBars(ScaffoldType.ARCHIVED_VIEW_SCREEN)
-            val archivedId = backStackEntry.arguments!!.getLong("archivedId")
-            ArchivedEditScreen(nav, scaffold, archivedId)
-        }
+    @Composable
+    override fun Composable(backStackEntry: NavBackStackEntry, nav: NavHostController) {
+        val archivedId = backStackEntry.arguments!!.getLong("archivedId")
+        ArchivedEditScreen(nav, archivedId)
+    }
 }
 
 @Composable
 private fun ArchivedEditScreen(
     nav: NavHostController,
-    scaffold: ScaffoldController,
     archivedId: Long,
     viewModel: ArchivedViewViewModel = koinViewModel()
 ) {

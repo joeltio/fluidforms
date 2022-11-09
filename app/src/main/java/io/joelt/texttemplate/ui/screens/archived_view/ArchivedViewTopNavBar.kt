@@ -1,6 +1,5 @@
-package io.joelt.texttemplate.ui.components
+package io.joelt.texttemplate.ui.screens.archived_view
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.material.IconButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -12,26 +11,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import io.joelt.texttemplate.R
 
-fun NavHostController.navigateBackToDrafts() {
-    navigate("drafts") {
-        this@navigateBackToDrafts.graph.startDestinationRoute?.let { route ->
-            popUpTo(route)
-        }
-    }
-}
-
 @Composable
-fun DraftEditTopNavBar(nav: NavHostController) {
+fun ArchivedViewTopNavBar(nav: NavHostController) {
     val bgColor = MaterialTheme.colorScheme.tertiaryContainer
     val contentColor = MaterialTheme.colorScheme.onTertiaryContainer
 
-    BackHandler(enabled = true) {
-        nav.navigateBackToDrafts()
-    }
-
     val backIconBtn = @Composable {
         IconButton(onClick = {
-            nav.navigateBackToDrafts()
+            nav.popBackStack()
         }) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
@@ -40,7 +27,6 @@ fun DraftEditTopNavBar(nav: NavHostController) {
             )
         }
     }
-
     TopAppBar(
         title = {},
         navigationIcon = backIconBtn,

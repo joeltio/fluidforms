@@ -1,4 +1,4 @@
-package io.joelt.texttemplate.ui.screens
+package io.joelt.texttemplate.ui.screens.settings
 
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -12,14 +12,13 @@ class SettingsScreen : Screen {
 
     override fun arguments(): List<NamedNavArgument> = listOf()
 
-    override fun makeComposable(backStackEntry: NavBackStackEntry): ScreenComposable =
-        { nav, scaffold ->
-            scaffold.changeNavBars(ScaffoldType.SETTINGS_SCREEN)
-            SettingsScreen(nav, scaffold)
-        }
+    @Composable
+    override fun Composable(backStackEntry: NavBackStackEntry, nav: NavHostController) {
+        SettingsScreen(nav)
+    }
 }
 
 @Composable
-private fun SettingsScreen(nav: NavHostController, scaffold: ScaffoldController) {
+private fun SettingsScreen(nav: NavHostController) {
     Text(text = "settings screen")
 }
