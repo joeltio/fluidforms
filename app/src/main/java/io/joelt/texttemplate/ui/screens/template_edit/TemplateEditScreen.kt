@@ -10,10 +10,13 @@ fun NavHostController.navigateToTemplateEdit(templateId: Long) {
 }
 
 class TemplateEditScreen : Screen {
-    override fun route(): String = "templates/{templateId}/edit"
-
-    override fun arguments(): List<NamedNavArgument> = listOf(
+    override val route: String = "templates/{templateId}/edit"
+    override val arguments: List<NamedNavArgument> = listOf(
         navArgument("templateId") { type = NavType.LongType }
+    )
+
+    override fun scaffold(nav: NavHostController) = ScaffoldOptions(
+        topBar = { TemplateEditTopNavBar(nav) }
     )
 
     @Composable

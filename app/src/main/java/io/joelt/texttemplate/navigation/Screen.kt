@@ -6,8 +6,10 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 
 interface Screen {
-    fun route(): String
-    fun arguments(): List<NamedNavArgument>
+    val route: String
+    val arguments: List<NamedNavArgument>
+    fun scaffold(nav: NavHostController): ScaffoldOptions
+
     @Composable
     fun Composable(backStackEntry: NavBackStackEntry, nav: NavHostController)
 }

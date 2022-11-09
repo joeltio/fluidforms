@@ -1,6 +1,5 @@
 package io.joelt.texttemplate.ui.screens.drafts
 
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
@@ -8,16 +7,19 @@ import androidx.navigation.NavHostController
 import io.joelt.texttemplate.models.Draft
 import io.joelt.texttemplate.navigation.*
 import io.joelt.texttemplate.ui.components.DraftList
-import io.joelt.texttemplate.ui.components.SimpleScaffold
-import io.joelt.texttemplate.ui.components.TopNavBar
+import io.joelt.texttemplate.ui.screens.TopNavBar
 import io.joelt.texttemplate.ui.screens.BottomNavBar
 import io.joelt.texttemplate.ui.screens.draft_edit.navigateToDraftEdit
 import org.koin.androidx.compose.koinViewModel
 
 class DraftsScreen : Screen {
-    override fun route(): String = "drafts"
+    override val route: String = "drafts"
+    override val arguments: List<NamedNavArgument> = emptyList()
 
-    override fun arguments(): List<NamedNavArgument> = listOf()
+    override fun scaffold(nav: NavHostController) = ScaffoldOptions(
+        topBar = { TopNavBar(nav) },
+        bottomBar = { BottomNavBar(nav) }
+    )
 
     @Composable
     override fun Composable(backStackEntry: NavBackStackEntry, nav: NavHostController) {
@@ -33,15 +35,12 @@ private fun DraftsScreenContent(
     DraftList(drafts, onItemClick = onDraftClick)
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DraftsScreen(
     nav: NavHostController,
     viewModel: DraftsViewModel = koinViewModel()
 ) {
-    SimpleScaffold(topBar = { TopNavBar(nav) }, bottomBar = { BottomNavBar(nav) }) {
-        DraftsScreenContent(drafts = viewModel.drafts) {
-            nav.navigateToDraftEdit(it.id)
-        }
+    DraftsScreenContent(drafts = viewModel.drafts) {
+        nav.navigateToDraftEdit(it.id)
     }
 }

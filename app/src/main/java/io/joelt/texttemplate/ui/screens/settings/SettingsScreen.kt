@@ -8,12 +8,16 @@ import androidx.navigation.NavHostController
 import io.joelt.texttemplate.navigation.*
 
 class SettingsScreen : Screen {
-    override fun route(): String = "settings"
+    override val route: String = "settings"
+    override val arguments: List<NamedNavArgument> = listOf()
 
-    override fun arguments(): List<NamedNavArgument> = listOf()
+    override fun scaffold(nav: NavHostController) = ScaffoldOptions(
+        topBar = { SettingsTopNavBar(nav) }
+    )
 
     @Composable
     override fun Composable(backStackEntry: NavBackStackEntry, nav: NavHostController) {
+
         SettingsScreen(nav)
     }
 }

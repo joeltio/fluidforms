@@ -22,11 +22,15 @@ fun NavHostController.navigateToCreateDraft(fromTemplateId: Long) {
 }
 
 class DraftEditScreen : Screen {
-    override fun route(): String = "drafts/{draftId}/edit/{templateId}"
-
-    override fun arguments(): List<NamedNavArgument> = listOf(
+    override val route: String = "drafts/{draftId}/edit/{templateId}"
+    override val arguments: List<NamedNavArgument> = listOf(
         navArgument("draftId") { type = NavType.LongType },
         navArgument("templateId") { type = NavType.LongType }
+    )
+
+    override fun scaffold(nav: NavHostController) = ScaffoldOptions(
+        topBar = { DraftEditTopNavBar(nav) },
+        bottomBar = { DraftEditBottomAppBar(nav) }
     )
 
     @Composable

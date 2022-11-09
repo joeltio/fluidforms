@@ -18,10 +18,13 @@ fun NavHostController.navigateToArchivedEdit(archivedId: Long) {
 }
 
 class ArchivedViewScreen : Screen {
-    override fun route(): String = "archived/{archivedId}/edit"
-
-    override fun arguments(): List<NamedNavArgument> = listOf(
+    override val route: String = "archived/{archivedId}/edit"
+    override val arguments: List<NamedNavArgument> = listOf(
         navArgument("archivedId") { type = NavType.LongType },
+    )
+
+    override fun scaffold(nav: NavHostController) = ScaffoldOptions(
+        topBar = { ArchivedViewTopNavBar(nav) }
     )
 
     @Composable
