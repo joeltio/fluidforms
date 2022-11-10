@@ -7,19 +7,19 @@ private val templates = listOf(
         0,
         LocalDateTime.of(2022, 2, 23, 18, 12, 46, 0),
         "Server Maintenance",
-        "Hi all, the server is going to be down from {% text | label = 'start' }{% end %} until {% text | label = 'end' }{% end %}. Sorry for the inconvenience caused."
+        "Hi all, the server is going to be down from {% text | label = 'start' %}{% end %} until {% text | label = 'end' %}{% end %}. Sorry for the inconvenience caused."
     ),
     Template(
         0,
         LocalDateTime.of(2022, 4, 9, 8, 30, 0, 0),
         "Calling in Sick",
-        "Hey boss, I'm feeling quite unwell this morning, I think I'm down with {% text | label = 'sickness' }{% end %}. I'm going to see a doctor soon and will be back as soon as I'm well."
+        "Hey boss, I'm feeling quite unwell this morning, I think I'm down with {% text | label = 'sickness' %}{% end %}. I'm going to see a doctor soon and will be back as soon as I'm well."
     ),
     Template(
         0,
         LocalDateTime.of(2022, 4, 23, 18, 12, 46, 0),
         "Swimming Practice",
-        "Hey swimmers, this week I would like you to practice {% text | label = 'strokes' }{% end %}. We will be doing {% text | label = 'X'} laps."
+        "Hey swimmers, this week I would like you to practice {% text | label = 'strokes' %}{% end %}. We will be doing {% text | label = 'X'} laps."
     ),
     Template(
         0,
