@@ -22,32 +22,6 @@ import io.joelt.texttemplate.ui.theme.TextTemplateTheme
 
 private const val SLOT_TAG = "Slot"
 
-private fun annotateSlots(
-    slots: List<Either<String, Slot>>,
-    selectedIndex: Int?
-): AnnotatedString =
-    buildAnnotatedString {
-        slots.forEachIndexed { slotIndex, it ->
-            when (it) {
-                is Either.Left -> {
-                    append(it.value)
-                }
-                is Either.Right -> {
-                    // Annotate the string with the slot so that it can be
-                    // retrieved later
-                    pushStringAnnotation(SLOT_TAG, slotIndex.toString())
-                    append(
-                        createSlotText(
-                            it.value,
-                            selectedIndex == slotIndex
-                        )
-                    )
-                    pop()
-                }
-            }
-        }
-    }
-
 @Composable
 fun SlotsPreview(
     slots: List<Either<String, Slot>>,
@@ -56,7 +30,7 @@ fun SlotsPreview(
     maxLines: Int = Int.MAX_VALUE,
     onSlotClick: ((slotIndex: Int) -> Unit)? = null
 ) {
-    val annotatedString = annotateSlots(slots, selectedSlotIndex)
+    val annotatedString = slots.annotateSlots(SLOT_TAG, selectedSlotIndex)
     Column {
         // This is needed as ClickableText will not respond to parent clicks but
         // Text will. For example, when this ClickableText is used in a row
