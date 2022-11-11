@@ -16,21 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import io.joelt.texttemplate.models.slots.PlainTextSlot
 import io.joelt.texttemplate.models.slots.Slot
 
-fun createSlotText(slot: Slot, selected: Boolean = false): AnnotatedString {
-    when (slot) {
-        is PlainTextSlot -> {
-            return buildAnnotatedString {
-                val bgColor = if (selected) { Color.Yellow } else { Color.Gray }
-                withStyle(SpanStyle(background = bgColor)) {
-                    val str = slot.toDisplayString()
-                    append(str)
-                }
-            }
-        }
-    }
 
-    throw Exception("slot type not recognised")
-}
 
 @Composable
 fun SwitchSlotButton(isLeft: Boolean, onClick: (() -> Unit)?) {
@@ -82,16 +68,4 @@ private fun SlotEditorPreview() {
             slot = it
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SlotTextSelected() {
-    Text(text = createSlotText(PlainTextSlot("hello world"), true))
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SlotTextNotSelected() {
-    Text(text = createSlotText(PlainTextSlot("hello world"), false))
 }

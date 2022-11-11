@@ -30,7 +30,14 @@ fun SlotsPreview(
     maxLines: Int = Int.MAX_VALUE,
     onSlotClick: ((slotIndex: Int) -> Unit)? = null
 ) {
-    val annotatedString = slots.annotateSlots(SLOT_TAG, selectedSlotIndex)
+    val annotatedString = slots.annotateSlotsIndexed { index, it ->
+        pushStringAnnotation(SLOT_TAG, index.toString())
+        withSlotStyle(selectedSlotIndex == index) {
+            append(it.toDisplayString())
+        }
+        pop()
+    }
+
     Column {
         // This is needed as ClickableText will not respond to parent clicks but
         // Text will. For example, when this ClickableText is used in a row
