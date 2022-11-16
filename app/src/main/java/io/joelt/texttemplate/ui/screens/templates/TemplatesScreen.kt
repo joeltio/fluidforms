@@ -11,6 +11,7 @@ import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import io.joelt.texttemplate.AppScaffold
 import io.joelt.texttemplate.R
 import io.joelt.texttemplate.models.Template
 import io.joelt.texttemplate.models.genTemplates
@@ -69,7 +70,7 @@ private fun TemplatesScreenPreview() {
     val screen = TemplatesScreen()
     val nav = rememberNavController()
     TextTemplateTheme {
-        ScaffoldWithOptions(scaffoldOptions = screen.scaffold(nav)) {
+        AppScaffold(scaffoldOptions = screen.scaffold(nav)) {
             TemplatesScreenContent(templates = genTemplates(10)) {}
         }
     }

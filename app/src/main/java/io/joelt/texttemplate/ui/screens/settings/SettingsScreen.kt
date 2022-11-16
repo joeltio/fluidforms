@@ -17,7 +17,6 @@ class SettingsScreen : Screen {
 
     @Composable
     override fun Composable(backStackEntry: NavBackStackEntry, nav: NavHostController) {
-
         SettingsScreen(nav)
     }
 }
