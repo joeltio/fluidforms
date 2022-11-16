@@ -8,9 +8,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
 
 @Composable
-fun SimpleTextField(
+fun PlaceholderTextField(
     value: TextFieldValue,
     onValueChange: (TextFieldValue) -> Unit,
     modifier: Modifier = Modifier,
@@ -18,6 +19,7 @@ fun SimpleTextField(
     textStyle: TextStyle = TextStyle.Default,
     singleLine: Boolean = false,
     maxLines: Int = Int.MAX_VALUE,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
 ) {
     BasicTextField(
         value = value,
@@ -26,10 +28,11 @@ fun SimpleTextField(
         textStyle = textStyle,
         singleLine = singleLine,
         maxLines = maxLines,
+        visualTransformation = visualTransformation,
         decorationBox = { innerTextField ->
             Box {
                 if (value.text.isEmpty()) {
-                    Text(placeholder)
+                    Text(placeholder, modifier = Modifier.alpha(0.38f), style = textStyle)
                 }
                 innerTextField()
             }
@@ -38,7 +41,7 @@ fun SimpleTextField(
 }
 
 @Composable
-fun SimpleTextField(
+fun PlaceholderTextField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -46,6 +49,7 @@ fun SimpleTextField(
     textStyle: TextStyle = TextStyle.Default,
     singleLine: Boolean = false,
     maxLines: Int = Int.MAX_VALUE,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
 ) {
     BasicTextField(
         value = value,
@@ -54,6 +58,7 @@ fun SimpleTextField(
         textStyle = textStyle,
         singleLine = singleLine,
         maxLines = maxLines,
+        visualTransformation = visualTransformation,
         decorationBox = { innerTextField ->
             Box {
                 if (value.isEmpty()) {
