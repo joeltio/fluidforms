@@ -8,26 +8,47 @@ import androidx.compose.ui.text.withStyle
 import io.joelt.texttemplate.models.Either
 import io.joelt.texttemplate.models.slots.Slot
 
-fun List<Either<String, Slot>>.annotateSlotsIndexed(block: AnnotatedString.Builder.(Int, Slot) -> Unit): AnnotatedString =
+/**
+ * Create an AnnotatedString from slots. Iterate through the slots in the list.
+ * For each slot in the list (does not include Strings), provides:
+ * start: the starting index in the final AnnotatedString, inclusive
+ * slotIndex: the index of the slot in the list
+ * slot: the slot
+ * return: the length of string added. Return 0 if you do not need the
+ */
+fun List<Either<String, Slot>>.annotateSlotsIndexed(
+    block: AnnotatedString.Builder.(start: Int, slotIndex: Int, slot: Slot) -> Int
+): AnnotatedString =
     buildAnnotatedString {
+        var count = 0
         this@annotateSlotsIndexed.forEachIndexed { index, it ->
             when (it) {
                 is Either.Left -> {
                     append(it.value)
+                    count += it.value.length
                 }
                 is Either.Right -> {
-                    block(index, it.value)
+                    count += block(count, index, it.value)
                 }
             }
         }
     }
 
-fun List<Either<String, Slot>>.annotateSlots(block: AnnotatedString.Builder.(Slot) -> Unit): AnnotatedString =
-    annotateSlotsIndexed { _, it ->
-        block(it)
+fun List<Either<String, Slot>>.annotateSlotsIndexed(
+    block: AnnotatedString.Builder.(slotIndex: Int, slot: Slot) -> Unit
+): AnnotatedString =
+    annotateSlotsIndexed { _, slotIndex, slot ->
+        block(slotIndex, slot)
+        0
     }
 
-fun <R: Any>AnnotatedString.Builder.withSlotStyle(
+fun List<Either<String, Slot>>.annotateSlots(block: AnnotatedString.Builder.(Slot) -> Unit): AnnotatedString =
+    annotateSlotsIndexed { _, _, it ->
+        block(it)
+        0
+    }
+
+fun <R : Any> AnnotatedString.Builder.withSlotStyle(
     selected: Boolean,
     block: AnnotatedString.Builder.() -> R
 ): R {

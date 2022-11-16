@@ -87,7 +87,7 @@ class SlotsEditorAnnotationTest {
         val annotations = listOf(
             AnnotatedString.Range("{% text | label = 'hello' %}{% end %}", 0, 5, SLOT_TAG),
         )
-        val newAnnotations = shiftAnnotations(annotations, oldTfv, newTfv)
+        val newAnnotations = shiftAnnotations(annotations, oldTfv, newTfv.text.length)
         assertEquals(0, newAnnotations[0].start)
         assertEquals(4, newAnnotations[0].end)
     }
@@ -99,7 +99,7 @@ class SlotsEditorAnnotationTest {
         val annotations = listOf(
             AnnotatedString.Range("{% text | label = 'hello' %}{% end %}", 0, 5, SLOT_TAG),
         )
-        val newAnnotations = shiftAnnotations(annotations, oldTfv, newTfv)
+        val newAnnotations = shiftAnnotations(annotations, oldTfv, newTfv.text.length)
         assertEquals(0, newAnnotations[0].start)
         assertEquals(2, newAnnotations[0].end)
     }
@@ -112,7 +112,7 @@ class SlotsEditorAnnotationTest {
             AnnotatedString.Range("{% text | label = 'hello' %}{% end %}", 0, 5, SLOT_TAG),
             AnnotatedString.Range("{% text | label = 'ld' %}{% end %}", 9, 11, SLOT_TAG),
         )
-        val newAnnotations = shiftAnnotations(annotations, oldTfv, newTfv)
+        val newAnnotations = shiftAnnotations(annotations, oldTfv, newTfv.text.length)
         assertEquals(0, newAnnotations[0].start)
         assertEquals(5, newAnnotations[0].end)
         assertEquals(21, newAnnotations[1].start)
@@ -126,7 +126,7 @@ class SlotsEditorAnnotationTest {
         val annotations = listOf(
             AnnotatedString.Range("{% text | label = 'hello' %}{% end %}", 0, 5, SLOT_TAG),
         )
-        val newAnnotations = shiftAnnotations(annotations, oldTfv, newTfv)
+        val newAnnotations = shiftAnnotations(annotations, oldTfv, newTfv.text.length)
         assertEquals(0, newAnnotations[0].start)
         assertEquals(2, newAnnotations[0].end)
     }
@@ -138,7 +138,7 @@ class SlotsEditorAnnotationTest {
         val annotations = listOf(
             AnnotatedString.Range("{% text | label = 'hello' %}{% end %}", 0, 5, SLOT_TAG),
         )
-        val newAnnotations = shiftAnnotations(annotations, oldTfv, newTfv)
+        val newAnnotations = shiftAnnotations(annotations, oldTfv, newTfv.text.length)
         assertEquals(0, newAnnotations[0].start)
         assertEquals(4, newAnnotations[0].end)
     }

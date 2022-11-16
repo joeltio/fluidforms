@@ -20,15 +20,14 @@ fun EditorLayout(
     onNameChange: (String) -> Unit,
     content: @Composable () -> Unit
 ) {
-    Column(Modifier.padding(16.dp)) {
+    Column {
         PlaceholderTextField(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.padding(16.dp).fillMaxWidth(),
             value = name,
             textStyle = Typography.headlineLarge,
             singleLine = true,
             placeholder = stringResource(R.string.template_name),
             onValueChange = { onNameChange(it) })
-        Spacer(modifier = Modifier.height(16.dp))
         content()
     }
 }
