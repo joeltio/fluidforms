@@ -23,6 +23,7 @@ import io.joelt.texttemplate.models.slots.PlainTextSlot
 import io.joelt.texttemplate.models.slots.Slot
 import io.joelt.texttemplate.models.slots.createSlotString
 import io.joelt.texttemplate.models.toTemplateSlot
+import io.joelt.texttemplate.ui.theme.Typography
 
 data class SlotsEditorState(
     val slots: List<Either<String, Slot>>,
@@ -391,6 +392,7 @@ fun SlotsEditor(
                 .padding(horizontal = 16.dp)
                 .fillMaxWidth()
                 .weight(1.0f),
+            textStyle = Typography.bodyLarge,
             visualTransformation = {
                 // Apply the styles from the annotatedString through visualTransformation instead
                 TransformedText(state.annotatedString, OffsetMapping.Identity)
