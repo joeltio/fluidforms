@@ -376,7 +376,11 @@ data class SlotsEditorState(
         )
 
         val newSlots = createSlotsFromAnnotations(newText, newAnnotations)
-        return SlotsEditorState(newSlots, TextRange(selection.start + slotText.length), null)
+        return SlotsEditorState(
+            newSlots,
+            TextRange(selection.start, selection.start + slotText.length),
+            null
+        )
     }
 }
 

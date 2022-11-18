@@ -55,7 +55,7 @@ fun <R : Any> AnnotatedString.Builder.withSlotStyle(
     val bgColor = if (selected) {
         Color.Yellow
     } else {
-        Color.Gray
+        Color(0x22000000)
     }
     return withStyle(SpanStyle(background = bgColor)) {
         block()
