@@ -16,7 +16,7 @@ import io.joelt.texttemplate.models.slots.Slot
  * slot: the slot
  * return: the length of string added. Return 0 if you do not need the
  */
-fun List<Either<String, Slot>>.annotateSlotsIndexed(
+inline fun List<Either<String, Slot>>.annotateSlotsIndexed(
     block: AnnotatedString.Builder.(start: Int, slotIndex: Int, slot: Slot) -> Int
 ): AnnotatedString =
     buildAnnotatedString {
@@ -34,7 +34,7 @@ fun List<Either<String, Slot>>.annotateSlotsIndexed(
         }
     }
 
-fun List<Either<String, Slot>>.annotateSlotsIndexed(
+inline fun List<Either<String, Slot>>.annotateSlotsIndexed(
     block: AnnotatedString.Builder.(slotIndex: Int, slot: Slot) -> Unit
 ): AnnotatedString =
     annotateSlotsIndexed { _, slotIndex, slot ->
@@ -42,7 +42,7 @@ fun List<Either<String, Slot>>.annotateSlotsIndexed(
         0
     }
 
-fun List<Either<String, Slot>>.annotateSlots(block: AnnotatedString.Builder.(Slot) -> Unit): AnnotatedString =
+inline fun List<Either<String, Slot>>.annotateSlots(block: AnnotatedString.Builder.(Slot) -> Unit): AnnotatedString =
     annotateSlotsIndexed { _, _, it ->
         block(it)
         0
