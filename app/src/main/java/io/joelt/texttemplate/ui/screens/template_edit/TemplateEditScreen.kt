@@ -15,6 +15,7 @@ import io.joelt.texttemplate.models.genTemplates
 import io.joelt.texttemplate.navigation.*
 import io.joelt.texttemplate.ui.components.EditorLayout
 import io.joelt.texttemplate.ui.components.SlotsEditor
+import io.joelt.texttemplate.ui.components.SlotsEditorState
 import io.joelt.texttemplate.ui.theme.TextTemplateTheme
 import org.koin.androidx.compose.koinViewModel
 
@@ -44,24 +45,32 @@ class TemplateEditScreen : Screen {
     }
 }
 
+data class TemplateEditState(
+    val template: Template?,
+    val editorState: SlotsEditorState? = template?.let {
+        SlotsEditorState(template.slots)
+    }
+)
+
 @Composable
 private fun TemplateEditScreenContent(
-    template: Template?,
-    onTemplateUpdate: (Template) -> Unit
+    state: TemplateEditState,
+    onStateChange: (TemplateEditState) -> Unit,
 ) {
-    if (template == null) {
+    if (state.template == null) {
         Spacer(Modifier.height(32.dp))
         CircularProgressIndicator()
         return
     }
+    state.editorState!!
 
     EditorLayout(
-        name = template.name,
-        onNameChange = { onTemplateUpdate(template.copy(name = it)) }
+        name = state.template.name,
+        onNameChange = { onStateChange(state.copy(template = state.template.copy(name = it))) }
     ) {
-        SlotsEditor(
-            slots = template.slots,
-            onSlotsChange = { onTemplateUpdate(template.copy(slots = it)) })
+        SlotsEditor(state.editorState) {
+            onStateChange(state.copy(editorState = it))
+        }
     }
 }
 
@@ -75,23 +84,22 @@ private fun TemplateEditScreen(
         viewModel.loadTemplate(templateId)
     }
 
-    TemplateEditScreenContent(viewModel.template) {
-        viewModel.template = it
+    TemplateEditScreenContent(viewModel.screenState) {
+        viewModel.screenState = it
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun TemplateEditScreenPreview() {
-    var template by remember {
-        mutableStateOf(genTemplates(1)[0])
-    }
+    val template = genTemplates(1)[0]
+    var screenState by remember { mutableStateOf(TemplateEditState(template)) }
 
     val screen = TemplateEditScreen()
     val nav = rememberNavController()
     TextTemplateTheme {
         AppScaffold(scaffoldOptions = screen.scaffold(nav)) {
-            TemplateEditScreenContent(template) { template = it }
+            TemplateEditScreenContent(screenState) { screenState = it }
         }
     }
 }

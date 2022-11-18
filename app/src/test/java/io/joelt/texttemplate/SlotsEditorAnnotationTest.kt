@@ -5,8 +5,8 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import io.joelt.texttemplate.models.Either
 import io.joelt.texttemplate.models.slots.Slot
-import io.joelt.texttemplate.ui.components.createSlotsFromAnnotations
-import io.joelt.texttemplate.ui.components.shiftAnnotations
+import io.joelt.texttemplate.ui.components.SlotsEditorState.Companion.createSlotsFromAnnotations
+import io.joelt.texttemplate.ui.components.SlotsEditorState.Companion.shiftAnnotations
 import org.junit.Assert.*
 import org.junit.Test
 
@@ -87,7 +87,7 @@ class SlotsEditorAnnotationTest {
         val annotations = listOf(
             AnnotatedString.Range("{% text | label = 'hello' %}{% end %}", 0, 5, SLOT_TAG),
         )
-        val newAnnotations = shiftAnnotations(annotations, oldTfv, newTfv.text.length)
+        val newAnnotations = shiftAnnotations(annotations, oldTfv, newTfv)
         assertEquals(0, newAnnotations[0].start)
         assertEquals(4, newAnnotations[0].end)
     }
@@ -99,7 +99,7 @@ class SlotsEditorAnnotationTest {
         val annotations = listOf(
             AnnotatedString.Range("{% text | label = 'hello' %}{% end %}", 0, 5, SLOT_TAG),
         )
-        val newAnnotations = shiftAnnotations(annotations, oldTfv, newTfv.text.length)
+        val newAnnotations = shiftAnnotations(annotations, oldTfv, newTfv)
         assertEquals(0, newAnnotations[0].start)
         assertEquals(2, newAnnotations[0].end)
     }
@@ -112,7 +112,7 @@ class SlotsEditorAnnotationTest {
             AnnotatedString.Range("{% text | label = 'hello' %}{% end %}", 0, 5, SLOT_TAG),
             AnnotatedString.Range("{% text | label = 'ld' %}{% end %}", 9, 11, SLOT_TAG),
         )
-        val newAnnotations = shiftAnnotations(annotations, oldTfv, newTfv.text.length)
+        val newAnnotations = shiftAnnotations(annotations, oldTfv, newTfv)
         assertEquals(0, newAnnotations[0].start)
         assertEquals(5, newAnnotations[0].end)
         assertEquals(21, newAnnotations[1].start)
@@ -126,7 +126,7 @@ class SlotsEditorAnnotationTest {
         val annotations = listOf(
             AnnotatedString.Range("{% text | label = 'hello' %}{% end %}", 0, 5, SLOT_TAG),
         )
-        val newAnnotations = shiftAnnotations(annotations, oldTfv, newTfv.text.length)
+        val newAnnotations = shiftAnnotations(annotations, oldTfv, newTfv)
         assertEquals(0, newAnnotations[0].start)
         assertEquals(2, newAnnotations[0].end)
     }
@@ -138,7 +138,7 @@ class SlotsEditorAnnotationTest {
         val annotations = listOf(
             AnnotatedString.Range("{% text | label = 'hello' %}{% end %}", 0, 5, SLOT_TAG),
         )
-        val newAnnotations = shiftAnnotations(annotations, oldTfv, newTfv.text.length)
+        val newAnnotations = shiftAnnotations(annotations, oldTfv, newTfv)
         assertEquals(0, newAnnotations[0].start)
         assertEquals(4, newAnnotations[0].end)
     }

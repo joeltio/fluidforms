@@ -12,24 +12,24 @@ import kotlinx.coroutines.*
 class TemplateEditViewModel(
     private val repository: TemplatesRepository
 ) : ViewModel() {
-    var template: Template? by mutableStateOf(null)
+    var screenState by mutableStateOf(TemplateEditState(null))
 
     fun loadTemplate(id: Long) {
         if (id == 0L) {
-            template = Template(name = "New Template", text = "")
+            screenState = TemplateEditState(Template(name = "New Template", text = ""))
         } else {
             viewModelScope.launch {
-                template = repository.getTemplate(id)
+                screenState = TemplateEditState(repository.getTemplate(id))
             }
         }
     }
 
     fun saveTemplate() {
         viewModelScope.launch {
-            template?.let { template ->
+            screenState.template?.let { template ->
                 if (template.id == 0L) {
                     val templateId = repository.createTemplate(template)
-                    this@TemplateEditViewModel.template = template.copy(id = templateId)
+                    screenState = screenState.copy(template = template.copy(id = templateId))
                 } else {
                     repository.updateTemplate(template)
                 }

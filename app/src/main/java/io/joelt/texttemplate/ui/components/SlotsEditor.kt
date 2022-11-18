@@ -24,181 +24,317 @@ import io.joelt.texttemplate.models.slots.Slot
 import io.joelt.texttemplate.models.slots.createSlotString
 import io.joelt.texttemplate.models.toTemplateSlot
 
-private const val SLOT_TAG = "slot"
-private const val SELECTED_TAG = "selected"
+data class SlotsEditorState(
+    val slots: List<Either<String, Slot>>,
+    val selection: TextRange = TextRange.Zero,
+    val composition: TextRange? = null,
+    val selectedSlotIndex: Int? = null
+) {
+    companion object {
+        private const val SLOT_TAG = "slot"
 
-fun List<Either<String, Slot>>.annotateSlotInfo(selection: TextRange) =
-    this.annotateSlotsIndexed { start, _, slot ->
-        val text = slot.toDisplayString()
-        val selected = if (selection.start == selection.end) {
-            TextRange(start, start + text.length).contains(selection.start)
-        } else {
-            false
+        private fun getSlotDisplayText(slot: Slot) = slot.toDisplayString()
+
+        /**
+         * Adjusts an annotation range as though a part of the text was removed.
+         * @param annotation the annotation range to adjust
+         * @param range the range that was removed
+         * @return the adjusted annotation range or null if the annotation range was
+         * deleted
+         */
+        fun <T> removeRangeFromAnnotation(
+            annotation: AnnotatedString.Range<T>,
+            range: TextRange
+        ): AnnotatedString.Range<T>? {
+            val annotationRange = TextRange(annotation.start, annotation.end)
+            // If the removed region does not affect the annotation
+            if (!annotationRange.intersects(range)) {
+                return annotation
+            }
+
+            val containsStart = range.contains(annotation.start)
+            val containsEnd = range.contains(annotation.end - 1)
+            // If the annotation is within the removed region
+            if (containsStart && containsEnd) {
+                return null
+            }
+
+            // Only the end is within range
+            return if (containsEnd) {
+                annotation.copy(end = range.start)
+            } else if (containsStart) {
+                // Only the start is within range
+                annotation.copy(start = range.end)
+            } else {
+                // The part that was deleted is within the annotation range
+                return annotation
+            }
         }
 
-        pushStringAnnotation(SLOT_TAG, createSlotString(slot))
-        if (selected) {
-            pushStringAnnotation(SELECTED_TAG, "true")
+        /**
+         * Moves the annotation ranges based on the change in text. The change
+         * in text is inferred from the change in lengths and whether or not the
+         * previous selection is a selection or a cursor.
+         *
+         * @param annotations the annotation ranges to shift
+         * @param selection the current selection or cursor
+         * @param textLength the current text's length
+         * @param newTextLength the new text's length
+         */
+        fun shiftAnnotations(
+            annotations: List<AnnotatedString.Range<String>>,
+            selection: TextRange,
+            textLength: Int,
+            newTextLength: Int,
+        ): List<AnnotatedString.Range<String>> {
+            val lenDiff = newTextLength - textLength
+            val selectionEndShifter = { index: Int ->
+                if (index >= selection.end) {
+                    index + lenDiff
+                } else {
+                    index
+                }
+            }
+
+            // Stage 1: Remove selection
+            var result = mutableListOf<AnnotatedString.Range<String>>()
+            if (selection.start != selection.end) {
+                annotations.forEach { annotation ->
+                    removeRangeFromAnnotation(annotation, selection)?.let {
+                        result.add(it)
+                    }
+                }
+            } else if (lenDiff < 0) {
+                val deletionRange = TextRange(
+                    selection.start + lenDiff,
+                    selection.start
+                )
+                annotations.forEach { annotation ->
+                    removeRangeFromAnnotation(annotation, deletionRange)?.let {
+                        result.add(it)
+                    }
+                }
+            } else {
+                result = annotations.toMutableList()
+            }
+
+            // Stage 2: Shift indexes after selection end
+            return result.map {
+                it.copy(
+                    start = selectionEndShifter(it.start),
+                    // Ends are exclusive, so deduct one first
+                    end = selectionEndShifter(it.end - 1) + 1
+                )
+            }
         }
-        withSlotStyle(selected) {
-            append(text)
+
+        fun shiftAnnotations(
+            annotations: List<AnnotatedString.Range<String>>,
+            oldTextFieldValue: TextFieldValue,
+            newTextFieldValue: TextFieldValue,
+        ): List<AnnotatedString.Range<String>> = shiftAnnotations(
+            annotations,
+            oldTextFieldValue.selection,
+            oldTextFieldValue.text.length,
+            newTextFieldValue.text.length
+        )
+
+        /**
+         * Reconciles the difference in annotations and the underlying text.
+         * The underlying text is used as the final label for the slot.
+         *
+         * @param text the underlying text
+         * @param annotations the annotations on the text, should include
+         * annotations for the slot's serialized value
+         */
+        fun createSlotsFromAnnotations(
+            text: String,
+            annotations: List<AnnotatedString.Range<String>>
+        ): List<Either<String, Slot>> {
+            if (annotations.isEmpty()) {
+                return listOf(Either.Left(text))
+            }
+
+            val slots = mutableListOf<Either<String, Slot>>()
+            var nextSlotIndex = 0
+            annotations.forEach {
+                if (it.start != nextSlotIndex) {
+                    slots.add(Either.Left(text.substring(nextSlotIndex, it.start)))
+                }
+
+                val label = text.substring(it.start, it.end)
+                val slot = (it.item.toTemplateSlot()[0] as Either.Right).value
+                slot.label = label
+                slots.add(Either.Right(slot))
+
+                nextSlotIndex = it.end
+            }
+
+            if (nextSlotIndex != text.length) {
+                // Add the last string
+                slots.add(Either.Left(text.substring(nextSlotIndex, text.length)))
+            }
+
+            return slots
         }
-        if (selected) {
+
+        /**
+         * Determines if a slot should be selected.
+         * @param slotStart the start of the slot string in the text, inclusive
+         * @param slotEnd the end of the slot string in the text, exclusive
+         * @param slotIndex the index of the slot in `slots`
+         * @return whether or not the slot should be selected
+         */
+        fun isSlotSelected(
+            selection: TextRange,
+            selectedSlotIndex: Int?,
+            slotStart: Int,
+            slotEnd: Int,
+            slotIndex: Int
+        ): Boolean {
+            val isSelection = selection.start != selection.end
+            val cursor = selection.start
+            if (isSelection) {
+                return false
+            }
+
+            val len = slotEnd - slotStart
+            val range = if (len == 1) {
+                // If there is only one character, select when adjacent
+                TextRange(slotStart, slotEnd + 1)
+            } else if (selectedSlotIndex != slotIndex) {
+                // If this is not the currently selected slot, be more strict
+                // only select when cursor is one character within the edges
+                TextRange(slotStart + 1, slotEnd)
+            } else {
+                // If there is a currently selected slot, be more lenient
+                // select as long as the cursor is at the edges
+                TextRange(slotStart, slotEnd + 1)
+            }
+            return range.contains(cursor)
+        }
+
+        /**
+         * Determines the slot to select from the slots given.
+         *
+         * @param selection the selected text or cursor position
+         * @param selectedSlotIndex the previously selected slot
+         * @param slots the slots
+         */
+        fun findSelectedSlot(
+            selection: TextRange,
+            selectedSlotIndex: Int?,
+            slots: List<Either<String, Slot>>
+        ): Int? {
+            slots.annotateSlotsIndexed { start, index, slot ->
+                val text = getSlotDisplayText(slot)
+                if (isSlotSelected(
+                        selection,
+                        selectedSlotIndex,
+                        start,
+                        start + text.length,
+                        index
+                    )
+                ) {
+                    return index
+                }
+                text.length
+            }
+
+            return null
+        }
+    }
+
+    val isCursor = selection.start == selection.end
+    val isSelection = !isCursor
+    // Convenience for when there is no selection
+    val cursor = selection.start
+
+    val annotatedString by lazy {
+        slots.annotateSlotsIndexed { index, slot ->
+            val text = getSlotDisplayText(slot)
+            pushStringAnnotation(SLOT_TAG, createSlotString(slot))
+            withSlotStyle(index == selectedSlotIndex) { append(text) }
             pop()
         }
-        pop()
-
-        return@annotateSlotsIndexed text.length
     }
-
-fun createSlotsFromAnnotations(
-    text: String,
-    annotations: List<AnnotatedString.Range<String>>
-): List<Either<String, Slot>> {
-    if (annotations.isEmpty()) {
-        return listOf(Either.Left(text))
+    val annotations by lazy {
+        annotatedString.getStringAnnotations(
+            SLOT_TAG,
+            0,
+            annotatedString.lastIndex
+        )
     }
+    val text by lazy { annotatedString.text }
+    val textFieldValue by lazy { TextFieldValue(text, selection, composition) }
 
-    val slots = mutableListOf<Either<String, Slot>>()
-    var nextSlotIndex = 0
-    annotations.forEach {
-        if (it.start != nextSlotIndex) {
-            slots.add(Either.Left(text.substring(nextSlotIndex, it.start)))
-        }
-
-        val label = text.substring(it.start, it.end)
-        val slot = (it.item.toTemplateSlot()[0] as Either.Right).value
-        slot.label = label
-        slots.add(Either.Right(slot))
-
-        nextSlotIndex = it.end
-    }
-
-    if (nextSlotIndex != text.length) {
-        // Add the last string
-        slots.add(Either.Left(text.substring(nextSlotIndex, text.length)))
-    }
-
-    return slots
-}
-
-private fun <T> removeSelection(
-    annotation: AnnotatedString.Range<T>,
-    selection: TextRange
-): AnnotatedString.Range<T>? {
-    val annotationRange = TextRange(annotation.start, annotation.end)
-    // If the removed region does not affect the annotation
-    if (!annotationRange.intersects(selection)) {
-        return annotation
-    }
-
-    val containsStart = selection.contains(annotation.start)
-    val containsEnd = selection.contains(annotation.end - 1)
-    // If the annotation is within the removed region
-    if (containsStart && containsEnd) {
-        return null
-    }
-
-    // Only the end is within range
-    return if (containsEnd) {
-        annotation.copy(end = selection.start)
-    } else if (containsStart) {
-        // Only the start is within range
-        annotation.copy(start = selection.end)
-    } else {
-        // The part that was deleted is within the annotation range
-        return annotation
-    }
-}
-
-fun shiftAnnotations(
-    annotations: List<AnnotatedString.Range<String>>,
-    oldTfv: TextFieldValue,
-    newTextLength: Int,
-): List<AnnotatedString.Range<String>> {
-    val lenDiff = newTextLength - oldTfv.text.length
-    val selectionEndShifter = { index: Int ->
-        if (index >= oldTfv.selection.end) {
-            index + lenDiff
+    // Change state functions
+    fun withNewTextFieldValue(newTextFieldValue: TextFieldValue): SlotsEditorState {
+        val newSlots = if (newTextFieldValue.text != text) {
+            val newAnnotations = shiftAnnotations(annotations, textFieldValue, newTextFieldValue)
+            createSlotsFromAnnotations(newTextFieldValue.text, newAnnotations)
         } else {
-            index
+            slots
         }
-    }
+        val newSelectedSlotIndex =
+            findSelectedSlot(newTextFieldValue.selection, selectedSlotIndex, newSlots)
 
-    // Stage 1: Remove selection
-    var result = mutableListOf<AnnotatedString.Range<String>>()
-    if (oldTfv.selection.start != oldTfv.selection.end) {
-        annotations.forEach { annotation ->
-            removeSelection(annotation, oldTfv.selection)?.let {
-                result.add(it)
-            }
-        }
-    } else if (lenDiff < 0) {
-        val deletionRange = TextRange(
-            oldTfv.selection.start + lenDiff,
-            oldTfv.selection.start
-        )
-        annotations.forEach { annotation ->
-            removeSelection(annotation, deletionRange)?.let {
-                result.add(it)
-            }
-        }
-    } else {
-        result = annotations.toMutableList()
-    }
-
-    // Stage 2: Shift indexes after selection end
-    return result.map {
-        it.copy(
-            start = selectionEndShifter(it.start),
-            // Ends are exclusive, so deduct one first
-            end = selectionEndShifter(it.end - 1) + 1
+        return SlotsEditorState(
+            newSlots,
+            newTextFieldValue.selection,
+            newTextFieldValue.composition,
+            newSelectedSlotIndex
         )
     }
-}
 
-fun AnnotatedString.getAllStringAnnotations(tag: String): List<AnnotatedString.Range<String>> =
-    this.getStringAnnotations(tag, 0, this.lastIndex)
-
-fun <T> List<T>.insertSortAsc(newItem: T, getVal: (T) -> Int): List<T> {
-    val newItemVal = getVal(newItem)
-    var insertIndex = this.lastIndex + 1
-
-    for (index in 0 until this.size) {
-        val item = this[index]
-        if (getVal(item) >= newItemVal) {
-            insertIndex = index
-            break
+    fun insertSlotAtSelection(slot: Slot): SlotsEditorState {
+        // Don't insert any slots if there is already a selected slot
+        if (selectedSlotIndex != null) {
+            return this
         }
-    }
 
-    val newList = this.toMutableList()
-    newList.add(insertIndex, newItem)
-    return newList
+        val slotText = getSlotDisplayText(slot)
+        val newText = text.substring(0, selection.start) + slotText + text.substring(selection.end)
+        val annotationsWithText = shiftAnnotations(
+            annotations,
+            textFieldValue,
+            TextFieldValue(newText, TextRange(selection.start), null)
+        )
+
+        // Insert the annotation for the slot
+        // Find where to insert in the list of annotations (annotation list is
+        // assumed to be sorted)
+        val insertIndex = annotationsWithText.let {
+            for (index in it.indices) {
+                if (it[index].start >= selection.start) {
+                    return@let index
+                }
+            }
+            it.size
+        }
+        // Insert the new annotation
+        val newAnnotations = annotationsWithText.toMutableList()
+        newAnnotations.add(
+            insertIndex,
+            AnnotatedString.Range(
+                createSlotString(slot),
+                selection.start,
+                selection.start + slotText.length,
+                SLOT_TAG
+            )
+        )
+
+        val newSlots = createSlotsFromAnnotations(newText, newAnnotations)
+        return SlotsEditorState(newSlots, TextRange(selection.start + slotText.length), null)
+    }
 }
 
 @Composable
 fun SlotsEditor(
-    slots: List<Either<String, Slot>>,
+    state: SlotsEditorState,
     modifier: Modifier = Modifier,
-    onSlotsChange: (List<Either<String, Slot>>) -> Unit,
+    onStateChange: (SlotsEditorState) -> Unit,
 ) {
-    var tfvState by remember {
-        mutableStateOf(TextFieldValue())
-    }
-
-    // Convert the slots to annotations
-    val annotatedString = slots.annotateSlotInfo(tfvState.selection)
-    val annotations = annotatedString.getAllStringAnnotations(SLOT_TAG)
-    val selectedAnnotation =
-        annotatedString.getAllStringAnnotations(SELECTED_TAG).firstOrNull()?.let {
-            annotatedString.getStringAnnotations(SLOT_TAG, it.start, it.end)
-        }
-
-    // Update tfv with the latest value from recomposition
-    // Use text instead of annotatedString because annotations make TextField stop working
-    val tfv = tfvState.copy(text = annotatedString.text)
-
     Column(modifier = Modifier.fillMaxHeight()) {
         PlaceholderTextField(
             modifier = modifier
@@ -207,17 +343,11 @@ fun SlotsEditor(
                 .weight(1.0f),
             visualTransformation = {
                 // Apply the styles from the annotatedString through visualTransformation instead
-                TransformedText(annotatedString, OffsetMapping.Identity)
+                TransformedText(state.annotatedString, OffsetMapping.Identity)
             },
-            value = tfv,
-            onValueChange = { newTfv ->
-                tfvState = newTfv
-
-                if (newTfv.text != tfv.text) {
-                    val newAnnotations = shiftAnnotations(annotations, tfv, newTfv.text.length)
-                    val newSlots = createSlotsFromAnnotations(newTfv.text, newAnnotations)
-                    onSlotsChange(newSlots)
-                }
+            value = state.textFieldValue,
+            onValueChange = {
+                onStateChange(state.withNewTextFieldValue(it))
             }
         )
         Box(
@@ -225,25 +355,12 @@ fun SlotsEditor(
                 .imePadding()
                 .fillMaxWidth()
         ) {
-            if (selectedAnnotation == null && tfvState.selection.start == tfvState.selection.end) {
-                val cursor = tfvState.selection.start
-                // By default, create a new PlainTextSlot
-                val newSlot = PlainTextSlot("")
-                newSlot.label = stringResource(R.string.plain_text_slot_placeholder)
-                val slotDisplayStr = newSlot.toDisplayString()
+            if (state.selectedSlotIndex == null) {
+                val slotLabel = stringResource(R.string.plain_text_slot_placeholder)
                 IconButton(modifier = Modifier.align(Alignment.CenterEnd), onClick = {
-                    val newText = StringBuilder(tfv.text).insert(cursor, slotDisplayStr).toString()
-                    val shiftedAnnotations = shiftAnnotations(annotations, tfv, newText.length)
-                    val newAnnotations = shiftedAnnotations.insertSortAsc(
-                        AnnotatedString.Range(
-                            createSlotString(newSlot),
-                            cursor,
-                            cursor + slotDisplayStr.length,
-                            SLOT_TAG
-                        )
-                    ) { it.start }
-                    val newSlots = createSlotsFromAnnotations(newText, newAnnotations)
-                    onSlotsChange(newSlots)
+                    val slot = PlainTextSlot("")
+                    slot.label = slotLabel
+                    onStateChange(state.insertSlotAtSelection(slot))
                 }) {
                     Icon(imageVector = Icons.Default.Add, contentDescription = "Add")
                 }
@@ -256,13 +373,13 @@ fun SlotsEditor(
 @Composable
 private fun SlotsEditorPreview() {
     val template = genTemplates(1)[0]
-    var slots by remember {
-        mutableStateOf(template.slots)
+    var state by remember {
+        mutableStateOf(SlotsEditorState(template.slots))
     }
 
     Column {
-        SlotsEditor(slots, onSlotsChange = {
-            slots = it
+        SlotsEditor(state, onStateChange = {
+            state = it
         })
     }
 }
