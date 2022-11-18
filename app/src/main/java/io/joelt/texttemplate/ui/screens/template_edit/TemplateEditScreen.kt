@@ -27,7 +27,12 @@ fun NavHostController.navigateToCreateTemplate() {
     this.navigate("templates/0/edit")
 }
 
+class TemplateEditController {
+    var onSave = {}
+}
+
 class TemplateEditScreen : Screen {
+    val controller = TemplateEditController()
 
     override val route: String = "templates/{templateId}/edit"
     override val arguments: List<NamedNavArgument> = listOf(
@@ -35,13 +40,13 @@ class TemplateEditScreen : Screen {
     )
 
     override fun scaffold(nav: NavHostController) = ScaffoldOptions(
-        topBar = { TemplateEditTopNavBar(nav) }
+        topBar = { TemplateEditTopNavBar(nav, onSave = { controller.onSave() }) }
     )
 
     @Composable
     override fun Composable(backStackEntry: NavBackStackEntry, nav: NavHostController) {
         val templateId = backStackEntry.arguments!!.getLong("templateId")
-        TemplateEditScreen(nav, templateId)
+        TemplateEditScreen(nav, controller, templateId)
     }
 }
 
@@ -50,7 +55,16 @@ data class TemplateEditState(
     val editorState: SlotsEditorState? = template?.let {
         SlotsEditorState(template.slots)
     }
-)
+) {
+    fun withTemplateName(name: String): TemplateEditState =
+        copy(template = template?.copy(name = name))
+
+    fun withEditorState(editorState: SlotsEditorState) =
+        copy(
+            template = template?.copy(slots = editorState.slots),
+            editorState = editorState
+        )
+}
 
 @Composable
 private fun TemplateEditScreenContent(
@@ -66,10 +80,10 @@ private fun TemplateEditScreenContent(
 
     EditorLayout(
         name = state.template.name,
-        onNameChange = { onStateChange(state.copy(template = state.template.copy(name = it))) }
+        onNameChange = { onStateChange(state.withTemplateName(it)) }
     ) {
         SlotsEditor(state.editorState) {
-            onStateChange(state.copy(editorState = it))
+            onStateChange(state.withEditorState(it))
         }
     }
 }
@@ -77,11 +91,17 @@ private fun TemplateEditScreenContent(
 @Composable
 private fun TemplateEditScreen(
     nav: NavHostController,
+    screenController: TemplateEditController,
     templateId: Long,
     viewModel: TemplateEditViewModel = koinViewModel()
 ) {
     LaunchedEffect(Unit) {
         viewModel.loadTemplate(templateId)
+        screenController.onSave = {
+            viewModel.saveTemplate {
+                nav.navigate("templates")
+            }
+        }
     }
 
     TemplateEditScreenContent(viewModel.screenState) {

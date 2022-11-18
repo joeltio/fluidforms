@@ -6,6 +6,7 @@
     <string name="navbar_settings">Settings</string>
     <string name="navbar_back">Back</string>
     <string name="add_template">Create new template</string>
+    <string name="save_template">Save template</string>
 
     <string name="plain_text_slot_placeholder">Text</string>
     <string name="template_name">Name</string>

@@ -24,7 +24,7 @@ class TemplateEditViewModel(
         }
     }
 
-    fun saveTemplate() {
+    fun saveTemplate(onFinish: () -> Unit) {
         viewModelScope.launch {
             screenState.template?.let { template ->
                 if (template.id == 0L) {
@@ -34,6 +34,8 @@ class TemplateEditViewModel(
                     repository.updateTemplate(template)
                 }
             }
+
+            onFinish()
         }
     }
 }
