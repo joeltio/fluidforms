@@ -32,6 +32,7 @@ data class SlotsEditorState(
 ) {
     companion object {
         private const val SLOT_TAG = "slot"
+        private const val SLOT_INDEX_TAG = "slot_index"
 
         private fun getSlotDisplayText(slot: Slot) = slot.toDisplayString()
 
@@ -245,19 +246,27 @@ data class SlotsEditorState(
         }
     }
 
+    // Properties
     val isCursor = selection.start == selection.end
     val isSelection = !isCursor
+
     // Convenience for when there is no selection
     val cursor = selection.start
 
-    val annotatedString by lazy {
-        slots.annotateSlotsIndexed { index, slot ->
-            val text = getSlotDisplayText(slot)
-            pushStringAnnotation(SLOT_TAG, createSlotString(slot))
-            withSlotStyle(index == selectedSlotIndex) { append(text) }
-            pop()
+    private var annotatedStringCache: AnnotatedString? = null
+    val annotatedString: AnnotatedString
+        get() {
+            annotatedStringCache?.let { return it }
+
+            return slots.annotateSlotsIndexed { index, slot ->
+                val text = getSlotDisplayText(slot)
+                pushStringAnnotation(SLOT_TAG, createSlotString(slot))
+                pushStringAnnotation(SLOT_INDEX_TAG, index.toString())
+                withSlotStyle(index == selectedSlotIndex) { append(text) }
+                pop()
+                pop()
+            }
         }
-    }
     val annotations by lazy {
         annotatedString.getStringAnnotations(
             SLOT_TAG,
@@ -265,12 +274,48 @@ data class SlotsEditorState(
             annotatedString.lastIndex
         )
     }
+    val indexAnnotations by lazy {
+        annotatedString.getStringAnnotations(
+            SLOT_INDEX_TAG,
+            0,
+            annotatedString.lastIndex
+        )
+    }
     val text by lazy { annotatedString.text }
     val textFieldValue by lazy { TextFieldValue(text, selection, composition) }
 
+    constructor(
+        slots: List<Either<String, Slot>>,
+        selection: TextRange = TextRange.Zero,
+        composition: TextRange? = null,
+        selectedSlotIndex: Int? = null,
+        annotatedStringCache: AnnotatedString?
+    ) : this(slots, selection, composition, selectedSlotIndex) {
+        this.annotatedStringCache = annotatedStringCache
+    }
+
+
+    // Utility functions
+    private fun selectAdjacentSlot(newTextFieldValue: TextFieldValue): SlotsEditorState? {
+        val lenDiff = newTextFieldValue.text.length - text.length
+        if (!(isCursor && lenDiff == -1 && selectedSlotIndex == null)) {
+            return null
+        }
+
+        val adjacentSlotIndex = (indexAnnotations.firstOrNull { it.end == cursor })?.item?.toInt()
+        if (adjacentSlotIndex != null) {
+            return SlotsEditorState(slots, selection, composition, adjacentSlotIndex)
+        }
+        return null
+    }
+
     // Change state functions
     fun withNewTextFieldValue(newTextFieldValue: TextFieldValue): SlotsEditorState {
-        val newSlots = if (newTextFieldValue.text != text) {
+        // Select the adjacent slot if that is an option
+        selectAdjacentSlot(newTextFieldValue)?.let { return it }
+
+        val textChanged = newTextFieldValue.text != text
+        val newSlots = if (textChanged) {
             val newAnnotations = shiftAnnotations(annotations, textFieldValue, newTextFieldValue)
             createSlotsFromAnnotations(newTextFieldValue.text, newAnnotations)
         } else {
@@ -283,7 +328,12 @@ data class SlotsEditorState(
             newSlots,
             newTextFieldValue.selection,
             newTextFieldValue.composition,
-            newSelectedSlotIndex
+            newSelectedSlotIndex,
+            if (textChanged) {
+                null
+            } else {
+                annotatedStringCache
+            }
         )
     }
 
@@ -347,7 +397,8 @@ fun SlotsEditor(
             },
             value = state.textFieldValue,
             onValueChange = {
-                onStateChange(state.withNewTextFieldValue(it))
+                val newState = state.withNewTextFieldValue(it)
+                onStateChange(newState)
             }
         )
         Box(
