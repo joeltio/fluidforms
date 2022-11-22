@@ -158,6 +158,37 @@ class SlotsEditorStateTest {
     }
 
     @Test
+    fun insert_at_end_of_text() {
+        val slots = slotBuilder {
+            string("hello")
+        }
+        val startState = SlotsEditorState(slots, TextRange(5))
+        val input = TextFieldValue("hellox", TextRange(6))
+        val newState = startState.withNewTextFieldValue(input)
+        assertEquals("hellox", asLeft(newState.slots[0]))
+    }
+
+    @Test
+    fun insert_at_end_of_slot() {
+        val slots = slotBuilder {
+            plainSlot("hello")
+        }
+        // Insert with slot selected
+        var startState = SlotsEditorState(slots, TextRange(5), null, 0)
+        val input = TextFieldValue("hellox", TextRange(6))
+        startState.withNewTextFieldValue(input).let {
+            assertEquals("hellox", slotLabel(it.slots[0]))
+        }
+
+        // Insert without slot selected
+        startState = SlotsEditorState(slots, TextRange(5), null, null)
+        startState.withNewTextFieldValue(input).let {
+            assertEquals("hello", slotLabel(it.slots[0]))
+            assertEquals("x", asLeft(it.slots[1]))
+        }
+    }
+
+    @Test
     fun replace_text() {
         val slots = slotBuilder {
             string("hello, ")
@@ -287,6 +318,22 @@ class SlotsEditorStateTest {
     }
 
     @Test
+    fun delete_slot() {
+        val slots = slotBuilder {
+            string("hello, ")
+            plainSlot("Name")
+            string("!")
+        }
+        val startState = SlotsEditorState(slots, TextRange(11), null, 1)
+        val input = TextFieldValue("hello, Nam!", TextRange(10))
+        val newState = startState.withNewTextFieldValue(input)
+        assertEquals(1, newState.selectedSlotIndex)
+        assertEquals("hello, ", asLeft(newState.slots[0]))
+        assertEquals("Nam", slotLabel(newState.slots[1]))
+        assertEquals("!", asLeft(newState.slots[2]))
+    }
+
+    @Test
     fun delete_across_text_and_slot() {
         val slots = slotBuilder {
             string("hello, ")
@@ -329,7 +376,7 @@ class SlotsEditorStateTest {
         var startState = SlotsEditorState(slots, TextRange(0), null, null)
         var input = TextFieldValue("hello, Name! Age", TextRange(7))
         assertNull(startState.withNewTextFieldValue(input).selectedSlotIndex)
-        input = TextFieldValue("hello, Name! Age", TextRange(12))
+        input = TextFieldValue("hello, Name! Age", TextRange(11))
         assertNull(startState.withNewTextFieldValue(input).selectedSlotIndex)
 
         // Select other slot and move cursor left and right
@@ -354,6 +401,54 @@ class SlotsEditorStateTest {
         assertEquals(1, startState.withNewTextFieldValue(input).selectedSlotIndex)
         input = TextFieldValue("hello, Name! Age", TextRange(11))
         assertEquals(1, startState.withNewTextFieldValue(input).selectedSlotIndex)
+    }
+
+    @Test
+    fun enter_while_in_slot_unselects_slot() {
+        val slots = slotBuilder {
+            string("hello, ")
+            plainSlot("Name")
+        }
+
+        // Press enter inside slot
+        var startState = SlotsEditorState(slots, TextRange(9), null, 1)
+        var input = TextFieldValue("hello, Na\nme", TextRange(10))
+        startState.withNewTextFieldValue(input).let {
+            assertNull(it.selectedSlotIndex)
+            assertEquals(11, it.selection.start)
+            assertEquals(11, it.selection.end)
+            assertEquals("hello, ", asLeft(it.slots[0]))
+            assertEquals("Name", slotLabel(it.slots[1]))
+        }
+
+        // Press enter at the end of the slot
+        startState = SlotsEditorState(slots, TextRange(11), null, 1)
+        input = TextFieldValue("hello, Name\n", TextRange(12))
+        startState.withNewTextFieldValue(input).let {
+            assertNull(it.selectedSlotIndex)
+            assertEquals(11, it.selection.start)
+            assertEquals(11, it.selection.end)
+            assertEquals("hello, ", asLeft(it.slots[0]))
+            assertEquals("Name", slotLabel(it.slots[1]))
+        }
+    }
+
+    @Test
+    fun insert_enter_without_selected_slot() {
+        val slots = slotBuilder {
+            string("hello, ")
+            plainSlot("Name")
+        }
+
+        // Press enter inside slot
+        val startState = SlotsEditorState(slots, TextRange(4), null, null)
+        val input = TextFieldValue("hell\no, Name", TextRange(5))
+        startState.withNewTextFieldValue(input).let {
+            assertEquals(5, it.selection.start)
+            assertEquals(5, it.selection.end)
+            assertEquals("hell\no, ", asLeft(it.slots[0]))
+            assertEquals("Name", slotLabel(it.slots[1]))
+        }
     }
 
     @Test
@@ -430,6 +525,28 @@ class SlotsEditorStateTest {
             assertEquals(", ", asLeft(it.slots[2]))
             assertEquals("Name", slotLabel(it.slots[3]))
             assertEquals("!", asLeft(it.slots[4]))
+        }
+    }
+
+    @Test
+    fun replace_with_slot() {
+        val slots = slotBuilder {
+            string("hello, ")
+            plainSlot("Name")
+            string("! Nice to meet you")
+        }
+
+        val startState = SlotsEditorState(slots, TextRange(3, 14), null, null)
+        val newSlot = PlainTextSlot("").apply { label = "Text" }
+        startState.insertSlotAtSelection(newSlot).let {
+            assertEquals(it.selectedSlotIndex, 1)
+
+            assertEquals(3, it.selection.start)
+            assertEquals(7, it.selection.end)
+
+            assertEquals("hel", asLeft(it.slots[0]))
+            assertEquals("Text", slotLabel(it.slots[1]))
+            assertEquals("ice to meet you", asLeft(it.slots[2]))
         }
     }
 }
