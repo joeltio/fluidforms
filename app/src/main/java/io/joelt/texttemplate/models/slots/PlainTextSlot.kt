@@ -6,4 +6,8 @@ data class PlainTextSlot(var value: String) : Slot() {
     override fun loadSerializedValue(s: String) {
         value = s
     }
+
+    override fun makeCopy(label: String): Slot {
+        return copy().apply { this.label = label }
+    }
 }

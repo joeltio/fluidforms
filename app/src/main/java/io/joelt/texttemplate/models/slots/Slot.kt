@@ -14,4 +14,5 @@ abstract class Slot {
 
     abstract fun serializeValue(): String
     abstract fun loadSerializedValue(s: String)
+    abstract fun makeCopy(label: String): Slot
 }
