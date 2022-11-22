@@ -41,6 +41,7 @@ class SlotsEditorStateTest {
         val input = TextFieldValue("h", TextRange(13))
         val newState = startState.withNewTextFieldValue(input)
         assertEquals("h", asLeft(newState.slots[0]))
+        assertNull(newState.selectedSlotIndex)
     }
 
     @Test
@@ -413,6 +414,17 @@ class SlotsEditorStateTest {
         // Press enter inside slot
         var startState = SlotsEditorState(slots, TextRange(9), null, 1)
         var input = TextFieldValue("hello, Na\nme", TextRange(10))
+        startState.withNewTextFieldValue(input).let {
+            assertNull(it.selectedSlotIndex)
+            assertEquals(11, it.selection.start)
+            assertEquals(11, it.selection.end)
+            assertEquals("hello, ", asLeft(it.slots[0]))
+            assertEquals("Name", slotLabel(it.slots[1]))
+        }
+
+        // Press enter while selecting inside a slot
+        startState = SlotsEditorState(slots, TextRange(8, 10), null, 1)
+        input = TextFieldValue("hello, N\ne", TextRange(9))
         startState.withNewTextFieldValue(input).let {
             assertNull(it.selectedSlotIndex)
             assertEquals(11, it.selection.start)

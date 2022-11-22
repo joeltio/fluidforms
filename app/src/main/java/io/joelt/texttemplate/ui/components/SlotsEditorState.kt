@@ -277,21 +277,20 @@ data class SlotsEditorState(
         selectedSlotIndex: Int?,
         slots: List<Either<String, Slot>>
     ): Int? {
-        var offset = 0
-        slots.forEachIndexed { index, slot ->
+        slots.annotateSlotsIndexed { start, slotIndex, slot ->
             if (
                 shouldSelectSlot(
                     selection,
                     selectedSlotIndex,
-                    offset,
-                    offset + slot.text.length,
-                    index
+                    start,
+                    start + slot.label.length,
+                    slotIndex
                 )
             ) {
-                return index
+                return slotIndex
             }
 
-            offset += slot.text.length
+            slot.label.length
         }
         return null
     }
@@ -318,6 +317,16 @@ data class SlotsEditorState(
         return null
     }
 
+    private fun unselectCurrentSlotWhenEnterPressed(newText: String): SlotsEditorState? {
+        if (selectedSlotIndex == null || newText != "\n") {
+            return null
+        }
+
+        val cursor = slots.cursorAt(selection.start)
+        val endOfSlot = selection.start + slots[cursor.slotIndex].text.length - cursor.subIndex
+        return SlotsEditorState(slots, TextRange(endOfSlot), null, null)
+    }
+
     // Change state functions
     fun withNewTextFieldValue(newTextFieldValue: TextFieldValue): SlotsEditorState {
         val textChanged = newTextFieldValue.text != text
@@ -328,7 +337,9 @@ data class SlotsEditorState(
             slots
         } else if (isCursor && lenDiff > 0) {
             // Insert
-            insert(slots, cursor, newTextFieldValue.text.substring(cursor, cursor + lenDiff))
+            val newText = newTextFieldValue.text.substring(cursor, cursor + lenDiff)
+            unselectCurrentSlotWhenEnterPressed(newText)?.let { return it }
+            insert(slots, cursor, newText)
         } else if ((isCursor && lenDiff < 0) || (isSelection && selection.length == -lenDiff)) {
             // Delete
             // Select the adjacent slot if that is an option
@@ -341,13 +352,12 @@ data class SlotsEditorState(
         } else {
             // Replace
             val insertValueLen = selection.length + lenDiff
-            replace(
-                selection,
-                newTextFieldValue.text.substring(
-                    selection.start,
-                    selection.start + insertValueLen
-                )
+            val newText = newTextFieldValue.text.substring(
+                selection.start,
+                selection.start + insertValueLen
             )
+            unselectCurrentSlotWhenEnterPressed(newText)?.let { return it }
+            replace(selection, newText)
         }
 
         val newSelectedSlotIndex =
