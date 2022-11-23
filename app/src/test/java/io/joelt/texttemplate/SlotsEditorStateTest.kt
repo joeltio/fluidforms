@@ -57,6 +57,7 @@ class SlotsEditorStateTest {
         assertEquals("hello, ", asLeft(newState.slots[0]))
         assertEquals("Name", slotLabel(newState.slots[1]))
         assertEquals("! ", asLeft(newState.slots[2]))
+        assertNull(newState.selectedSlotIndex)
     }
 
     @Test
@@ -74,6 +75,7 @@ class SlotsEditorStateTest {
         assertEquals("Naame", slotLabel(newState.slots[1]))
         assertEquals("! ", asLeft(newState.slots[2]))
         assertEquals("Name", slotLabel(newState.slots[3]))
+        assertEquals(1, newState.selectedSlotIndex)
     }
 
     @Test
@@ -91,6 +93,7 @@ class SlotsEditorStateTest {
         assertEquals("Name", slotLabel(newState.slots[1]))
         assertEquals("! ", asLeft(newState.slots[2]))
         assertEquals("Name", slotLabel(newState.slots[3]))
+        assertNull(newState.selectedSlotIndex)
     }
 
     @Test
@@ -108,6 +111,7 @@ class SlotsEditorStateTest {
         assertEquals("Name", slotLabel(newState.slots[1]))
         assertEquals("a! ", asLeft(newState.slots[2]))
         assertEquals("Name", slotLabel(newState.slots[3]))
+        assertNull(newState.selectedSlotIndex)
     }
 
     @Test
@@ -125,6 +129,7 @@ class SlotsEditorStateTest {
         assertEquals("aName", slotLabel(newState.slots[1]))
         assertEquals("! ", asLeft(newState.slots[2]))
         assertEquals("Name", slotLabel(newState.slots[3]))
+        assertEquals(1, newState.selectedSlotIndex)
     }
 
     @Test
@@ -142,6 +147,7 @@ class SlotsEditorStateTest {
         assertEquals("Namea", slotLabel(newState.slots[1]))
         assertEquals("! ", asLeft(newState.slots[2]))
         assertEquals("Name", slotLabel(newState.slots[3]))
+        assertEquals(1, newState.selectedSlotIndex)
     }
 
     @Test
@@ -156,6 +162,7 @@ class SlotsEditorStateTest {
         assertEquals("Name", slotLabel(newState.slots[0]))
         assertEquals("X", asLeft(newState.slots[1]))
         assertEquals("Name", slotLabel(newState.slots[2]))
+        assertNull(newState.selectedSlotIndex)
     }
 
     @Test
@@ -167,6 +174,7 @@ class SlotsEditorStateTest {
         val input = TextFieldValue("hellox", TextRange(6))
         val newState = startState.withNewTextFieldValue(input)
         assertEquals("hellox", asLeft(newState.slots[0]))
+        assertNull(newState.selectedSlotIndex)
     }
 
     @Test
@@ -179,6 +187,7 @@ class SlotsEditorStateTest {
         val input = TextFieldValue("hellox", TextRange(6))
         startState.withNewTextFieldValue(input).let {
             assertEquals("hellox", slotLabel(it.slots[0]))
+            assertEquals(0, it.selectedSlotIndex)
         }
 
         // Insert without slot selected
@@ -186,6 +195,7 @@ class SlotsEditorStateTest {
         startState.withNewTextFieldValue(input).let {
             assertEquals("hello", slotLabel(it.slots[0]))
             assertEquals("x", asLeft(it.slots[1]))
+            assertNull(it.selectedSlotIndex)
         }
     }
 
@@ -202,6 +212,7 @@ class SlotsEditorStateTest {
         assertEquals("goodbye, ", asLeft(newState.slots[0]))
         assertEquals("Name", slotLabel(newState.slots[1]))
         assertEquals("!", asLeft(newState.slots[2]))
+        assertNull(newState.selectedSlotIndex)
     }
 
     @Test
@@ -217,6 +228,7 @@ class SlotsEditorStateTest {
         assertEquals("helCHANG", asLeft(newState.slots[0]))
         assertEquals("me", slotLabel(newState.slots[1]))
         assertEquals("!", asLeft(newState.slots[2]))
+        assertNull(newState.selectedSlotIndex)
     }
 
     @Test
@@ -230,6 +242,7 @@ class SlotsEditorStateTest {
         val input = TextFieldValue("hello,there", TextRange(6))
         val newState = startState.withNewTextFieldValue(input)
         assertEquals("hello,there", asLeft(newState.slots[0]))
+        assertNull(newState.selectedSlotIndex)
     }
 
     @Test
@@ -245,6 +258,7 @@ class SlotsEditorStateTest {
         assertEquals("hello, ", asLeft(newState.slots[0]))
         assertEquals("Nxe", slotLabel(newState.slots[1]))
         assertEquals("!", asLeft(newState.slots[2]))
+        assertEquals(1, newState.selectedSlotIndex)
     }
 
     @Test
@@ -260,6 +274,7 @@ class SlotsEditorStateTest {
         assertEquals("hello, ", asLeft(newState.slots[0]))
         assertEquals("Age", slotLabel(newState.slots[1]))
         assertEquals("!", asLeft(newState.slots[2]))
+        assertEquals(1, newState.selectedSlotIndex)
     }
 
     @Test
@@ -271,6 +286,7 @@ class SlotsEditorStateTest {
         val input = TextFieldValue("X", TextRange(10))
         val newState = startState.withNewTextFieldValue(input)
         assertEquals("X", slotLabel(newState.slots[0]))
+        assertEquals(0, newState.selectedSlotIndex)
     }
 
     @Test
@@ -286,6 +302,7 @@ class SlotsEditorStateTest {
         assertEquals("hello, ", asLeft(newState.slots[0]))
         assertEquals("Xme", slotLabel(newState.slots[1]))
         assertEquals("!", asLeft(newState.slots[2]))
+        assertEquals(1, newState.selectedSlotIndex)
     }
 
     @Test
@@ -301,6 +318,7 @@ class SlotsEditorStateTest {
         assertEquals("hello, ", asLeft(newState.slots[0]))
         assertEquals("NaX", slotLabel(newState.slots[1]))
         assertEquals("!", asLeft(newState.slots[2]))
+        assertEquals(1, newState.selectedSlotIndex)
     }
 
     @Test
@@ -316,6 +334,7 @@ class SlotsEditorStateTest {
         assertEquals(", ", asLeft(newState.slots[0]))
         assertEquals("Name", slotLabel(newState.slots[1]))
         assertEquals("!", asLeft(newState.slots[2]))
+        assertNull(newState.selectedSlotIndex)
     }
 
     @Test
@@ -332,6 +351,7 @@ class SlotsEditorStateTest {
         assertEquals("hello, ", asLeft(newState.slots[0]))
         assertEquals("Nam", slotLabel(newState.slots[1]))
         assertEquals("!", asLeft(newState.slots[2]))
+        assertEquals(1, newState.selectedSlotIndex)
     }
 
     @Test
@@ -349,6 +369,7 @@ class SlotsEditorStateTest {
         assertEquals("helce to meet you. I am ", asLeft(newState.slots[0]))
         assertEquals("Name", slotLabel(newState.slots[1]))
         assertEquals(".", asLeft(newState.slots[2]))
+        assertNull(newState.selectedSlotIndex)
     }
 
     // Cursor movement
