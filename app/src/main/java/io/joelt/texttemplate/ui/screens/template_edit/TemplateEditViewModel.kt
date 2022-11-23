@@ -5,6 +5,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavHostController
 import io.joelt.texttemplate.models.Template
 import io.joelt.texttemplate.database.TemplatesRepository
 import kotlinx.coroutines.*
@@ -24,7 +25,7 @@ class TemplateEditViewModel(
         }
     }
 
-    fun saveTemplate(onFinish: () -> Unit) {
+    fun saveTemplate(nav: NavHostController) {
         viewModelScope.launch {
             screenState?.let {
                 val template = it.template
@@ -36,7 +37,7 @@ class TemplateEditViewModel(
                 }
             }
 
-            onFinish()
+            nav.navigate("templates")
         }
     }
 }

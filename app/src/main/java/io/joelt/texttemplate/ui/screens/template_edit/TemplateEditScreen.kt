@@ -94,9 +94,7 @@ private fun TemplateEditScreen(
             viewModel.loadTemplate(templateId)
         }
         screenController.onSave = {
-            viewModel.saveTemplate {
-                nav.navigate("templates")
-            }
+            viewModel.saveTemplate(nav)
         }
     }
 
