@@ -7,8 +7,11 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import io.joelt.texttemplate.navigation.*
 
+val Route.settings: String
+    get() = "settings"
+
 class SettingsScreen : Screen {
-    override val route: String = "settings"
+    override val route: String = Route.settings
     override val arguments: List<NamedNavArgument> = listOf()
 
     @Composable

@@ -13,12 +13,15 @@ import io.joelt.texttemplate.navigation.*
 import io.joelt.texttemplate.ui.components.DraftList
 import io.joelt.texttemplate.ui.screens.TopNavBar
 import io.joelt.texttemplate.ui.screens.BottomNavBar
-import io.joelt.texttemplate.ui.screens.draft_edit.navigateToDraftEdit
+import io.joelt.texttemplate.ui.screens.draft_edit.draftEdit
 import org.koin.androidx.compose.koinViewModel
+
+val Route.drafts: String
+    get() = "drafts"
 
 @OptIn(ExperimentalMaterial3Api::class)
 class DraftsScreen : Screen {
-    override val route: String = "drafts"
+    override val route: String = Route.drafts
     override val arguments: List<NamedNavArgument> = emptyList()
 
     @Composable
@@ -51,6 +54,6 @@ private fun DraftsScreen(
     viewModel: DraftsViewModel = koinViewModel()
 ) {
     DraftsScreenContent(drafts = viewModel.drafts) {
-        nav.navigateToDraftEdit(it.id)
+        nav.navigate(Route.draftEdit(it.id))
     }
 }

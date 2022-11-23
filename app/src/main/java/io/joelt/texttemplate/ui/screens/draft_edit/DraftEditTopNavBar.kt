@@ -11,9 +11,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import io.joelt.texttemplate.R
+import io.joelt.texttemplate.navigation.Route
+import io.joelt.texttemplate.ui.screens.drafts.drafts
 
 fun NavHostController.navigateBackToDrafts() {
-    navigate("drafts") {
+    navigate(Route.drafts) {
         this@navigateBackToDrafts.graph.startDestinationRoute?.let { route ->
             popUpTo(route)
         }

@@ -13,12 +13,15 @@ import io.joelt.texttemplate.navigation.*
 import io.joelt.texttemplate.ui.components.DraftList
 import io.joelt.texttemplate.ui.screens.TopNavBar
 import io.joelt.texttemplate.ui.screens.BottomNavBar
-import io.joelt.texttemplate.ui.screens.archived_view.navigateToArchivedEdit
+import io.joelt.texttemplate.ui.screens.archived_view.archivedEdit
 import org.koin.androidx.compose.koinViewModel
+
+val Route.archived: String
+    get() = "archived"
 
 @OptIn(ExperimentalMaterial3Api::class)
 class ArchivedScreen : Screen {
-    override val route: String = "archived"
+    override val route: String = Route.archived
     override val arguments: List<NamedNavArgument> = emptyList()
     @Composable
     override fun scaffold(nav: NavHostController): ScaffoldOptions {
@@ -47,6 +50,6 @@ private fun ArchivedScreen(
     viewModel: ArchivedViewModel = koinViewModel()
 ) {
     ArchivedScreenContent(archived = viewModel.archived) {
-        nav.navigateToArchivedEdit(it.id)
+        nav.navigate(Route.archivedEdit(it.id))
     }
 }

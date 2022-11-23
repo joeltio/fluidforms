@@ -8,6 +8,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import io.joelt.texttemplate.models.Template
 import io.joelt.texttemplate.database.TemplatesRepository
+import io.joelt.texttemplate.navigation.Route
+import io.joelt.texttemplate.ui.screens.templates.templates
 import kotlinx.coroutines.*
 
 class TemplateEditViewModel(
@@ -37,7 +39,7 @@ class TemplateEditViewModel(
                 }
             }
 
-            nav.navigate("templates")
+            nav.navigate(Route.templates)
         }
     }
 }

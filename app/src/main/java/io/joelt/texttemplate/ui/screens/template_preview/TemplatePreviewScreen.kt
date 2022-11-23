@@ -21,12 +21,12 @@ import io.joelt.texttemplate.models.Template
 import io.joelt.texttemplate.models.genTemplates
 import io.joelt.texttemplate.navigation.*
 import io.joelt.texttemplate.ui.components.TemplatePreview
-import io.joelt.texttemplate.ui.screens.draft_edit.createDraftRoute
-import io.joelt.texttemplate.ui.screens.template_edit.templateEditRoute
+import io.joelt.texttemplate.ui.screens.draft_edit.createDraft
+import io.joelt.texttemplate.ui.screens.template_edit.templateEdit
 import io.joelt.texttemplate.ui.theme.TextTemplateTheme
 import org.koin.androidx.compose.koinViewModel
 
-fun NavHostController.templatePreviewRoute(templateId: Long) = "templates/$templateId"
+fun Route.templatePreview(templateId: Long) = "templates/$templateId"
 
 class TemplatePreviewController {
     var onEditTemplate = {}
@@ -92,13 +92,13 @@ private fun TemplateEditScreen(
     LaunchedEffect(Unit) {
         viewModel.loadTemplate(templateId)
         screenController.onEditTemplate = {
-            nav.navigateClearStack(nav.templateEditRoute(templateId))
+            nav.navigateClearStack(Route.templateEdit(templateId))
         }
         screenController.onDeleteTemplate = {
             viewModel.deleteTemplate(nav)
         }
         screenController.onCreateDraftWithTemplate = {
-            nav.navigateClearStack(nav.createDraftRoute(templateId))
+            nav.navigateClearStack(Route.createDraft(templateId))
         }
     }
 

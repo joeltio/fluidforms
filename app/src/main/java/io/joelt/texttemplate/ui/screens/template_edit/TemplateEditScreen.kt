@@ -17,11 +17,10 @@ import io.joelt.texttemplate.ui.components.*
 import io.joelt.texttemplate.ui.theme.TextTemplateTheme
 import org.koin.androidx.compose.koinViewModel
 
-fun NavHostController.templateEditRoute(templateId: Long) = "templates/$templateId/edit"
+fun Route.templateEdit(templateId: Long) = "templates/$templateId/edit"
 
-fun NavHostController.navigateToCreateTemplate() {
-    this.navigate("templates/0/edit")
-}
+val Route.createTemplate: String
+    get() = "templates/0/edit"
 
 class TemplateEditController {
     var onSave = {}

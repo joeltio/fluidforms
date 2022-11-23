@@ -21,14 +21,17 @@ import io.joelt.texttemplate.navigation.*
 import io.joelt.texttemplate.ui.components.TemplateList
 import io.joelt.texttemplate.ui.screens.BottomNavBar
 import io.joelt.texttemplate.ui.screens.TopNavBar
-import io.joelt.texttemplate.ui.screens.template_edit.navigateToCreateTemplate
-import io.joelt.texttemplate.ui.screens.template_preview.templatePreviewRoute
+import io.joelt.texttemplate.ui.screens.template_edit.createTemplate
+import io.joelt.texttemplate.ui.screens.template_preview.templatePreview
 import io.joelt.texttemplate.ui.theme.TextTemplateTheme
 import org.koin.androidx.compose.koinViewModel
 
+val Route.templates: String
+    get() = "templates"
+
 @OptIn(ExperimentalMaterial3Api::class)
 class TemplatesScreen : Screen {
-    override val route: String = "templates"
+    override val route: String = Route.templates
     override val arguments: List<NamedNavArgument> = emptyList()
     @Composable
     override fun scaffold(nav: NavHostController): ScaffoldOptions {
@@ -38,7 +41,7 @@ class TemplatesScreen : Screen {
             topBar = { TopNavBar(nav, scrollBehavior) },
             bottomBar = { BottomNavBar(nav) },
             floatingActionButton = {
-                FloatingActionButton(onClick = { nav.navigateToCreateTemplate() }) {
+                FloatingActionButton(onClick = { nav.navigate(Route.createTemplate) }) {
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = stringResource(id = R.string.add_template)
@@ -72,7 +75,7 @@ private fun TemplatesScreen(
     }
 
     TemplatesScreenContent(templates = viewModel.templates) {
-        nav.navigate(nav.templatePreviewRoute(it.id))
+        nav.navigate(Route.templatePreview(it.id))
     }
 }
 

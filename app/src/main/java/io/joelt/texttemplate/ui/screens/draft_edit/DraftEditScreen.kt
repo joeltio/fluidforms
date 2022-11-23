@@ -13,11 +13,9 @@ import io.joelt.texttemplate.navigation.*
 import io.joelt.texttemplate.ui.components.SlotsPreview
 import org.koin.androidx.compose.koinViewModel
 
-fun NavHostController.navigateToDraftEdit(draftId: Long) {
-    this.navigate("drafts/$draftId/edit/0")
-}
+fun Route.draftEdit(draftId: Long) = "drafts/$draftId/edit/0"
 
-fun NavHostController.createDraftRoute(fromTemplateId: Long) = "drafts/0/edit/$fromTemplateId"
+fun Route.createDraft(fromTemplateId: Long) = "drafts/0/edit/$fromTemplateId"
 
 class DraftEditScreen : Screen {
     override val route: String = "drafts/{draftId}/edit/{templateId}"

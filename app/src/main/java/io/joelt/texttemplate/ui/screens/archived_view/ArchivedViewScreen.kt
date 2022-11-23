@@ -13,9 +13,7 @@ import io.joelt.texttemplate.navigation.*
 import io.joelt.texttemplate.ui.components.SlotsPreview
 import org.koin.androidx.compose.koinViewModel
 
-fun NavHostController.navigateToArchivedEdit(archivedId: Long) {
-    this.navigate("archived/$archivedId/edit")
-}
+fun Route.archivedEdit(archivedId: Long) = "archived/$archivedId/edit"
 
 class ArchivedViewScreen : Screen {
     override val route: String = "archived/{archivedId}/edit"

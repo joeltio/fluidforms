@@ -7,8 +7,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import io.joelt.texttemplate.R
+import io.joelt.texttemplate.navigation.Route
 import io.joelt.texttemplate.navigation.atRoute
 import io.joelt.texttemplate.navigation.navigateClearStack
+import io.joelt.texttemplate.ui.screens.archived.archived
+import io.joelt.texttemplate.ui.screens.drafts.drafts
+import io.joelt.texttemplate.ui.screens.templates.templates
 
 private data class NavItem(
     val name: String,
@@ -22,17 +26,17 @@ fun BottomNavBar(nav: NavHostController) {
         NavItem(
             stringResource(id = R.string.navbar_templates),
             painterResource(id = R.drawable.ic_baseline_description_24),
-            "templates"
+            Route.templates
         ),
         NavItem(
             stringResource(id = R.string.navbar_drafts),
             painterResource(id = R.drawable.ic_baseline_drafts_24),
-            "drafts"
+            Route.drafts
         ),
         NavItem(
             stringResource(id = R.string.navbar_archived),
             painterResource(id = R.drawable.ic_baseline_inventory_24),
-            "archived"
+            Route.archived
         )
     )
 
