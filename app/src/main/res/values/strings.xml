@@ -7,6 +7,7 @@
     <string name="navbar_back">Back</string>
     <string name="add_template">Create new template</string>
     <string name="save_template">Save template</string>
+    <string name="delete_template">Delete Template</string>
     <string name="menu_edit_template">Edit Template</string>
     <string name="menu_show_menu">Show Menu</string>
     <string name="fill_up_template">Fill Up Template</string>
