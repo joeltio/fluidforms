@@ -3,6 +3,7 @@ package io.joelt.texttemplate.ui.screens.template_preview
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.*
@@ -17,7 +18,11 @@ import io.joelt.texttemplate.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TemplatePreviewTopNavBar(nav: NavHostController, onEditTemplate: () -> Unit) {
+fun TemplatePreviewTopNavBar(
+    nav: NavHostController,
+    onDeleteTemplate: () -> Unit,
+    onEditTemplate: () -> Unit
+) {
     var showMenu by remember {
         mutableStateOf(false)
     }
@@ -34,6 +39,12 @@ fun TemplatePreviewTopNavBar(nav: NavHostController, onEditTemplate: () -> Unit)
             }
         },
         actions = {
+            IconButton(onClick = onDeleteTemplate) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = stringResource(R.string.delete_template)
+                )
+            }
             IconButton(onClick = {
                 showMenu = true
             }) {

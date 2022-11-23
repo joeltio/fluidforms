@@ -15,11 +15,7 @@ class TemplatesViewModel(
     var templates: List<Template>? by mutableStateOf(null)
         private set
 
-    init {
-        loadTemplates()
-    }
-
-    private fun loadTemplates() {
+    fun loadTemplates() {
         viewModelScope.launch {
             templates = repository.getTemplates()
         }

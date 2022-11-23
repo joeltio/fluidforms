@@ -30,6 +30,7 @@ fun NavHostController.templatePreviewRoute(templateId: Long) = "templates/$templ
 
 class TemplatePreviewController {
     var onEditTemplate = {}
+    var onDeleteTemplate = {}
     var onCreateDraftWithTemplate = {}
 }
 
@@ -46,7 +47,8 @@ class TemplatePreviewScreen : Screen {
         topBar = {
             TemplatePreviewTopNavBar(
                 nav,
-                onEditTemplate = { controller.onEditTemplate() })
+                onEditTemplate = { controller.onEditTemplate() },
+                onDeleteTemplate = { controller.onDeleteTemplate() })
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(icon = {
@@ -91,6 +93,9 @@ private fun TemplateEditScreen(
         viewModel.loadTemplate(templateId)
         screenController.onEditTemplate = {
             nav.navigateClearStack(nav.templateEditRoute(templateId))
+        }
+        screenController.onDeleteTemplate = {
+            viewModel.deleteTemplate(nav)
         }
         screenController.onCreateDraftWithTemplate = {
             nav.navigateClearStack(nav.createDraftRoute(templateId))

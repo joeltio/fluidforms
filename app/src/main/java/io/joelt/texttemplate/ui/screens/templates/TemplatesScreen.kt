@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
@@ -66,6 +67,10 @@ private fun TemplatesScreen(
     nav: NavHostController,
     viewModel: TemplatesViewModel = koinViewModel()
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.loadTemplates()
+    }
+
     TemplatesScreenContent(templates = viewModel.templates) {
         nav.navigate(nav.templatePreviewRoute(it.id))
     }
