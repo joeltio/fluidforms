@@ -2,15 +2,14 @@ package io.joelt.texttemplate.ui.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import io.joelt.texttemplate.models.Either
@@ -26,7 +25,7 @@ private const val SLOT_TAG = "Slot"
 fun SlotsPreview(
     slots: List<Either<String, Slot>>,
     selectedSlotIndex: Int? = null,
-    style: TextStyle = TextStyle.Default,
+    style: TextStyle = LocalTextStyle.current,
     maxLines: Int = Int.MAX_VALUE,
     onSlotClick: ((slotIndex: Int) -> Unit)? = null
 ) {
