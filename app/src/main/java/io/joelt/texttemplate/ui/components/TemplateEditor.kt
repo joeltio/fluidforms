@@ -37,7 +37,7 @@ fun TemplateEditor(
             value = state.templateName,
             textStyle = LocalTextStyle.current,
             singleLine = true,
-            placeholder = stringResource(R.string.template_name),
+            placeholder = stringResource(R.string.template_name_placeholder),
             onValueChange = {
                 onStateChange(state.copy(templateName = it))
             })
@@ -94,6 +94,7 @@ fun TemplateEditor(
                 // Apply the styles from the annotatedString through visualTransformation instead
                 TransformedText(annotatedString, OffsetMapping.Identity)
             },
+            placeholder = stringResource(R.string.template_body_placeholder),
             value = slotsState.textFieldValue,
             onValueChange = {
                 val newState = slotsState.withNewTextFieldValue(it)

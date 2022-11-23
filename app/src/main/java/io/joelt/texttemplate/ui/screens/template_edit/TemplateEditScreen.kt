@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.*
@@ -27,7 +29,7 @@ class TemplateEditController {
 }
 
 class TemplateEditScreen : Screen {
-    val controller = TemplateEditController()
+    private val controller = TemplateEditController()
 
     override val route: String = "templates/{templateId}/edit"
     override val arguments: List<NamedNavArgument> = listOf(

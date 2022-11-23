@@ -14,5 +14,6 @@
 
     <string name="plain_text_slot_placeholder">Text</string>
     <string name="plain_text_slot_type_name">TEXT</string>
-    <string name="template_name">Name</string>
+    <string name="template_name_placeholder">Name</string>
+    <string name="template_body_placeholder">Create your template here…</string>
 </resources>

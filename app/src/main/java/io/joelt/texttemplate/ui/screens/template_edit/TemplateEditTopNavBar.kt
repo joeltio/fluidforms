@@ -3,6 +3,7 @@ package io.joelt.texttemplate.ui.screens.template_edit
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -20,7 +21,7 @@ fun TemplateEditTopNavBar(nav: NavHostController, onSave: () -> Unit) {
             nav.popBackStack()
         }) {
             Icon(
-                imageVector = Icons.Default.ArrowBack,
+                imageVector = Icons.Default.Close,
                 contentDescription = stringResource(id = R.string.navbar_back),
             )
         }
