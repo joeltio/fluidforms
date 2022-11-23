@@ -12,7 +12,7 @@ import io.joelt.texttemplate.ui.theme.Typography
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopNavBar(nav: NavHostController) {
+fun TopNavBar(nav: NavHostController, scrollBehaviour: TopAppBarScrollBehavior? = null) {
     val settingsIconBtn = @Composable {
         IconButton(onClick = {
             nav.navigate("settings")
@@ -31,5 +31,6 @@ fun TopNavBar(nav: NavHostController) {
             )
         },
         navigationIcon = settingsIconBtn,
+        scrollBehavior = scrollBehaviour
     )
 }

@@ -30,18 +30,22 @@ class TemplatesScreen : Screen {
     override val route: String = "templates"
     override val arguments: List<NamedNavArgument> = emptyList()
     @Composable
-    override fun scaffold(nav: NavHostController) = ScaffoldOptions(
-        topBar = { TopNavBar(nav) },
-        bottomBar = { BottomNavBar(nav) },
-        floatingActionButton = {
-            FloatingActionButton(onClick = { nav.navigateToCreateTemplate() }) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(id = R.string.add_template)
-                )
+    override fun scaffold(nav: NavHostController): ScaffoldOptions {
+        val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+        return ScaffoldOptions(
+            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+            topBar = { TopNavBar(nav, scrollBehavior) },
+            bottomBar = { BottomNavBar(nav) },
+            floatingActionButton = {
+                FloatingActionButton(onClick = { nav.navigateToCreateTemplate() }) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(id = R.string.add_template)
+                    )
+                }
             }
-        }
-    )
+        )
+    }
 
     @Composable
     override fun Composable(backStackEntry: NavBackStackEntry, nav: NavHostController) {

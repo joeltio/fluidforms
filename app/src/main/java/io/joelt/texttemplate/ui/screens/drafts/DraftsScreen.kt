@@ -1,7 +1,10 @@
 package io.joelt.texttemplate.ui.screens.drafts
 
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
@@ -19,10 +22,14 @@ class DraftsScreen : Screen {
     override val arguments: List<NamedNavArgument> = emptyList()
 
     @Composable
-    override fun scaffold(nav: NavHostController) = ScaffoldOptions(
-        topBar = { TopNavBar(nav) },
-        bottomBar = { BottomNavBar(nav) }
-    )
+    override fun scaffold(nav: NavHostController): ScaffoldOptions {
+        val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+        return ScaffoldOptions(
+            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+            topBar = { TopNavBar(nav, scrollBehavior) },
+            bottomBar = { BottomNavBar(nav) }
+        )
+    }
 
     @Composable
     override fun Composable(backStackEntry: NavBackStackEntry, nav: NavHostController) {
