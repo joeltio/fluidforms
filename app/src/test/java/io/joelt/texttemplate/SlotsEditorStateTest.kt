@@ -322,6 +322,18 @@ class SlotsEditorStateTest {
     }
 
     @Test
+    fun replace_all_text() {
+        val slots = slotBuilder {
+            string("hello, world! ")
+            plainSlot("Name")
+        }
+        val startState = SlotsEditorState(slots, TextRange(0, 18))
+        val input = TextFieldValue("ABC", TextRange(3))
+        val newState = startState.withNewTextFieldValue(input)
+        assertEquals("ABC", asLeft(newState.slots[0]))
+    }
+
+    @Test
     fun delete_text() {
         val slots = slotBuilder {
             string("hello, ")
@@ -334,6 +346,35 @@ class SlotsEditorStateTest {
         assertEquals(", ", asLeft(newState.slots[0]))
         assertEquals("Name", slotLabel(newState.slots[1]))
         assertEquals("!", asLeft(newState.slots[2]))
+        assertNull(newState.selectedSlotIndex)
+    }
+
+    @Test
+    fun delete_all() {
+        val slots = slotBuilder {
+            string("hello, ")
+            plainSlot("Name")
+        }
+        val startState = SlotsEditorState(slots, TextRange(0, 11))
+        val input = TextFieldValue("", TextRange(0))
+        val newState = startState.withNewTextFieldValue(input)
+        assertEquals(0, newState.slots.size)
+        assertNull(newState.selectedSlotIndex)
+    }
+
+    @Test
+    fun delete_text_removes_either() {
+        val slots = slotBuilder {
+            string("hello, ")
+            plainSlot("Name")
+            string("!")
+        }
+        val startState = SlotsEditorState(slots, TextRange(12))
+        val input = TextFieldValue("hello, Name", TextRange(11))
+        val newState = startState.withNewTextFieldValue(input)
+        assertEquals(2, newState.slots.size)
+        assertEquals("hello, ", asLeft(newState.slots[0]))
+        assertEquals("Name", slotLabel(newState.slots[1]))
         assertNull(newState.selectedSlotIndex)
     }
 
@@ -510,7 +551,7 @@ class SlotsEditorStateTest {
 
     @Test
     fun deletion_changes_selection_of_slot() {
-        val slots = slotBuilder {
+        var slots = slotBuilder {
             string("hello, ")
             plainSlot("Name")
             string("!")
@@ -534,6 +575,26 @@ class SlotsEditorStateTest {
             assertEquals("hello, ", asLeft(it.slots[0]))
             assertEquals("Name", slotLabel(it.slots[1]))
             assertEquals("!", asLeft(it.slots[2]))
+        }
+
+        // Outside the slot
+        startState = SlotsEditorState(slots, TextRange(12), null, null)
+        input = TextFieldValue("hello, Name", TextRange(11))
+        startState.withNewTextFieldValue(input).let {
+            assertNull(it.selectedSlotIndex)
+            assertEquals("hello, ", asLeft(it.slots[0]))
+            assertEquals("Name", slotLabel(it.slots[1]))
+        }
+
+        // With nothing after slot
+        slots = slotBuilder {
+            plainSlot("Name")
+        }
+        startState = SlotsEditorState(slots, TextRange(4), null, null)
+        input = TextFieldValue("Nam", TextRange(3))
+        startState.withNewTextFieldValue(input).let {
+            assertEquals(0, it.selectedSlotIndex)
+            assertEquals("Name", slotLabel(it.slots[0]))
         }
     }
 

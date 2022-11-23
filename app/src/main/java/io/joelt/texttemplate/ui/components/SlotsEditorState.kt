@@ -212,9 +212,18 @@ data class SlotsEditorState(
         if (newStartSlot is Either.Left && newEndSlot is Either.Left) {
             // Combine the strings
             newSlots.add(start.slotIndex, Either.Left(newStartSlot.value + newEndSlot.value))
+            if (newSlots[start.slotIndex].text.isEmpty()) {
+                newSlots.removeAt(start.slotIndex)
+            }
         } else {
             newSlots.add(start.slotIndex, newStartSlot)
             newSlots.add(start.slotIndex + 1, newEndSlot)
+            if (newSlots[start.slotIndex + 1].text.isEmpty()) {
+                newSlots.removeAt(start.slotIndex + 1)
+            }
+            if (newSlots[start.slotIndex].text.isEmpty()) {
+                newSlots.removeAt(start.slotIndex)
+            }
         }
 
         return newSlots
@@ -236,6 +245,8 @@ data class SlotsEditorState(
             val newSlot = (slots[start.slotIndex] as Either.Right).value.makeCopy(label = value)
             newSlots.add(start.slotIndex, Either.Right(newSlot))
             return newSlots
+        } else if (newSlots.isEmpty()) {
+            return listOf(Either.Left(value))
         }
 
         return insert(newSlots, selection.start, value)
@@ -300,8 +311,15 @@ data class SlotsEditorState(
             return null
         }
 
-        val cursor = slots.cursorAt(cursor)
+        val position = selection.start
+        var cursor = slots.cursorAt(position)
         if (selectedSlotIndex == null) {
+            if (position == text.length) {
+                cursor = Cursor(cursor.slotIndex + 1, 0)
+            } else if (cursor.subIndex != 0) {
+                return null
+            }
+
             // Try to select from unselected
             val precedingEither = slots.getOrNull(cursor.slotIndex - 1)
             if (precedingEither is Either.Right) {
@@ -360,8 +378,11 @@ data class SlotsEditorState(
             replace(selection, newText)
         }
 
-        val newSelectedSlotIndex =
+        val newSelectedSlotIndex = if (textChanged || selection != newTextFieldValue.selection) {
             findSelectedSlot(newTextFieldValue.selection, selectedSlotIndex, newSlots)
+        } else {
+            selectedSlotIndex
+        }
 
         return SlotsEditorState(
             newSlots,
