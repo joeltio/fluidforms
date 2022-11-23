@@ -19,10 +19,12 @@ fun TemplateViewLayout(
     body: @Composable () -> Unit = {},
 ) {
     Column {
-        Column(modifier = Modifier
-            .padding(16.dp)
-            .weight(1f)
-            .verticalScroll(rememberScrollState())) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+        ) {
             ProvideTextStyle(value = Typography.headlineLarge) {
                 name()
             }
@@ -32,7 +34,13 @@ fun TemplateViewLayout(
             }
         }
 
-        bottomBar()
+        Box(
+            modifier = Modifier
+                .imePadding()
+                .fillMaxWidth()
+        ) {
+            bottomBar()
+        }
     }
 }
 
