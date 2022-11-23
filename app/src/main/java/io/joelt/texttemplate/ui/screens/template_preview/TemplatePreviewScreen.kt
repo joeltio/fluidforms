@@ -41,6 +41,7 @@ class TemplatePreviewScreen : Screen {
         navArgument("templateId") { type = NavType.LongType }
     )
 
+    @Composable
     override fun scaffold(nav: NavHostController) = ScaffoldOptions(
         topBar = {
             TemplatePreviewTopNavBar(

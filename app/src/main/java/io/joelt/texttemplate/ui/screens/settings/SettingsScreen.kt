@@ -11,6 +11,7 @@ class SettingsScreen : Screen {
     override val route: String = "settings"
     override val arguments: List<NamedNavArgument> = listOf()
 
+    @Composable
     override fun scaffold(nav: NavHostController) = ScaffoldOptions(
         topBar = { SettingsTopNavBar(nav) }
     )

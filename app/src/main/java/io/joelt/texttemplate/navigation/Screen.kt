@@ -8,6 +8,7 @@ import androidx.navigation.NavHostController
 interface Screen {
     val route: String
     val arguments: List<NamedNavArgument>
+    @Composable
     fun scaffold(nav: NavHostController): ScaffoldOptions
 
     @Composable

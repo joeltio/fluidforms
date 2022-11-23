@@ -2,9 +2,10 @@ package io.joelt.texttemplate.ui.screens.templates
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NamedNavArgument
@@ -24,9 +25,11 @@ import io.joelt.texttemplate.ui.screens.template_preview.templatePreviewRoute
 import io.joelt.texttemplate.ui.theme.TextTemplateTheme
 import org.koin.androidx.compose.koinViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 class TemplatesScreen : Screen {
     override val route: String = "templates"
     override val arguments: List<NamedNavArgument> = emptyList()
+    @Composable
     override fun scaffold(nav: NavHostController) = ScaffoldOptions(
         topBar = { TopNavBar(nav) },
         bottomBar = { BottomNavBar(nav) },

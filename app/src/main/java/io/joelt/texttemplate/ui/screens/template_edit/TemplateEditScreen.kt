@@ -35,6 +35,7 @@ class TemplateEditScreen : Screen {
         navArgument("templateId") { type = NavType.LongType }
     )
 
+    @Composable
     override fun scaffold(nav: NavHostController) = ScaffoldOptions(
         topBar = { TemplateEditTopNavBar(nav, onSave = { controller.onSave() }) }
     )

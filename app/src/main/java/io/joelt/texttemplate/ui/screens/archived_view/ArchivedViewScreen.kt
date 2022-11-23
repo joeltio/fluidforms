@@ -23,6 +23,7 @@ class ArchivedViewScreen : Screen {
         navArgument("archivedId") { type = NavType.LongType },
     )
 
+    @Composable
     override fun scaffold(nav: NavHostController) = ScaffoldOptions(
         topBar = { ArchivedViewTopNavBar(nav) }
     )

@@ -26,6 +26,7 @@ class DraftEditScreen : Screen {
         navArgument("templateId") { type = NavType.LongType }
     )
 
+    @Composable
     override fun scaffold(nav: NavHostController) = ScaffoldOptions(
         topBar = { DraftEditTopNavBar(nav) },
         bottomBar = { DraftEditBottomAppBar(nav) }
