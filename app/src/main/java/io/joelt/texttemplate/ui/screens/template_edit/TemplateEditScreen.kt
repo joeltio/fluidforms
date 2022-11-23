@@ -51,32 +51,33 @@ class TemplateEditScreen : Screen {
 }
 
 data class TemplateEditState(
-    val template: Template?,
-    val editorState: SlotsEditorState? = template?.let {
-        SlotsEditorState(template.slots)
-    }
+    val template: Template,
+    val editorState: SlotsEditorState
 ) {
+    constructor(
+        template: Template
+    ): this(template, SlotsEditorState(template.slots))
+
     fun withTemplateName(name: String): TemplateEditState =
-        copy(template = template?.copy(name = name))
+        copy(template = template.copy(name = name))
 
     fun withEditorState(editorState: SlotsEditorState) =
         copy(
-            template = template?.copy(slots = editorState.slots),
+            template = template.copy(slots = editorState.slots),
             editorState = editorState
         )
 }
 
 @Composable
 private fun TemplateEditScreenContent(
-    state: TemplateEditState,
+    state: TemplateEditState?,
     onStateChange: (TemplateEditState) -> Unit,
 ) {
-    if (state.template == null) {
+    if (state == null) {
         Spacer(Modifier.height(32.dp))
         CircularProgressIndicator()
         return
     }
-    state.editorState!!
 
     EditorLayout(
         name = state.template.name,
@@ -96,7 +97,10 @@ private fun TemplateEditScreen(
     viewModel: TemplateEditViewModel = koinViewModel()
 ) {
     LaunchedEffect(Unit) {
-        viewModel.loadTemplate(templateId)
+        // The LaunchedEffect gets run again when orientation changes
+        if (viewModel.screenState == null) {
+            viewModel.loadTemplate(templateId)
+        }
         screenController.onSave = {
             viewModel.saveTemplate {
                 nav.navigate("templates")
