@@ -9,5 +9,6 @@
     <string name="save_template">Save template</string>
 
     <string name="plain_text_slot_placeholder">Text</string>
+    <string name="plain_text_slot_type_name">TEXT</string>
     <string name="template_name">Name</string>
 </resources>
