@@ -13,9 +13,7 @@ import io.joelt.texttemplate.AppScaffold
 import io.joelt.texttemplate.models.Template
 import io.joelt.texttemplate.models.genTemplates
 import io.joelt.texttemplate.navigation.*
-import io.joelt.texttemplate.ui.components.EditorLayout
-import io.joelt.texttemplate.ui.components.SlotsEditor
-import io.joelt.texttemplate.ui.components.SlotsEditorState
+import io.joelt.texttemplate.ui.components.*
 import io.joelt.texttemplate.ui.theme.TextTemplateTheme
 import org.koin.androidx.compose.koinViewModel
 
@@ -52,18 +50,18 @@ class TemplateEditScreen : Screen {
 
 data class TemplateEditState(
     val template: Template,
-    val editorState: SlotsEditorState
+    val editorState: TemplateEditorState
 ) {
     constructor(
         template: Template
-    ): this(template, SlotsEditorState(template.slots))
+    ) : this(template, TemplateEditorState(template))
 
-    fun withTemplateName(name: String): TemplateEditState =
-        copy(template = template.copy(name = name))
-
-    fun withEditorState(editorState: SlotsEditorState) =
+    fun withEditorState(editorState: TemplateEditorState) =
         copy(
-            template = template.copy(slots = editorState.slots),
+            template = template.copy(
+                name = editorState.templateName,
+                slots = editorState.slotsState.slots
+            ),
             editorState = editorState
         )
 }
@@ -79,14 +77,9 @@ private fun TemplateEditScreenContent(
         return
     }
 
-    EditorLayout(
-        name = state.template.name,
-        onNameChange = { onStateChange(state.withTemplateName(it)) }
-    ) {
-        SlotsEditor(state.editorState) {
-            onStateChange(state.withEditorState(it))
-        }
-    }
+    TemplateEditor(
+        state = state.editorState,
+        onStateChange = { onStateChange(state.withEditorState(it)) })
 }
 
 @Composable

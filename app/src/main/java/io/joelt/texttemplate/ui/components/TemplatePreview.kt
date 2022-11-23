@@ -8,7 +8,7 @@ import io.joelt.texttemplate.models.genTemplates
 
 @Composable
 fun TemplatePreview(template: Template) {
-    TemplateViewLayout(name = {
+    TemplateViewLayout(contentScrollable = true, name = {
         Text(text = template.name)
     }) {
         SlotsPreview(slots = template.slots)

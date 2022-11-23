@@ -14,17 +14,21 @@ import io.joelt.texttemplate.ui.theme.Typography
 
 @Composable
 fun TemplateViewLayout(
-    name: @Composable () -> Unit = {},
+    contentScrollable: Boolean = false,
+    name: @Composable ColumnScope.() -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
-    body: @Composable () -> Unit = {},
+    body: @Composable ColumnScope.() -> Unit = {},
 ) {
     Column {
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
-        ) {
+        var modifier = Modifier
+            .padding(16.dp)
+            .weight(1f)
+
+        if (contentScrollable) {
+            modifier = modifier.verticalScroll(rememberScrollState())
+        }
+
+        Column(modifier = modifier) {
             ProvideTextStyle(value = Typography.headlineLarge) {
                 name()
             }
@@ -57,6 +61,6 @@ private fun TemplateViewLayoutPreview() {
         })
     }) {
         val text = "hello world! This is the start." + "\n".repeat(30) + "This is the end."
-        Text(text = text)
+        Text(modifier = Modifier.weight(1f), text = text)
     }
 }
