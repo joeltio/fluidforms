@@ -1,9 +1,8 @@
 package io.joelt.texttemplate.ui.components
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
@@ -20,7 +19,10 @@ fun TemplateViewLayout(
     body: @Composable () -> Unit = {},
 ) {
     Column {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier
+            .padding(16.dp)
+            .weight(1f)
+            .verticalScroll(rememberScrollState())) {
             ProvideTextStyle(value = Typography.headlineLarge) {
                 name()
             }
@@ -29,11 +31,12 @@ fun TemplateViewLayout(
                 body()
             }
         }
+
         bottomBar()
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun TemplateViewLayoutPreview() {
     TemplateViewLayout(name = {
@@ -45,6 +48,7 @@ private fun TemplateViewLayoutPreview() {
             }
         })
     }) {
-        Text(text = "hello world! This is the body.")
+        val text = "hello world! This is the start." + "\n".repeat(30) + "This is the end."
+        Text(text = text)
     }
 }
