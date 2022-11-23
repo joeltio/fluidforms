@@ -1,24 +1,18 @@
 package io.joelt.texttemplate.ui.screens
 
 import androidx.compose.material.IconButton
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import io.joelt.texttemplate.R
 import io.joelt.texttemplate.ui.theme.Typography
-import io.joelt.texttemplate.ui.theme.onTertiarySecondary
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopNavBar(nav: NavHostController) {
-    val bgColor = MaterialTheme.colorScheme.tertiaryContainer
-    val contentColor = MaterialTheme.colorScheme.onTertiarySecondary
-
     val settingsIconBtn = @Composable {
         IconButton(onClick = {
             nav.navigate("settings")
@@ -26,7 +20,6 @@ fun TopNavBar(nav: NavHostController) {
             Icon(
                 imageVector = Icons.Default.Settings,
                 contentDescription = stringResource(id = R.string.navbar_settings),
-                tint = contentColor
             )
         }
     }
@@ -34,12 +27,9 @@ fun TopNavBar(nav: NavHostController) {
         title = {
             Text(
                 stringResource(id = R.string.app_name),
-                color = contentColor,
                 style = Typography.titleLarge,
             )
         },
         navigationIcon = settingsIconBtn,
-        backgroundColor = bgColor,
-        contentColor = contentColor
     )
 }

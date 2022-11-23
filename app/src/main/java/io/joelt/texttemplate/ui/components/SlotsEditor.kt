@@ -27,6 +27,7 @@ fun SlotsEditor(
     onStateChange: (SlotsEditorState) -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxHeight()) {
+        val annotatedString = state.annotatedString
         PlaceholderTextField(
             modifier = modifier
                 .padding(horizontal = 16.dp)
@@ -35,7 +36,7 @@ fun SlotsEditor(
             textStyle = Typography.bodyLarge,
             visualTransformation = {
                 // Apply the styles from the annotatedString through visualTransformation instead
-                TransformedText(state.annotatedString, OffsetMapping.Identity)
+                TransformedText(annotatedString, OffsetMapping.Identity)
             },
             value = state.textFieldValue,
             onValueChange = {

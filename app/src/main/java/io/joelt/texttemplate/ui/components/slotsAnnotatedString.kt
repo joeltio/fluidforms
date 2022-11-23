@@ -1,9 +1,11 @@
 package io.joelt.texttemplate.ui.components
 
-import androidx.compose.ui.graphics.Color
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import io.joelt.texttemplate.models.Either
 import io.joelt.texttemplate.models.slots.Slot
@@ -48,16 +50,23 @@ inline fun List<Either<String, Slot>>.annotateSlots(block: AnnotatedString.Build
         0
     }
 
+@Composable
 fun <R : Any> AnnotatedString.Builder.withSlotStyle(
     selected: Boolean,
     block: AnnotatedString.Builder.() -> R
 ): R {
-    val bgColor = if (selected) {
-        Color.Yellow
+    val style = if (selected) {
+        SpanStyle(
+            background = MaterialTheme.colorScheme.secondaryContainer,
+            fontWeight = FontWeight.Medium
+        )
     } else {
-        Color(0x22000000)
+        SpanStyle(
+            background = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.12f),
+        )
     }
-    return withStyle(SpanStyle(background = bgColor)) {
+
+    return withStyle(style) {
         block()
     }
 }

@@ -1,5 +1,6 @@
 package io.joelt.texttemplate.ui.components
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
@@ -84,6 +85,7 @@ data class SlotsEditorState(
 
     private var annotatedStringCache: AnnotatedString? = null
     val annotatedString: AnnotatedString
+        @Composable
         get() {
             annotatedStringCache?.let { return it }
 
@@ -92,7 +94,12 @@ data class SlotsEditorState(
                 withSlotStyle(index == selectedSlotIndex) { append(text) }
             }
         }
-    val text by lazy { annotatedString.text }
+    val text by lazy {
+        annotatedStringCache?.let { return@lazy it.text }
+        slots.annotateSlots {
+            append(it.label)
+        }.text
+    }
     val textFieldValue by lazy { TextFieldValue(text, selection, composition) }
 
     constructor(
