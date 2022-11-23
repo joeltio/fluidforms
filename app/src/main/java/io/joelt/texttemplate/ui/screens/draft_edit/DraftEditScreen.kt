@@ -17,9 +17,7 @@ fun NavHostController.navigateToDraftEdit(draftId: Long) {
     this.navigate("drafts/$draftId/edit/0")
 }
 
-fun NavHostController.navigateToCreateDraft(fromTemplateId: Long) {
-    this.navigate("drafts/0/edit/$fromTemplateId")
-}
+fun NavHostController.createDraftRoute(fromTemplateId: Long) = "drafts/0/edit/$fromTemplateId"
 
 class DraftEditScreen : Screen {
     override val route: String = "drafts/{draftId}/edit/{templateId}"

@@ -19,8 +19,8 @@ import io.joelt.texttemplate.navigation.*
 import io.joelt.texttemplate.ui.components.TemplateList
 import io.joelt.texttemplate.ui.screens.BottomNavBar
 import io.joelt.texttemplate.ui.screens.TopNavBar
-import io.joelt.texttemplate.ui.screens.draft_edit.navigateToCreateDraft
 import io.joelt.texttemplate.ui.screens.template_edit.navigateToCreateTemplate
+import io.joelt.texttemplate.ui.screens.template_preview.navigateToTemplatePreview
 import io.joelt.texttemplate.ui.theme.TextTemplateTheme
 import org.koin.androidx.compose.koinViewModel
 
@@ -60,7 +60,7 @@ private fun TemplatesScreen(
     viewModel: TemplatesViewModel = koinViewModel()
 ) {
     TemplatesScreenContent(templates = viewModel.templates) {
-        nav.navigateToCreateDraft(it.id)
+        nav.navigateToTemplatePreview(it.id)
     }
 }
 

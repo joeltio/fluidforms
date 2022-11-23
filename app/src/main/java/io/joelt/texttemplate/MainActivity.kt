@@ -17,6 +17,7 @@ import io.joelt.texttemplate.ui.screens.draft_edit.DraftEditScreen
 import io.joelt.texttemplate.ui.screens.drafts.DraftsScreen
 import io.joelt.texttemplate.ui.screens.settings.SettingsScreen
 import io.joelt.texttemplate.ui.screens.template_edit.TemplateEditScreen
+import io.joelt.texttemplate.ui.screens.template_preview.TemplatePreviewScreen
 import io.joelt.texttemplate.ui.screens.templates.TemplatesScreen
 import io.joelt.texttemplate.ui.theme.TextTemplateTheme
 
@@ -34,10 +35,11 @@ class MainActivity : ComponentActivity() {
                 val screenStartIndex = 0
                 val screens = listOf(
                     TemplatesScreen(),
+                    TemplatePreviewScreen(),
+                    TemplateEditScreen(),
                     DraftsScreen(),
                     ArchivedScreen(),
                     SettingsScreen(),
-                    TemplateEditScreen(),
                     DraftEditScreen(),
                     ArchivedViewScreen(),
                 )
