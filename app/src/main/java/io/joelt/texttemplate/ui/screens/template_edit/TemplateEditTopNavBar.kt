@@ -37,7 +37,8 @@ fun TemplateEditTopNavBar(nav: NavHostController, onSave: () -> Unit) {
             }) {
                 Icon(
                     imageVector = Icons.Default.Done,
-                    contentDescription = stringResource(R.string.save_template)
+                    contentDescription = stringResource(R.string.save_template),
+                    tint = contentColor
                 )
             }
         },
