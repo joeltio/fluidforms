@@ -3,6 +3,7 @@ package io.joelt.texttemplate.ui.theme
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -37,7 +38,35 @@ private val LightColorPalette = lightColorScheme(
     outline = Color(0xFF77767B),
 )
 
-private val DarkColorPalette = LightColorPalette
+private val DarkColorPalette = darkColorScheme(
+    primary = Color(0xFFBEC4F2),
+    onPrimary = Color(0xFF282E53),
+    primaryContainer = Color(0xFF3E446B),
+    onPrimaryContainer = Color(0xFFDEE0FF),
+    inversePrimary = Color(0xFF565C84),
+    secondary = Color(0xFFC6C5D2),
+    onSecondary = Color(0xFF2F303A),
+    secondaryContainer = Color(0xFF454650),
+    onSecondaryContainer = Color(0xFFE2E1EE),
+    tertiary = Color(0xFFD9BFCF),
+    onTertiary = Color(0xFF3C2B37),
+    tertiaryContainer = Color(0xFF54414E),
+    onTertiaryContainer = Color(0xFFF6DBEB),
+    error = Color(0xFFFFB4AB),
+    onError = Color(0xFF690005),
+    errorContainer = Color(0xFF93000A),
+    onErrorContainer = Color(0xFFFFB4AB),
+    background = Color(0xFF1C1B1D),
+    onBackground = Color(0xFFE5E1E4),
+    surface = Color(0xFF1C1B1D),
+    onSurface = Color(0xFFE5E1E4),
+    surfaceTint = Color(0xFFBEC4F2),
+    inverseSurface = Color(0xFFE5E1E4),
+    inverseOnSurface = Color(0xFF313032),
+    surfaceVariant = Color(0xFF47464B),
+    onSurfaceVariant = Color(0xFFC8C5CB),
+    outline = Color(0xFF919095),
+)
 
 @Composable
 fun TextTemplateTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
