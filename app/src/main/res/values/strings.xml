@@ -9,6 +9,7 @@
     <string name="save_template">Save template</string>
     <string name="save_draft">Save Draft</string>
     <string name="delete_template">Delete Template</string>
+    <string name="delete_draft">Delete Draft</string>
     <string name="menu_edit_template">Edit Template</string>
     <string name="menu_show_menu">Show Menu</string>
     <string name="fill_up_template">Fill Up Template</string>

@@ -38,4 +38,13 @@ class DraftEditViewModel(
             }
         }
     }
+
+    fun deleteDraft(nav: NavHostController) {
+        viewModelScope.launch {
+            draft?.let {
+                repository.deleteDraft(it.id)
+                nav.navigateBackToDrafts()
+            }
+        }
+    }
 }

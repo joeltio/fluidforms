@@ -31,6 +31,7 @@ fun Route.createDraft(fromTemplateId: Long) = "drafts/0/edit/$fromTemplateId"
 private class DraftEditController {
     var snackbarHostState: SnackbarHostState? = null
     var onSave = {}
+    var onDelete = {}
     var onCopyToClipboard = {}
 }
 
@@ -54,6 +55,7 @@ class DraftEditScreen : Screen {
                 DraftEditTopNavBar(
                     nav,
                     onSave = { controller.onSave() },
+                    onDelete = { controller.onDelete() },
                     onCopyToClipboard = { controller.onCopyToClipboard() })
             },
         )
@@ -101,6 +103,10 @@ private fun DraftEditScreen(
 
         screenController.onSave = {
             viewModel.saveDraft(nav)
+        }
+
+        screenController.onDelete = {
+            viewModel.deleteDraft(nav)
         }
 
         screenController.onCopyToClipboard = {
