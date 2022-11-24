@@ -7,10 +7,15 @@
     <string name="navbar_back">Back</string>
     <string name="add_template">Create new template</string>
     <string name="save_template">Save template</string>
+    <string name="save_draft">Save Draft</string>
     <string name="delete_template">Delete Template</string>
     <string name="menu_edit_template">Edit Template</string>
     <string name="menu_show_menu">Show Menu</string>
     <string name="fill_up_template">Fill Up Template</string>
+    <string name="previous_slot">Previous Slot</string>
+    <string name="next_slot">Next Slot</string>
+    <string name="edit_slot">Edit Slot</string>
+    <string name="text_copied_to_clipboard">Text copied to clipboard!</string>
 
     <string name="plain_text_slot_placeholder">Text</string>
     <string name="plain_text_slot_type_name">TEXT</string>
