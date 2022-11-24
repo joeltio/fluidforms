@@ -11,7 +11,7 @@ interface TemplateDao {
     @Insert
     fun insert(template: Template): Long
 
-    @Query("SELECT * FROM template")
+    @Query("SELECT * FROM template ORDER BY template.created_on DESC")
     fun getAll(): List<Template>
 
     @Query("SELECT * FROM template WHERE id = :id")

@@ -11,10 +11,10 @@ interface DraftDao {
     @Insert
     fun insert(draft: Draft): Long
 
-    @Query("SELECT * FROM draft WHERE archived = :archived")
+    @Query("SELECT * FROM draft WHERE archived = :archived ORDER BY draft.created_on DESC")
     fun getDrafts(archived: Boolean): List<Draft>
 
-    @Query("SELECT * FROM draft")
+    @Query("SELECT * FROM draft ORDER BY draft.created_on DESC")
     fun getDrafts(): List<Draft>
 
     @Query("SELECT * FROM draft WHERE id = :id")
