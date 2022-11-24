@@ -5,6 +5,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavHostController
 import io.joelt.texttemplate.database.TemplatesRepository
 import io.joelt.texttemplate.models.Draft
 import kotlinx.coroutines.launch
@@ -13,7 +14,6 @@ class DraftEditViewModel(
     private val repository: TemplatesRepository
 ) : ViewModel() {
     var draft: Draft? by mutableStateOf(null)
-        private set
 
     fun loadDraft(draftId: Long) {
         viewModelScope.launch {
@@ -27,6 +27,15 @@ class DraftEditViewModel(
             val newDraft = Draft(template)
             val draftId = repository.createDraft(newDraft)
             draft = newDraft.copy(id = draftId)
+        }
+    }
+
+    fun saveDraft(nav: NavHostController) {
+        viewModelScope.launch {
+            draft?.let {
+                repository.updateDraft(it)
+                nav.navigateBackToDrafts()
+            }
         }
     }
 }
