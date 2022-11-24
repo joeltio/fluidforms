@@ -29,25 +29,23 @@ fun SystemBarScaffold(
     contentColor: Color = contentColorFor(containerColor),
     content: @Composable () -> Unit
 ) {
-    Box(modifier = Modifier.systemBarsPadding()) {
-        Scaffold(
-            modifier = modifier,
-            topBar = topBar,
-            bottomBar = bottomBar,
-            snackbarHost = snackbarHost,
-            floatingActionButton = floatingActionButton,
-            floatingActionButtonPosition = floatingActionButtonPosition,
-            containerColor = containerColor,
-            contentColor = contentColor,
-            contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        ) { innerPadding ->
-            Box(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .consumedWindowInsets(innerPadding)
-            ) {
-                content()
-            }
+    Scaffold(
+        modifier = modifier,
+        topBar = topBar,
+        bottomBar = bottomBar,
+        snackbarHost = snackbarHost,
+        floatingActionButton = floatingActionButton,
+        floatingActionButtonPosition = floatingActionButtonPosition,
+        containerColor = containerColor,
+        contentColor = contentColor,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .padding(innerPadding)
+                .consumedWindowInsets(innerPadding)
+        ) {
+            content()
         }
     }
 }

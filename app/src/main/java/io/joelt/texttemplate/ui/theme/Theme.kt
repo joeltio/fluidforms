@@ -6,7 +6,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Color
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 private val LightColorPalette = lightColorScheme(
     primary = Color(0xFF565C84),
@@ -70,6 +72,14 @@ private val DarkColorPalette = darkColorScheme(
 
 @Composable
 fun TextTemplateTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
+    val systemUiController = rememberSystemUiController()
+    LaunchedEffect(Unit) {
+        systemUiController.setSystemBarsColor(
+            color = Color.Transparent,
+            darkIcons = !darkTheme
+        )
+    }
+
     val colors = if (darkTheme) {
         DarkColorPalette
     } else {
