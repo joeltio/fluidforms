@@ -10,9 +10,11 @@
     <string name="save_draft">Save Draft</string>
     <string name="delete_template">Delete Template</string>
     <string name="delete_draft">Delete Draft</string>
+    <string name="delete_archived">Delete archived draft permanently</string>
     <string name="menu_edit_template">Edit Template</string>
     <string name="menu_show_menu">Show Menu</string>
     <string name="fill_up_template">Fill Up Template</string>
+    <string name="fill_up_archived">Unarchive And Edit</string>
     <string name="previous_slot">Previous Slot</string>
     <string name="next_slot">Next Slot</string>
     <string name="edit_slot">Edit Slot</string>

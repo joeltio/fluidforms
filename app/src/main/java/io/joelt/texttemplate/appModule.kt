@@ -5,7 +5,7 @@ import io.joelt.texttemplate.database.TemplatesRepository
 import io.joelt.texttemplate.database.room.AppDatabase
 import io.joelt.texttemplate.database.room.RoomRepository
 import io.joelt.texttemplate.ui.screens.archived.ArchivedViewModel
-import io.joelt.texttemplate.ui.screens.archived_view.ArchivedViewViewModel
+import io.joelt.texttemplate.ui.screens.archived_preview.ArchivedPreviewViewModel
 import io.joelt.texttemplate.ui.screens.draft_edit.DraftEditViewModel
 import io.joelt.texttemplate.ui.screens.drafts.DraftsViewModel
 import io.joelt.texttemplate.ui.screens.template_edit.TemplateEditViewModel
@@ -30,5 +30,5 @@ val appModule = module {
     viewModel { DraftsViewModel(get()) }
     viewModel { ArchivedViewModel(get()) }
     viewModel { DraftEditViewModel(get()) }
-    viewModel { ArchivedViewViewModel(get()) }
+    viewModel { ArchivedPreviewViewModel(get()) }
 }

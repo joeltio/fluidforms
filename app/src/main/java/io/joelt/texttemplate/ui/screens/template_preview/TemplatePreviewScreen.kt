@@ -65,7 +65,7 @@ class TemplatePreviewScreen : Screen {
     @Composable
     override fun Composable(backStackEntry: NavBackStackEntry, nav: NavHostController) {
         val templateId = backStackEntry.arguments!!.getLong("templateId")
-        TemplateEditScreen(nav, controller, templateId)
+        TemplatePreviewScreen(nav, controller, templateId)
     }
 }
 
@@ -83,7 +83,7 @@ private fun TemplatePreviewScreenContent(
 }
 
 @Composable
-private fun TemplateEditScreen(
+private fun TemplatePreviewScreen(
     nav: NavHostController,
     screenController: TemplatePreviewController,
     templateId: Long,

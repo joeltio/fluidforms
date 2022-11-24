@@ -12,7 +12,7 @@ import io.joelt.texttemplate.navigation.ScaffoldOptions
 import io.joelt.texttemplate.navigation.currentRouteAsState
 import io.joelt.texttemplate.ui.components.SystemBarScaffold
 import io.joelt.texttemplate.ui.screens.archived.ArchivedScreen
-import io.joelt.texttemplate.ui.screens.archived_view.ArchivedViewScreen
+import io.joelt.texttemplate.ui.screens.archived_preview.ArchivedPreviewScreen
 import io.joelt.texttemplate.ui.screens.draft_edit.DraftEditScreen
 import io.joelt.texttemplate.ui.screens.drafts.DraftsScreen
 import io.joelt.texttemplate.ui.screens.settings.SettingsScreen
@@ -41,7 +41,7 @@ class MainActivity : ComponentActivity() {
                     ArchivedScreen(),
                     SettingsScreen(),
                     DraftEditScreen(),
-                    ArchivedViewScreen(),
+                    ArchivedPreviewScreen(),
                 )
 
 

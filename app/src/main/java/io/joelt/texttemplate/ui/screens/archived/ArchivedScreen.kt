@@ -13,7 +13,7 @@ import io.joelt.texttemplate.navigation.*
 import io.joelt.texttemplate.ui.components.DraftList
 import io.joelt.texttemplate.ui.screens.TopNavBar
 import io.joelt.texttemplate.ui.screens.BottomNavBar
-import io.joelt.texttemplate.ui.screens.archived_view.archivedEdit
+import io.joelt.texttemplate.ui.screens.archived_preview.archivedPreview
 import org.koin.androidx.compose.koinViewModel
 
 val Route.archived: String
@@ -50,6 +50,6 @@ private fun ArchivedScreen(
     viewModel: ArchivedViewModel = koinViewModel()
 ) {
     ArchivedScreenContent(archived = viewModel.archived) {
-        nav.navigate(Route.archivedEdit(it.id))
+        nav.navigate(Route.archivedPreview(it.id))
     }
 }
