@@ -63,6 +63,9 @@ dependencies {
     annotationProcessor "androidx.room:room-compiler:$room_version"
     ksp "androidx.room:room-compiler:$room_version"
 
+    // Preferences DataStore
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
+
     // Koin
     implementation "io.insert-koin:koin-core:3.2.2"
     implementation "io.insert-koin:koin-android:3.3.0"

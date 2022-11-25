@@ -1,5 +1,6 @@
 package io.joelt.texttemplate.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -29,7 +30,9 @@ fun SystemBarScaffold(
     contentColor: Color = contentColorFor(containerColor),
     content: @Composable () -> Unit
 ) {
-    Box(modifier = Modifier.systemBarsPadding()) {
+    Box(modifier = Modifier
+        .background(MaterialTheme.colorScheme.background)
+        .systemBarsPadding()) {
         Scaffold(
             modifier = modifier,
             topBar = topBar,

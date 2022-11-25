@@ -8,6 +8,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import io.joelt.texttemplate.database.LocalPreferences
+import io.joelt.texttemplate.database.ThemeColor
 
 private val LightColorPalette = lightColorScheme(
     primary = Color(0xFF565C84),
@@ -70,9 +72,15 @@ private val DarkColorPalette = darkColorScheme(
 )
 
 @Composable
-fun TextTemplateTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
+fun TextTemplateTheme(content: @Composable () -> Unit) {
+    val darkTheme = when (LocalPreferences.current.themeColor) {
+        ThemeColor.SYSTEM -> isSystemInDarkTheme()
+        ThemeColor.DARK -> true
+        ThemeColor.LIGHT -> false
+    }
+
     val systemUiController = rememberSystemUiController()
-    LaunchedEffect(Unit) {
+    LaunchedEffect(darkTheme, systemUiController) {
         systemUiController.setSystemBarsColor(
             color = Color.Transparent,
             darkIcons = !darkTheme
