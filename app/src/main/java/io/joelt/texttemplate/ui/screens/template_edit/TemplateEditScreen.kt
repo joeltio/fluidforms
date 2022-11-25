@@ -3,15 +3,18 @@ package io.joelt.texttemplate.ui.screens.template_edit
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.*
 import androidx.navigation.compose.rememberNavController
 import io.joelt.texttemplate.AppScaffold
+import io.joelt.texttemplate.R
 import io.joelt.texttemplate.models.Template
 import io.joelt.texttemplate.models.genTemplates
 import io.joelt.texttemplate.navigation.*
@@ -26,6 +29,7 @@ val Route.createTemplate: String
 
 class TemplateEditController {
     var onSave = {}
+    var onBack = {}
 }
 
 class TemplateEditScreen : Screen {
@@ -38,7 +42,12 @@ class TemplateEditScreen : Screen {
 
     @Composable
     override fun scaffold(nav: NavHostController) = ScaffoldOptions(
-        topBar = { TemplateEditTopNavBar(nav, onSave = { controller.onSave() }) }
+        topBar = {
+            TemplateEditTopNavBar(
+                nav,
+                onSave = { controller.onSave() },
+                onBack = { controller.onBack() })
+        }
     )
 
     @Composable
@@ -89,14 +98,43 @@ private fun TemplateEditScreen(
     templateId: Long,
     viewModel: TemplateEditViewModel = koinViewModel()
 ) {
+    val defaultName = stringResource(R.string.new_template_name)
+    var showConfirmDiscardDialog by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         // The LaunchedEffect gets run again when orientation changes
         if (viewModel.screenState == null) {
-            viewModel.loadTemplate(templateId)
+            viewModel.loadTemplate(templateId, defaultName)
         }
+
         screenController.onSave = {
             viewModel.saveTemplate(nav)
         }
+
+        screenController.onBack = {
+            if (viewModel.templateChanged()) {
+                showConfirmDiscardDialog = true
+            } else {
+                nav.popBackStack()
+            }
+        }
+    }
+
+    if (showConfirmDiscardDialog) {
+        AlertDialog(
+            title = { Text(text = stringResource(R.string.template_confirm_discard_title)) },
+            text = { Text(text = stringResource(R.string.template_confirm_discard)) },
+            onDismissRequest = { showConfirmDiscardDialog = false },
+            confirmButton = {
+                TextButton(onClick = { nav.popBackStack() }) {
+                    Text(text = stringResource(R.string.dialog_discard))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showConfirmDiscardDialog = false }) {
+                    Text(text = stringResource(R.string.dialog_cancel))
+                }
+            }
+        )
     }
 
     TemplateEditScreenContent(viewModel.screenState) {

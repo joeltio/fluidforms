@@ -14,11 +14,9 @@ import io.joelt.texttemplate.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TemplateEditTopNavBar(nav: NavHostController, onSave: () -> Unit) {
+fun TemplateEditTopNavBar(nav: NavHostController, onSave: () -> Unit, onBack: () -> Unit) {
     val backIconBtn = @Composable {
-        IconButton(onClick = {
-            nav.popBackStack()
-        }) {
+        IconButton(onClick = onBack) {
             Icon(
                 imageVector = Icons.Default.Close,
                 contentDescription = stringResource(id = R.string.navbar_back),

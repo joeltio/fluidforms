@@ -5,9 +5,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.Text
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -85,14 +83,33 @@ private fun ArchivedPreviewScreen(
     archivedId: Long,
     viewModel: ArchivedPreviewViewModel = koinViewModel()
 ) {
+    var showConfirmDeleteDialog by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         viewModel.loadArchived(archivedId)
         screenController.onEditArchived = {
             viewModel.unarchive(nav)
         }
         screenController.onDeleteArchived = {
-            viewModel.deleteArchived(nav)
+            showConfirmDeleteDialog = true
         }
+    }
+
+    if (showConfirmDeleteDialog) {
+        AlertDialog(
+            title = { Text(text = stringResource(R.string.archived_confirm_delete_title)) },
+            text = { Text(text = stringResource(R.string.archived_confirm_delete)) },
+            onDismissRequest = { showConfirmDeleteDialog = false },
+            confirmButton = {
+                TextButton(onClick = { viewModel.deleteArchived(nav) }) {
+                    Text(text = stringResource(R.string.dialog_delete))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showConfirmDeleteDialog = false }) {
+                    Text(text = stringResource(R.string.dialog_cancel))
+                }
+            }
+        )
     }
 
     ArchivedPreviewScreenContent(viewModel.archived)
