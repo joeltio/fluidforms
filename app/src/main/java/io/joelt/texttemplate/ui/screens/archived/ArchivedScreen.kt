@@ -3,6 +3,7 @@ package io.joelt.texttemplate.ui.screens.archived
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.navigation.NamedNavArgument
@@ -49,6 +50,10 @@ private fun ArchivedScreen(
     nav: NavHostController,
     viewModel: ArchivedViewModel = koinViewModel()
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.loadArchived()
+    }
+
     ArchivedScreenContent(archived = viewModel.archived) {
         nav.navigate(Route.archivedPreview(it.id))
     }

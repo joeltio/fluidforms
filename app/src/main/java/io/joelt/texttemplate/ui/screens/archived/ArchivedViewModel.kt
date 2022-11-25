@@ -8,6 +8,8 @@ import androidx.lifecycle.viewModelScope
 import io.joelt.texttemplate.models.Draft
 import io.joelt.texttemplate.database.TemplatesRepository
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.Period
 
 class ArchivedViewModel(
     private val repository: TemplatesRepository
@@ -15,13 +17,22 @@ class ArchivedViewModel(
     var archived: List<Draft>? by mutableStateOf(null)
         private set
 
-    init {
-        loadArchived()
-    }
-
-    private fun loadArchived() {
+    fun loadArchived() {
         viewModelScope.launch {
-            archived = repository.getDrafts(true)
+            val newArchived = mutableListOf<Draft>()
+            val today = LocalDate.now()
+            repository.getDrafts().forEach {
+                val period = Period.between(it.lastEditedOn.toLocalDate(), today)
+                if (period.toTotalMonths() > 0) {
+                    // Archive
+                    repository.archiveDraft(it.id)
+                    newArchived.add(it)
+                } else if (it.archived) {
+                    newArchived.add(it)
+                }
+            }
+
+            archived = newArchived
         }
     }
 }

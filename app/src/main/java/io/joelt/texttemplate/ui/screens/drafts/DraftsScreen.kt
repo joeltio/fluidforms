@@ -3,6 +3,7 @@ package io.joelt.texttemplate.ui.screens.drafts
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.navigation.NamedNavArgument
@@ -53,7 +54,11 @@ private fun DraftsScreen(
     nav: NavHostController,
     viewModel: DraftsViewModel = koinViewModel()
 ) {
-    DraftsScreenContent(drafts = viewModel.drafts) {
+    LaunchedEffect(Unit) {
+        viewModel.loadDrafts()
+    }
+
+    DraftsScreenContent(viewModel.drafts) {
         nav.navigate(Route.draftEdit(it.id))
     }
 }

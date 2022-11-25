@@ -12,6 +12,7 @@ import io.joelt.texttemplate.navigation.Route
 import io.joelt.texttemplate.navigation.navigateClearStack
 import io.joelt.texttemplate.ui.screens.draft_edit.draftEdit
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 
 class ArchivedPreviewViewModel(
     private val repository: TemplatesRepository
@@ -28,7 +29,8 @@ class ArchivedPreviewViewModel(
     fun unarchive(nav: NavHostController) {
         viewModelScope.launch {
             archived?.let {
-                repository.unarchiveDraft(it.id)
+                // Unarchive and update the last edited time so it does not get re-archived
+                repository.updateDraft(it.copy(lastEditedOn = LocalDateTime.now(), archived = false))
                 nav.navigateClearStack(Route.draftEdit(it.id))
             }
         }
