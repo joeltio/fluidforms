@@ -63,6 +63,7 @@ fun PlaceholderTextField(
         singleLine = singleLine,
         maxLines = maxLines,
         visualTransformation = visualTransformation,
+        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
         decorationBox = { innerTextField ->
             Box {
                 if (value.isEmpty()) {
