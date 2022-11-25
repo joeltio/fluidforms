@@ -24,4 +24,21 @@
     <string name="plain_text_slot_type_name">TEXT</string>
     <string name="template_name_placeholder">Name</string>
     <string name="template_body_placeholder">Create your template here…</string>
+
+    <string name="dialog_done">Done</string>
+
+    <string name="look_and_feel_title">Look and Feel</string>
+    <string name="theme_color_title">Theme Color</string>
+    <string name="theme_color_subtitle">Change to dark or light mode</string>
+    <string-array name="theme_color_options">
+        <item>System Default</item>
+        <item>Dark</item>
+        <item>Light</item>
+    </string-array>
+    <!-- These values must match the names of the ThemeColor enum -->
+    <string-array name="theme_color_values">
+        <item>SYSTEM</item>
+        <item>DARK</item>
+        <item>LIGHT</item>
+    </string-array>
 </resources>

@@ -63,6 +63,9 @@ dependencies {
     annotationProcessor "androidx.room:room-compiler:$room_version"
     ksp "androidx.room:room-compiler:$room_version"
 
+    // Preferences DataStore
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
+
     // Koin
     implementation "io.insert-koin:koin-core:3.2.2"
     implementation "io.insert-koin:koin-android:3.3.0"
@@ -80,6 +83,9 @@ dependencies {
     implementation "androidx.compose.material3:material3-window-size-class:1.0.0-rc01"
     // See https://developer.android.com/jetpack/androidx/releases/activity
     implementation 'androidx.activity:activity-compose:1.6.0'
+
+    // Accompanist
+    implementation "com.google.accompanist:accompanist-systemuicontroller:0.27.1"
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

@@ -8,7 +8,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
@@ -56,7 +55,7 @@ fun TemplateEditor(
                     Box(
                         modifier = Modifier
                             .size(width = 1.dp, height = 36.dp)
-                            .background(Color.Black)
+                            .background(contentColorFor(BottomAppBarDefaults.containerColor))
                     )
                 }
             },
