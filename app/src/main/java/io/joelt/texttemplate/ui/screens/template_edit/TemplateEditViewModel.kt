@@ -16,13 +16,20 @@ class TemplateEditViewModel(
     private val repository: TemplatesRepository
 ) : ViewModel() {
     var screenState by mutableStateOf<TemplateEditState?>(null)
+    lateinit var initialTemplate: Template
 
-    fun loadTemplate(id: Long) {
+    fun loadTemplate(id: Long, defaultName: String) {
         if (id == 0L) {
-            screenState = TemplateEditState(Template(name = "New Template", text = ""))
+            TemplateEditState(Template(name = defaultName, text = "")).let {
+                screenState = it
+                initialTemplate = it.template
+            }
         } else {
             viewModelScope.launch {
-                screenState = TemplateEditState(repository.getTemplate(id))
+                TemplateEditState(repository.getTemplate(id)).let {
+                    screenState = it
+                    initialTemplate = it.template
+                }
             }
         }
     }
@@ -41,5 +48,12 @@ class TemplateEditViewModel(
 
             nav.navigate(Route.templates)
         }
+    }
+
+    fun templateChanged(): Boolean {
+        screenState?.let {
+            return initialTemplate.name != it.template.name || initialTemplate.text != it.template.text
+        }
+        return false
     }
 }
