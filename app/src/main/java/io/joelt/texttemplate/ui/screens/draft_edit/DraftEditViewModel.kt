@@ -9,6 +9,7 @@ import androidx.navigation.NavHostController
 import io.joelt.texttemplate.database.TemplatesRepository
 import io.joelt.texttemplate.models.Draft
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 
 class DraftEditViewModel(
     private val repository: TemplatesRepository
@@ -33,7 +34,7 @@ class DraftEditViewModel(
     fun saveDraft(nav: NavHostController) {
         viewModelScope.launch {
             draft?.let {
-                repository.updateDraft(it)
+                repository.updateDraft(it.copy(lastEditedOn = LocalDateTime.now()))
                 nav.navigateBackToDrafts()
             }
         }
