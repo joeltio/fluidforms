@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -89,17 +91,36 @@ private fun TemplatePreviewScreen(
     templateId: Long,
     viewModel: TemplatePreviewViewModel = koinViewModel()
 ) {
+    var showConfirmDeleteDialog by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         viewModel.loadTemplate(templateId)
         screenController.onEditTemplate = {
             nav.navigateClearStack(Route.templateEdit(templateId))
         }
         screenController.onDeleteTemplate = {
-            viewModel.deleteTemplate(nav)
+            showConfirmDeleteDialog = true
         }
         screenController.onCreateDraftWithTemplate = {
             nav.navigateClearStack(Route.createDraft(templateId))
         }
+    }
+
+    if (showConfirmDeleteDialog) {
+        AlertDialog(
+            title = { Text(text = stringResource(R.string.template_confirm_delete_title)) },
+            text = { Text(text = stringResource(R.string.template_confirm_delete)) },
+            onDismissRequest = { showConfirmDeleteDialog = false },
+            confirmButton = {
+                TextButton(onClick = { viewModel.deleteTemplate(nav) }) {
+                    Text(text = stringResource(R.string.dialog_delete))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showConfirmDeleteDialog = false }) {
+                    Text(text = stringResource(R.string.dialog_cancel))
+                }
+            }
+        )
     }
 
     TemplatePreviewScreenContent(viewModel.template)

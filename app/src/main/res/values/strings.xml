@@ -25,7 +25,12 @@
     <string name="template_name_placeholder">Name</string>
     <string name="template_body_placeholder">Create your template here…</string>
 
+    <string name="template_confirm_delete_title">Delete Template</string>
+    <string name="template_confirm_delete">Are you sure you want to delete this template?</string>
+
     <string name="dialog_done">Done</string>
+    <string name="dialog_delete">Delete</string>
+    <string name="dialog_cancel">Cancel</string>
 
     <string name="look_and_feel_title">Look and Feel</string>
     <string name="theme_color_title">Theme Color</string>
