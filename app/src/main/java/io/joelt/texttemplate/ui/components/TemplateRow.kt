@@ -12,6 +12,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.joelt.texttemplate.database.HourFormat
+import io.joelt.texttemplate.database.LocalPreferences
 import io.joelt.texttemplate.models.Either
 import io.joelt.texttemplate.models.genTemplates
 import io.joelt.texttemplate.models.slots.Slot
@@ -21,7 +23,24 @@ import io.joelt.texttemplate.ui.theme.Typography
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-private val dateTimeFormat = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
+@Composable
+fun formatDateTime(dateTime: LocalDateTime): String {
+    val preferences = LocalPreferences.current
+    val timeFormat = when (preferences.hourFormat) {
+        HourFormat.HOUR_24 -> "H:mm"
+        HourFormat.HOUR_12 -> "h:mm a"
+    }
+
+    val currentDateTime = LocalDateTime.now()
+    val dateTimeFormat = if (currentDateTime.dayOfMonth == dateTime.dayOfMonth) {
+        // It is today, show the time only
+        DateTimeFormatter.ofPattern(timeFormat)
+    } else {
+        DateTimeFormatter.ofPattern("dd/MM/yy")
+    }
+
+    return dateTimeFormat.format(dateTime)
+}
 
 @Composable
 fun TemplateRow(
@@ -52,7 +71,7 @@ fun TemplateRow(
         dateTime?.let {
             Spacer(modifier = Modifier.padding(vertical = 8.dp))
             Text(
-                text = dateTime.format(dateTimeFormat),
+                text = formatDateTime(it),
                 style = Typography.labelMedium,
                 modifier = Modifier.alpha(0.38f)
             )

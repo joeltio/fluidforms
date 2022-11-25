@@ -17,11 +17,20 @@ enum class ThemeColor {
     LIGHT
 }
 
-data class UserPreferences(val themeColor: ThemeColor = ThemeColor.SYSTEM)
+enum class HourFormat {
+    HOUR_12,
+    HOUR_24
+}
+
+data class UserPreferences(
+    val themeColor: ThemeColor = ThemeColor.SYSTEM,
+    val hourFormat: HourFormat = HourFormat.HOUR_12
+)
 
 class UserPreferencesRepository(private val dataStore: DataStore<Preferences>) {
     private object PreferencesKeys {
         val THEME_COLOR = stringPreferencesKey("theme_color")
+        val HOUR_FORMAT = stringPreferencesKey("hour_format")
     }
 
     val flow: Flow<UserPreferences> = dataStore.data
@@ -41,12 +50,21 @@ class UserPreferencesRepository(private val dataStore: DataStore<Preferences>) {
         }
     }
 
+    suspend fun updateHourFormat(hourFormat: HourFormat) {
+        dataStore.edit {
+            it[PreferencesKeys.HOUR_FORMAT] = hourFormat.name
+        }
+    }
+
     private fun mapUserPreferences(preferences: Preferences): UserPreferences {
         val themeColor = ThemeColor.valueOf(
             preferences[PreferencesKeys.THEME_COLOR] ?: ThemeColor.SYSTEM.name
         )
+        val hourFormat = HourFormat.valueOf(
+            preferences[PreferencesKeys.HOUR_FORMAT] ?: HourFormat.HOUR_12.name
+        )
 
-        return UserPreferences(themeColor)
+        return UserPreferences(themeColor, hourFormat)
     }
 }
 

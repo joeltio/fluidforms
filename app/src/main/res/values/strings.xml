@@ -43,7 +43,9 @@
     <string name="dialog_discard">Discard</string>
     <string name="dialog_cancel">Cancel</string>
 
+    <!-- Settings -->
     <string name="look_and_feel_title">Look and Feel</string>
+
     <string name="theme_color_title">Theme Color</string>
     <string name="theme_color_subtitle">Change to dark or light mode</string>
     <string-array name="theme_color_options">
@@ -56,5 +58,18 @@
         <item>SYSTEM</item>
         <item>DARK</item>
         <item>LIGHT</item>
+    </string-array>
+
+    <string name="date_and_time_title">Date and Time</string>
+    <string name="hour_format_title">Hour Format</string>
+    <string name="hour_format_subtitle">Change between 24-hour and 12-hour time format</string>
+    <string-array name="hour_format_options">
+        <item>12-Hour</item>
+        <item>24-Hour</item>
+    </string-array>
+    <!-- These values must match the names of the HourFormat enum -->
+    <string-array name="hour_format_values">
+        <item>HOUR_12</item>
+        <item>HOUR_24</item>
     </string-array>
 </resources>

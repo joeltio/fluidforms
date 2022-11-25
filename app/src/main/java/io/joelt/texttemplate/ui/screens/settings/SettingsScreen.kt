@@ -2,6 +2,7 @@ package io.joelt.texttemplate.ui.screens.settings
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -12,6 +13,7 @@ import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import io.joelt.texttemplate.R
+import io.joelt.texttemplate.database.HourFormat
 import io.joelt.texttemplate.database.LocalPreferences
 import io.joelt.texttemplate.database.ThemeColor
 import io.joelt.texttemplate.database.UserPreferencesRepository
@@ -43,6 +45,7 @@ private fun SettingTitle(text: String) {
     Text(
         modifier = Modifier.padding(start = 16.dp),
         text = text,
+        color = MaterialTheme.colorScheme.primary,
         style = Typography.titleMedium
     )
 }
@@ -63,6 +66,20 @@ private fun SettingsScreen(nav: NavHostController, preferencesRepo: UserPreferen
             onSelectedOptionChange = {
                 scope.launch {
                     preferencesRepo.updateThemeColor(ThemeColor.valueOf(it))
+                }
+            }
+        )
+
+        SettingTitle(text = stringResource(R.string.date_and_time_title))
+        ListSettingRow(
+            title = stringResource(R.string.hour_format_title),
+            subtitle = stringResource(R.string.hour_format_subtitle),
+            options = stringArrayResource(R.array.hour_format_options),
+            optionValues = stringArrayResource(R.array.hour_format_values),
+            selectedOption = currentSettings.hourFormat.name,
+            onSelectedOptionChange = {
+                scope.launch {
+                    preferencesRepo.updateHourFormat(HourFormat.valueOf(it))
                 }
             }
         )
