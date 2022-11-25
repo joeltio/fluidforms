@@ -32,6 +32,9 @@
     <string name="template_confirm_discard_title">Discard Changes</string>
     <string name="template_confirm_discard">Are you sure you want to discard your changes to this template?</string>
 
+    <string name="draft_confirm_delete_title">Delete Draft</string>
+    <string name="draft_confirm_delete">Are you sure you want to delete this draft?</string>
+
     <string name="dialog_done">Done</string>
     <string name="dialog_delete">Delete</string>
     <string name="dialog_discard">Discard</string>

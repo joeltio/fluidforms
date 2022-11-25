@@ -2,13 +2,8 @@ package io.joelt.texttemplate.ui.screens.draft_edit
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.stringResource
@@ -94,6 +89,8 @@ private fun DraftEditScreen(
     val clipboardMessage = stringResource(R.string.text_copied_to_clipboard)
     val scope = rememberCoroutineScope()
 
+    var showConfirmDeleteDialog by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
         if (draftId != 0L) {
             viewModel.loadDraft(draftId)
@@ -106,7 +103,7 @@ private fun DraftEditScreen(
         }
 
         screenController.onDelete = {
-            viewModel.deleteDraft(nav)
+            showConfirmDeleteDialog = true
         }
 
         screenController.onCopyToClipboard = {
@@ -124,6 +121,24 @@ private fun DraftEditScreen(
                 }
             }
         }
+    }
+
+    if (showConfirmDeleteDialog) {
+        AlertDialog(
+            title = { Text(text = stringResource(R.string.draft_confirm_delete_title)) },
+            text = { Text(text = stringResource(R.string.draft_confirm_delete)) },
+            onDismissRequest = { showConfirmDeleteDialog = false },
+            confirmButton = {
+                TextButton(onClick = { viewModel.deleteDraft(nav) }) {
+                    Text(text = stringResource(R.string.dialog_delete))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showConfirmDeleteDialog = false }) {
+                    Text(text = stringResource(R.string.dialog_cancel))
+                }
+            }
+        )
     }
 
     DraftEditScreenContent(viewModel.draft) {
