@@ -9,8 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NamedNavArgument
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import io.joelt.texttemplate.AppScaffold
@@ -30,63 +28,60 @@ val Route.templates: String
     get() = "templates"
 
 @OptIn(ExperimentalMaterial3Api::class)
-class TemplatesScreen : Screen {
-    override val route: String = Route.templates
-    override val arguments: List<NamedNavArgument> = emptyList()
-    @Composable
-    override fun scaffold(nav: NavHostController): ScaffoldOptions {
-        val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-        return ScaffoldOptions(
-            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-            topBar = { TopNavBar(nav, scrollBehavior) },
-            bottomBar = { BottomNavBar(nav) },
-            floatingActionButton = {
-                FloatingActionButton(onClick = { nav.navigate(Route.createTemplate) }) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = stringResource(id = R.string.add_template)
-                    )
-                }
-            }
-        )
-    }
-
-    @Composable
-    override fun Composable(backStackEntry: NavBackStackEntry, nav: NavHostController) {
-        TemplatesScreen(nav)
-    }
-}
-
 @Composable
-private fun TemplatesScreenContent(
-    templates: List<Template>?,
-    onTemplateClick: (Template) -> Unit
-) {
-    TemplateList(templates, onItemClick = onTemplateClick)
-}
-
-@Composable
-private fun TemplatesScreen(
+private fun templatesScreenContent(
     nav: NavHostController,
-    viewModel: TemplatesViewModel = koinViewModel()
-) {
-    LaunchedEffect(Unit) {
-        viewModel.loadTemplates()
+    templates: List<Template>?,
+    onTemplateClick: (Template) -> Unit,
+) = buildScreenContent {
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    scaffoldOptions {
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+        topBar = { TopNavBar(nav, scrollBehavior) }
+        bottomBar = { BottomNavBar(nav) }
+        floatingActionButton = {
+            FloatingActionButton(onClick = { nav.navigate(Route.createTemplate) }) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(id = R.string.add_template)
+                )
+            }
+        }
     }
 
-    TemplatesScreenContent(templates = viewModel.templates) {
-        nav.navigate(Route.templatePreview(it.id))
+    content {
+        TemplateList(templates, onItemClick = onTemplateClick)
+    }
+}
+
+val TemplatesScreen = buildScreen {
+    route = Route.templates
+    arguments = emptyList()
+
+    contentFactory { _, nav ->
+        val viewModel: TemplatesViewModel = koinViewModel()
+
+        LaunchedEffect(Unit) {
+            viewModel.loadTemplates()
+        }
+
+        templatesScreenContent(
+            nav = nav,
+            templates = viewModel.templates,
+            onTemplateClick = {
+                nav.navigate(Route.templatePreview(it.id))
+            })
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun TemplatesScreenPreview() {
-    val screen = TemplatesScreen()
     val nav = rememberNavController()
+    val screen = templatesScreenContent(nav = nav, templates = genTemplates(10), onTemplateClick = {})
     TextTemplateTheme {
-        AppScaffold(scaffoldOptions = screen.scaffold(nav)) {
-            TemplatesScreenContent(templates = genTemplates(10)) {}
+        AppScaffold(scaffoldOptions = screen.scaffoldOptions) {
+            screen.content()
         }
     }
 }
