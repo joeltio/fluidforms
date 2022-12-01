@@ -9,8 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NamedNavArgument
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import io.joelt.texttemplate.R
 import io.joelt.texttemplate.database.HourFormat
@@ -21,24 +19,10 @@ import io.joelt.texttemplate.navigation.*
 import io.joelt.texttemplate.ui.components.ListSettingRow
 import io.joelt.texttemplate.ui.theme.Typography
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.get
 
 val Route.settings: String
     get() = "settings"
-
-class SettingsScreen(private val preferencesRepo: UserPreferencesRepository) : Screen {
-    override val route: String = Route.settings
-    override val arguments: List<NamedNavArgument> = listOf()
-
-    @Composable
-    override fun scaffold(nav: NavHostController) = ScaffoldOptions(
-        topBar = { SettingsTopNavBar(nav) }
-    )
-
-    @Composable
-    override fun Composable(backStackEntry: NavBackStackEntry, nav: NavHostController) {
-        SettingsScreen(nav, preferencesRepo)
-    }
-}
 
 @Composable
 private fun SettingTitle(text: String) {
@@ -51,37 +35,56 @@ private fun SettingTitle(text: String) {
 }
 
 @Composable
-private fun SettingsScreen(nav: NavHostController, preferencesRepo: UserPreferencesRepository) {
-    val scope = rememberCoroutineScope()
-    Column {
-        val currentSettings = LocalPreferences.current
+private fun settingsScreenContent(
+    nav: NavHostController,
+    onUpdateThemeColor: (ThemeColor) -> Unit,
+    onUpdateHourFormat: (HourFormat) -> Unit,
+) = buildScreenContent {
+    scaffoldOptions {
+        topBar = { SettingsTopNavBar(nav) }
+    }
 
-        SettingTitle(text = stringResource(R.string.look_and_feel_title))
-        ListSettingRow(
-            title = stringResource(R.string.theme_color_title),
-            subtitle = stringResource(R.string.theme_color_subtitle),
-            options = stringArrayResource(R.array.theme_color_options),
-            optionValues = stringArrayResource(R.array.theme_color_values),
-            selectedOption = currentSettings.themeColor.name,
-            onSelectedOptionChange = {
-                scope.launch {
-                    preferencesRepo.updateThemeColor(ThemeColor.valueOf(it))
-                }
-            }
-        )
+    content {
+        Column {
+            val currentSettings = LocalPreferences.current
 
-        SettingTitle(text = stringResource(R.string.date_and_time_title))
-        ListSettingRow(
-            title = stringResource(R.string.hour_format_title),
-            subtitle = stringResource(R.string.hour_format_subtitle),
-            options = stringArrayResource(R.array.hour_format_options),
-            optionValues = stringArrayResource(R.array.hour_format_values),
-            selectedOption = currentSettings.hourFormat.name,
-            onSelectedOptionChange = {
-                scope.launch {
-                    preferencesRepo.updateHourFormat(HourFormat.valueOf(it))
+            SettingTitle(text = stringResource(R.string.look_and_feel_title))
+            ListSettingRow(
+                title = stringResource(R.string.theme_color_title),
+                subtitle = stringResource(R.string.theme_color_subtitle),
+                options = stringArrayResource(R.array.theme_color_options),
+                optionValues = stringArrayResource(R.array.theme_color_values),
+                selectedOption = currentSettings.themeColor.name,
+                onSelectedOptionChange = {
+                    onUpdateThemeColor(ThemeColor.valueOf(it))
                 }
-            }
-        )
+            )
+
+            SettingTitle(text = stringResource(R.string.date_and_time_title))
+            ListSettingRow(
+                title = stringResource(R.string.hour_format_title),
+                subtitle = stringResource(R.string.hour_format_subtitle),
+                options = stringArrayResource(R.array.hour_format_options),
+                optionValues = stringArrayResource(R.array.hour_format_values),
+                selectedOption = currentSettings.hourFormat.name,
+                onSelectedOptionChange = {
+                    onUpdateHourFormat(HourFormat.valueOf(it))
+                }
+            )
+        }
+    }
+}
+
+val SettingsScreen = buildScreen {
+    route = Route.settings
+    arguments = emptyList()
+
+    contentFactory { _, nav ->
+        val scope = rememberCoroutineScope()
+        val preferencesRepo: UserPreferencesRepository = get()
+        settingsScreenContent(
+            nav = nav,
+            onUpdateThemeColor = { scope.launch { preferencesRepo.updateThemeColor(it) } },
+            onUpdateHourFormat = { scope.launch { preferencesRepo.updateHourFormat(it) } })
     }
 }
