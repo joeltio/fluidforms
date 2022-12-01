@@ -36,6 +36,7 @@ private fun draftEditScreenContent(
     val clipboardManager = LocalClipboardManager.current
     val scope = rememberCoroutineScope()
     val clipboardMessage = stringResource(R.string.text_copied_to_clipboard)
+    var showConfirmDeleteDialog by remember { mutableStateOf(false) }
 
     scaffoldOptions {
         snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -43,7 +44,7 @@ private fun draftEditScreenContent(
             DraftEditTopNavBar(
                 nav,
                 onSave = onSave,
-                onDelete = onDelete,
+                onDelete = { showConfirmDeleteDialog = true },
                 onCopyToClipboard = {
                     val content = onCopyToClipboard()
                     content?.let {
@@ -57,7 +58,6 @@ private fun draftEditScreenContent(
     }
 
     content {
-        var showConfirmDeleteDialog by remember { mutableStateOf(false) }
         if (showConfirmDeleteDialog) {
             AlertDialog(
                 title = { Text(text = stringResource(R.string.draft_confirm_delete_title)) },
