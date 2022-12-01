@@ -12,7 +12,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.*
-import androidx.navigation.compose.rememberNavController
 import io.joelt.texttemplate.AppScaffold
 import io.joelt.texttemplate.R
 import io.joelt.texttemplate.models.Template
@@ -26,36 +25,6 @@ fun Route.templateEdit(templateId: Long) = "templates/$templateId/edit"
 
 val Route.createTemplate: String
     get() = "templates/0/edit"
-
-class TemplateEditController {
-    var onSave = {}
-    var onBack = {}
-}
-
-class TemplateEditScreen : Screen {
-    private val controller = TemplateEditController()
-
-    override val route: String = "templates/{templateId}/edit"
-    override val arguments: List<NamedNavArgument> = listOf(
-        navArgument("templateId") { type = NavType.LongType }
-    )
-
-    @Composable
-    override fun scaffold(nav: NavHostController) = ScaffoldOptions(
-        topBar = {
-            TemplateEditTopNavBar(
-                nav,
-                onSave = { controller.onSave() },
-                onBack = { controller.onBack() })
-        }
-    )
-
-    @Composable
-    override fun Composable(backStackEntry: NavBackStackEntry, nav: NavHostController) {
-        val templateId = backStackEntry.arguments!!.getLong("templateId")
-        TemplateEditScreen(nav, controller, templateId)
-    }
-}
 
 data class TemplateEditState(
     val template: Template,
@@ -76,69 +45,88 @@ data class TemplateEditState(
 }
 
 @Composable
-private fun TemplateEditScreenContent(
+private fun templateEditScreenContent(
     state: TemplateEditState?,
     onStateChange: (TemplateEditState) -> Unit,
-) {
-    if (state == null) {
-        Spacer(Modifier.height(32.dp))
-        CircularProgressIndicator()
-        return
+    templateChanged: Boolean,
+    onSave: () -> Unit,
+    onBack: () -> Unit,
+) = buildScreenContent {
+    var showConfirmDiscardDialog by remember { mutableStateOf(false) }
+    scaffoldOptions {
+        topBar = {
+            TemplateEditTopNavBar(
+                onSave = onSave,
+                onBack = {
+                    if (templateChanged) {
+                        showConfirmDiscardDialog = true
+                    } else {
+                        onBack()
+                    }
+                }
+            )
+        }
     }
 
-    TemplateEditor(
-        state = state.editorState,
-        onStateChange = { onStateChange(state.withEditorState(it)) })
+    content {
+        if (showConfirmDiscardDialog) {
+            AlertDialog(
+                title = { Text(text = stringResource(R.string.template_confirm_discard_title)) },
+                text = { Text(text = stringResource(R.string.template_confirm_discard)) },
+                onDismissRequest = { showConfirmDiscardDialog = false },
+                confirmButton = {
+                    TextButton(onClick = onBack) {
+                        Text(text = stringResource(R.string.dialog_discard))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showConfirmDiscardDialog = false }) {
+                        Text(text = stringResource(R.string.dialog_cancel))
+                    }
+                }
+            )
+        }
+
+        if (state == null) {
+            Spacer(Modifier.height(32.dp))
+            CircularProgressIndicator()
+        } else {
+            TemplateEditor(
+                state = state.editorState,
+                onStateChange = { onStateChange(state.withEditorState(it)) })
+        }
+    }
 }
 
-@Composable
-private fun TemplateEditScreen(
-    nav: NavHostController,
-    screenController: TemplateEditController,
-    templateId: Long,
-    viewModel: TemplateEditViewModel = koinViewModel()
-) {
-    val defaultName = stringResource(R.string.new_template_name)
-    var showConfirmDiscardDialog by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) {
-        // The LaunchedEffect gets run again when orientation changes
-        if (viewModel.screenState == null) {
-            viewModel.loadTemplate(templateId, defaultName)
-        }
+val TemplateEditScreen = buildScreen {
+    route = "templates/{templateId}/edit"
+    arguments = listOf(
+        navArgument("templateId") { type = NavType.LongType }
+    )
 
-        screenController.onSave = {
-            viewModel.saveTemplate(nav)
-        }
+    contentFactory { backStackEntry, nav ->
+        val defaultName = stringResource(R.string.new_template_name)
+        val templateId = backStackEntry.arguments!!.getLong("templateId")
+        val viewModel: TemplateEditViewModel = koinViewModel()
 
-        screenController.onBack = {
-            if (viewModel.templateChanged()) {
-                showConfirmDiscardDialog = true
-            } else {
-                nav.popBackStack()
+        LaunchedEffect(Unit) {
+            // The LaunchedEffect gets run again when orientation changes
+            // don't reload when the orientation changes
+            if (viewModel.screenState == null) {
+                viewModel.loadTemplate(templateId, defaultName)
             }
         }
-    }
 
-    if (showConfirmDiscardDialog) {
-        AlertDialog(
-            title = { Text(text = stringResource(R.string.template_confirm_discard_title)) },
-            text = { Text(text = stringResource(R.string.template_confirm_discard)) },
-            onDismissRequest = { showConfirmDiscardDialog = false },
-            confirmButton = {
-                TextButton(onClick = { nav.popBackStack() }) {
-                    Text(text = stringResource(R.string.dialog_discard))
-                }
+        templateEditScreenContent(
+            viewModel.screenState,
+            onStateChange = { viewModel.screenState = it },
+            viewModel.templateChanged(),
+            onSave = {
+                viewModel.saveTemplate(nav)
             },
-            dismissButton = {
-                TextButton(onClick = { showConfirmDiscardDialog = false }) {
-                    Text(text = stringResource(R.string.dialog_cancel))
-                }
-            }
-        )
-    }
-
-    TemplateEditScreenContent(viewModel.screenState) {
-        viewModel.screenState = it
+            onBack = {
+                nav.popBackStack()
+            })
     }
 }
 
@@ -148,11 +136,15 @@ private fun TemplateEditScreenPreview() {
     val template = genTemplates(1)[0]
     var screenState by remember { mutableStateOf(TemplateEditState(template)) }
 
-    val screen = TemplateEditScreen()
-    val nav = rememberNavController()
+    val screen = templateEditScreenContent(
+        state = screenState,
+        onStateChange = { screenState = it },
+        templateChanged = true,
+        onSave = {},
+        onBack = {})
     TextTemplateTheme {
-        AppScaffold(scaffoldOptions = screen.scaffold(nav)) {
-            TemplateEditScreenContent(screenState) { screenState = it }
+        AppScaffold(scaffoldOptions = screen.scaffoldOptions) {
+            screen.content()
         }
     }
 }

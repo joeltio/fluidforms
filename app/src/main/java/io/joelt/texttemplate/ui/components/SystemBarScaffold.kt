@@ -28,7 +28,7 @@ fun SystemBarScaffold(
     floatingActionButtonPosition: FabPosition = FabPosition.End,
     containerColor: Color = MaterialTheme.colorScheme.background,
     contentColor: Color = contentColorFor(containerColor),
-    content: @Composable () -> Unit
+    content: @Composable BoxScope.() -> Unit
 ) {
     Box(modifier = Modifier
         .background(MaterialTheme.colorScheme.background)
@@ -57,7 +57,7 @@ fun SystemBarScaffold(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SystemBarScaffold(scaffoldOptions: ScaffoldOptions, content: @Composable () -> Unit) {
+fun SystemBarScaffold(scaffoldOptions: ScaffoldOptions, content: @Composable BoxScope.() -> Unit) {
     SystemBarScaffold(
         modifier = scaffoldOptions.modifier,
         topBar = scaffoldOptions.topBar,

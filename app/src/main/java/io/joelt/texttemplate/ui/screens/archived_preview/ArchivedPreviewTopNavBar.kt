@@ -9,16 +9,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavHostController
 import io.joelt.texttemplate.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ArchivedPreviewTopNavBar(nav: NavHostController, onDeleteArchived: () -> Unit) {
+fun ArchivedPreviewTopNavBar(onBack: () -> Unit, onDeleteArchived: () -> Unit) {
     val backIconBtn = @Composable {
-        IconButton(onClick = {
-            nav.popBackStack()
-        }) {
+        IconButton(onClick = onBack) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
                 contentDescription = stringResource(id = R.string.navbar_back),

@@ -12,7 +12,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.*
-import androidx.navigation.compose.rememberNavController
 import io.joelt.texttemplate.AppScaffold
 import io.joelt.texttemplate.R
 import io.joelt.texttemplate.models.Draft
@@ -24,26 +23,20 @@ import org.koin.androidx.compose.koinViewModel
 
 fun Route.archivedPreview(archivedId: Long) = "archived/$archivedId"
 
-class ArchivedPreviewController {
-    var onEditArchived = {}
-    var onDeleteArchived = {}
-}
-
-class ArchivedPreviewScreen : Screen {
-    private val controller = ArchivedPreviewController()
-
-    override val route: String = "archived/{archivedId}"
-    override val arguments: List<NamedNavArgument> = listOf(
-        navArgument("archivedId") { type = NavType.LongType }
-    )
-
-    @Composable
-    override fun scaffold(nav: NavHostController) = ScaffoldOptions(
+@Composable
+private fun archivedPreviewScreenContent(
+    archived: Draft?,
+    onBack: () -> Unit,
+    onDelete: () -> Unit,
+    onEdit: () -> Unit
+) = buildScreenContent {
+    var showConfirmDeleteDialog by remember { mutableStateOf(false) }
+    scaffoldOptions {
         topBar = {
             ArchivedPreviewTopNavBar(
-                nav,
-                onDeleteArchived = { controller.onDeleteArchived() })
-        },
+                onBack = onBack,
+                onDeleteArchived = { showConfirmDeleteDialog = true })
+        }
         floatingActionButton = {
             ExtendedFloatingActionButton(icon = {
                 Icon(
@@ -52,67 +45,58 @@ class ArchivedPreviewScreen : Screen {
                 )
             }, text = {
                 Text(text = stringResource(R.string.fill_up_archived))
-            }, onClick = { controller.onEditArchived() })
+            }, onClick = onEdit)
         }
+    }
+
+    content {
+        if (showConfirmDeleteDialog) {
+            AlertDialog(
+                title = { Text(text = stringResource(R.string.archived_confirm_delete_title)) },
+                text = { Text(text = stringResource(R.string.archived_confirm_delete)) },
+                onDismissRequest = { showConfirmDeleteDialog = false },
+                confirmButton = {
+                    TextButton(onClick = onDelete) {
+                        Text(text = stringResource(R.string.dialog_delete))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showConfirmDeleteDialog = false }) {
+                        Text(text = stringResource(R.string.dialog_cancel))
+                    }
+                }
+            )
+        }
+
+        if (archived == null) {
+            Spacer(Modifier.height(32.dp))
+            CircularProgressIndicator()
+        } else {
+            TemplatePreview(name = archived.name, slots = archived.slots)
+        }
+    }
+}
+
+val ArchivedPreviewScreen = buildScreen {
+    route = "archived/{archivedId}"
+    arguments = listOf(
+        navArgument("archivedId") { type = NavType.LongType }
     )
 
-    @Composable
-    override fun Composable(backStackEntry: NavBackStackEntry, nav: NavHostController) {
+    contentFactory { backStackEntry, nav ->
         val archivedId = backStackEntry.arguments!!.getLong("archivedId")
-        ArchivedPreviewScreen(nav, controller, archivedId)
-    }
-}
+        val viewModel: ArchivedPreviewViewModel = koinViewModel()
 
-@Composable
-private fun ArchivedPreviewScreenContent(
-    archived: Draft?,
-) {
-    if (archived == null) {
-        Spacer(Modifier.height(32.dp))
-        CircularProgressIndicator()
-        return
-    }
-
-    TemplatePreview(name = archived.name, slots = archived.slots)
-}
-
-@Composable
-private fun ArchivedPreviewScreen(
-    nav: NavHostController,
-    screenController: ArchivedPreviewController,
-    archivedId: Long,
-    viewModel: ArchivedPreviewViewModel = koinViewModel()
-) {
-    var showConfirmDeleteDialog by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) {
-        viewModel.loadArchived(archivedId)
-        screenController.onEditArchived = {
-            viewModel.unarchive(nav)
+        LaunchedEffect(Unit) {
+            viewModel.loadArchived(archivedId)
         }
-        screenController.onDeleteArchived = {
-            showConfirmDeleteDialog = true
-        }
-    }
 
-    if (showConfirmDeleteDialog) {
-        AlertDialog(
-            title = { Text(text = stringResource(R.string.archived_confirm_delete_title)) },
-            text = { Text(text = stringResource(R.string.archived_confirm_delete)) },
-            onDismissRequest = { showConfirmDeleteDialog = false },
-            confirmButton = {
-                TextButton(onClick = { viewModel.deleteArchived(nav) }) {
-                    Text(text = stringResource(R.string.dialog_delete))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showConfirmDeleteDialog = false }) {
-                    Text(text = stringResource(R.string.dialog_cancel))
-                }
-            }
-        )
+        archivedPreviewScreenContent(
+            archived = viewModel.archived,
+            onBack = { nav.popBackStack() },
+            onDelete = { viewModel.deleteArchived(nav) },
+            onEdit = { viewModel.unarchive(nav) })
     }
-
-    ArchivedPreviewScreenContent(viewModel.archived)
 }
 
 @Preview(showBackground = true)
@@ -121,11 +105,10 @@ private fun ArchivedPreviewScreenPreview() {
     val template = genTemplates(1)[0]
     val archived = Draft(template)
 
-    val screen = ArchivedPreviewScreen()
-    val nav = rememberNavController()
+    val screen = archivedPreviewScreenContent(archived, {}, {}, {})
     TextTemplateTheme {
-        AppScaffold(scaffoldOptions = screen.scaffold(nav)) {
-            ArchivedPreviewScreenContent(archived)
+        AppScaffold(scaffoldOptions = screen.scaffoldOptions) {
+            screen.content()
         }
     }
 }

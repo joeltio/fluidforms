@@ -1,5 +1,6 @@
 package io.joelt.texttemplate.ui.screens.draft_edit
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.*
@@ -16,6 +17,7 @@ import io.joelt.texttemplate.models.Either
 import io.joelt.texttemplate.navigation.*
 import io.joelt.texttemplate.ui.components.DraftEditor
 import io.joelt.texttemplate.ui.components.DraftEditorState
+import io.joelt.texttemplate.ui.screens.drafts.drafts
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -23,125 +25,118 @@ fun Route.draftEdit(draftId: Long) = "drafts/$draftId/edit/0"
 
 fun Route.createDraft(fromTemplateId: Long) = "drafts/0/edit/$fromTemplateId"
 
-private class DraftEditController {
-    var snackbarHostState: SnackbarHostState? = null
-    var onSave = {}
-    var onDelete = {}
-    var onCopyToClipboard = {}
+fun NavHostController.navigateBackToDrafts() {
+    navigate(Route.drafts) {
+        this@navigateBackToDrafts.graph.startDestinationRoute?.let { route ->
+            popUpTo(route)
+        }
+    }
 }
 
-class DraftEditScreen : Screen {
-    private val controller = DraftEditController()
+@Composable
+private fun draftEditScreenContent(
+    draft: Draft?,
+    onBack: () -> Unit,
+    onDraftChange: (Draft) -> Unit,
+    onSave: () -> Unit,
+    onDelete: () -> Unit,
+    onCopyToClipboard: () -> String?,
+) = buildScreenContent {
+    val snackbarHostState = remember { SnackbarHostState() }
+    val clipboardManager = LocalClipboardManager.current
+    val scope = rememberCoroutineScope()
+    val clipboardMessage = stringResource(R.string.text_copied_to_clipboard)
+    var showConfirmDeleteDialog by remember { mutableStateOf(false) }
 
-    override val route: String = "drafts/{draftId}/edit/{templateId}"
-    override val arguments: List<NamedNavArgument> = listOf(
+    scaffoldOptions {
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+        topBar = {
+            DraftEditTopNavBar(
+                onBack = onBack,
+                onSave = onSave,
+                onDelete = { showConfirmDeleteDialog = true },
+                onCopyToClipboard = {
+                    val content = onCopyToClipboard()
+                    content?.let {
+                        clipboardManager.setText(AnnotatedString(content))
+                        scope.launch {
+                            snackbarHostState.showSnackbar(clipboardMessage)
+                        }
+                    }
+                })
+        }
+    }
+
+    content {
+        if (showConfirmDeleteDialog) {
+            AlertDialog(
+                title = { Text(text = stringResource(R.string.draft_confirm_delete_title)) },
+                text = { Text(text = stringResource(R.string.draft_confirm_delete)) },
+                onDismissRequest = { showConfirmDeleteDialog = false },
+                confirmButton = {
+                    TextButton(onClick = onDelete) {
+                        Text(text = stringResource(R.string.dialog_delete))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showConfirmDeleteDialog = false }) {
+                        Text(text = stringResource(R.string.dialog_cancel))
+                    }
+                }
+            )
+        }
+
+        if (draft == null) {
+            Spacer(Modifier.height(32.dp))
+            CircularProgressIndicator()
+        } else {
+            DraftEditor(state = DraftEditorState(draft), onStateChange = {
+                onDraftChange(draft.copy(name = it.name, slots = it.slots))
+            })
+        }
+    }
+}
+
+val DraftEditScreen = buildScreen {
+    route = "drafts/{draftId}/edit/{templateId}"
+    arguments = listOf(
         navArgument("draftId") { type = NavType.LongType },
         navArgument("templateId") { type = NavType.LongType }
     )
 
-    @Composable
-    override fun scaffold(nav: NavHostController): ScaffoldOptions {
-        val snackbarHostState = remember { SnackbarHostState() }
-        controller.snackbarHostState = snackbarHostState
-
-        return ScaffoldOptions(
-            snackbarHost = { SnackbarHost(snackbarHostState) },
-            topBar = {
-                DraftEditTopNavBar(
-                    nav,
-                    onSave = { controller.onSave() },
-                    onDelete = { controller.onDelete() },
-                    onCopyToClipboard = { controller.onCopyToClipboard() })
-            },
-        )
-    }
-
-    @Composable
-    override fun Composable(backStackEntry: NavBackStackEntry, nav: NavHostController) {
+    contentFactory { backStackEntry, nav ->
         val draftId = backStackEntry.arguments!!.getLong("draftId")
         val templateId = backStackEntry.arguments!!.getLong("templateId")
-        DraftEditScreen(nav, controller, draftId, templateId)
-    }
-}
+        val viewModel: DraftEditViewModel = koinViewModel()
 
-@Composable
-private fun DraftEditScreenContent(draft: Draft?, onDraftChange: (Draft) -> Unit) {
-    if (draft == null) {
-        Spacer(Modifier.height(32.dp))
-        CircularProgressIndicator()
-        return
-    }
-
-    DraftEditor(state = DraftEditorState(draft), onStateChange = {
-        onDraftChange(draft.copy(name = it.name, slots = it.slots))
-    })
-}
-
-@Composable
-private fun DraftEditScreen(
-    nav: NavHostController,
-    screenController: DraftEditController,
-    draftId: Long,
-    templateId: Long,
-    viewModel: DraftEditViewModel = koinViewModel()
-) {
-    val clipboardManager = LocalClipboardManager.current
-    val clipboardMessage = stringResource(R.string.text_copied_to_clipboard)
-    val scope = rememberCoroutineScope()
-
-    var showConfirmDeleteDialog by remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        if (draftId != 0L) {
-            viewModel.loadDraft(draftId)
-        } else if (templateId != 0L) {
-            viewModel.createDraft(templateId)
-        }
-
-        screenController.onSave = {
-            viewModel.saveDraft(nav)
-        }
-
-        screenController.onDelete = {
-            showConfirmDeleteDialog = true
-        }
-
-        screenController.onCopyToClipboard = {
-            viewModel.draft?.let { draft ->
-                val text = draft.slots.joinToString {
-                    when (it) {
-                        is Either.Left -> it.value
-                        is Either.Right -> it.value.toDisplayString()
-                    }
-                }
-
-                clipboardManager.setText(AnnotatedString(text))
-                scope.launch {
-                    screenController.snackbarHostState?.showSnackbar(clipboardMessage)
-                }
+        LaunchedEffect(Unit) {
+            if (draftId != 0L) {
+                viewModel.loadDraft(draftId)
+            } else if (templateId != 0L) {
+                viewModel.createDraft(templateId)
             }
         }
-    }
 
-    if (showConfirmDeleteDialog) {
-        AlertDialog(
-            title = { Text(text = stringResource(R.string.draft_confirm_delete_title)) },
-            text = { Text(text = stringResource(R.string.draft_confirm_delete)) },
-            onDismissRequest = { showConfirmDeleteDialog = false },
-            confirmButton = {
-                TextButton(onClick = { viewModel.deleteDraft(nav) }) {
-                    Text(text = stringResource(R.string.dialog_delete))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showConfirmDeleteDialog = false }) {
-                    Text(text = stringResource(R.string.dialog_cancel))
+        BackHandler(enabled = true) {
+            nav.navigateBackToDrafts()
+        }
+
+        draftEditScreenContent(
+            draft = viewModel.draft,
+            onBack = { nav.navigateBackToDrafts() },
+            onDraftChange = { viewModel.draft = it },
+            onSave = { viewModel.saveDraft(nav) },
+            onDelete = { viewModel.deleteDraft(nav) },
+            onCopyToClipboard = {
+                viewModel.draft?.let { draft ->
+                    draft.slots.joinToString {
+                        when (it) {
+                            is Either.Left -> it.value
+                            is Either.Right -> it.value.toDisplayString()
+                        }
+                    }
                 }
             }
         )
-    }
-
-    DraftEditScreenContent(viewModel.draft) {
-        viewModel.draft = it
     }
 }
