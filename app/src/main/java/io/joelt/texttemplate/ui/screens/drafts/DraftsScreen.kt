@@ -6,8 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.navigation.NamedNavArgument
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import io.joelt.texttemplate.models.Draft
 import io.joelt.texttemplate.navigation.*
@@ -21,44 +19,37 @@ val Route.drafts: String
     get() = "drafts"
 
 @OptIn(ExperimentalMaterial3Api::class)
-class DraftsScreen : Screen {
-    override val route: String = Route.drafts
-    override val arguments: List<NamedNavArgument> = emptyList()
-
-    @Composable
-    override fun scaffold(nav: NavHostController): ScaffoldOptions {
-        val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-        return ScaffoldOptions(
-            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-            topBar = { TopNavBar(nav, scrollBehavior) },
-            bottomBar = { BottomNavBar(nav) }
-        )
-    }
-
-    @Composable
-    override fun Composable(backStackEntry: NavBackStackEntry, nav: NavHostController) {
-        DraftsScreen(nav)
-    }
-}
-
 @Composable
-private fun DraftsScreenContent(
+private fun draftsScreenContent(
+    nav: NavHostController,
     drafts: List<Draft>?,
     onDraftClick: (Draft) -> Unit
-) {
-    DraftList(drafts, onItemClick = onDraftClick)
-}
-
-@Composable
-private fun DraftsScreen(
-    nav: NavHostController,
-    viewModel: DraftsViewModel = koinViewModel()
-) {
-    LaunchedEffect(Unit) {
-        viewModel.loadDrafts()
+) = buildScreenContent {
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    scaffoldOptions {
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+        topBar = { TopNavBar(nav, scrollBehavior) }
+        bottomBar = { BottomNavBar(nav) }
     }
 
-    DraftsScreenContent(viewModel.drafts) {
-        nav.navigate(Route.draftEdit(it.id))
+    content {
+        DraftList(drafts, onItemClick = onDraftClick)
+    }
+}
+
+val DraftsScreen = buildScreen {
+    route = Route.drafts
+    arguments = emptyList()
+
+    contentFactory { _, nav ->
+        val viewModel: DraftsViewModel = koinViewModel()
+        LaunchedEffect(Unit) {
+            viewModel.loadDrafts()
+        }
+
+        draftsScreenContent(
+            nav = nav,
+            drafts = viewModel.drafts,
+            onDraftClick = { nav.navigate(Route.draftEdit(it.id)) })
     }
 }
