@@ -1,5 +1,6 @@
 package io.joelt.texttemplate.ui.screens.draft_edit
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.*
@@ -16,6 +17,7 @@ import io.joelt.texttemplate.models.Either
 import io.joelt.texttemplate.navigation.*
 import io.joelt.texttemplate.ui.components.DraftEditor
 import io.joelt.texttemplate.ui.components.DraftEditorState
+import io.joelt.texttemplate.ui.screens.drafts.drafts
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -23,10 +25,18 @@ fun Route.draftEdit(draftId: Long) = "drafts/$draftId/edit/0"
 
 fun Route.createDraft(fromTemplateId: Long) = "drafts/0/edit/$fromTemplateId"
 
+fun NavHostController.navigateBackToDrafts() {
+    navigate(Route.drafts) {
+        this@navigateBackToDrafts.graph.startDestinationRoute?.let { route ->
+            popUpTo(route)
+        }
+    }
+}
+
 @Composable
 private fun draftEditScreenContent(
-    nav: NavHostController,
     draft: Draft?,
+    onBack: () -> Unit,
     onDraftChange: (Draft) -> Unit,
     onSave: () -> Unit,
     onDelete: () -> Unit,
@@ -42,7 +52,7 @@ private fun draftEditScreenContent(
         snackbarHost = { SnackbarHost(snackbarHostState) }
         topBar = {
             DraftEditTopNavBar(
-                nav,
+                onBack = onBack,
                 onSave = onSave,
                 onDelete = { showConfirmDeleteDialog = true },
                 onCopyToClipboard = {
@@ -107,9 +117,13 @@ val DraftEditScreen = buildScreen {
             }
         }
 
+        BackHandler(enabled = true) {
+            nav.navigateBackToDrafts()
+        }
+
         draftEditScreenContent(
-            nav = nav,
             draft = viewModel.draft,
+            onBack = { nav.navigateBackToDrafts() },
             onDraftChange = { viewModel.draft = it },
             onSave = { viewModel.saveDraft(nav) },
             onDelete = { viewModel.deleteDraft(nav) },

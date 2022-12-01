@@ -12,7 +12,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.*
-import androidx.navigation.compose.rememberNavController
 import io.joelt.texttemplate.AppScaffold
 import io.joelt.texttemplate.R
 import io.joelt.texttemplate.models.Draft
@@ -26,8 +25,8 @@ fun Route.archivedPreview(archivedId: Long) = "archived/$archivedId"
 
 @Composable
 private fun archivedPreviewScreenContent(
-    nav: NavHostController,
     archived: Draft?,
+    onBack: () -> Unit,
     onDelete: () -> Unit,
     onEdit: () -> Unit
 ) = buildScreenContent {
@@ -35,7 +34,7 @@ private fun archivedPreviewScreenContent(
     scaffoldOptions {
         topBar = {
             ArchivedPreviewTopNavBar(
-                nav,
+                onBack = onBack,
                 onDeleteArchived = { showConfirmDeleteDialog = true })
         }
         floatingActionButton = {
@@ -93,8 +92,8 @@ val ArchivedPreviewScreen = buildScreen {
         }
 
         archivedPreviewScreenContent(
-            nav = nav,
             archived = viewModel.archived,
+            onBack = { nav.popBackStack() },
             onDelete = { viewModel.deleteArchived(nav) },
             onEdit = { viewModel.unarchive(nav) })
     }
@@ -106,8 +105,7 @@ private fun ArchivedPreviewScreenPreview() {
     val template = genTemplates(1)[0]
     val archived = Draft(template)
 
-    val nav = rememberNavController()
-    val screen = archivedPreviewScreenContent(nav, archived, {}, {})
+    val screen = archivedPreviewScreenContent(archived, {}, {}, {})
     TextTemplateTheme {
         AppScaffold(scaffoldOptions = screen.scaffoldOptions) {
             screen.content()

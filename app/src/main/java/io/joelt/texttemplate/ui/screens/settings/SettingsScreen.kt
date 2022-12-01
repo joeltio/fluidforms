@@ -9,7 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import io.joelt.texttemplate.R
 import io.joelt.texttemplate.database.HourFormat
 import io.joelt.texttemplate.database.LocalPreferences
@@ -36,12 +35,12 @@ private fun SettingTitle(text: String) {
 
 @Composable
 private fun settingsScreenContent(
-    nav: NavHostController,
+    onBack: () -> Unit,
     onUpdateThemeColor: (ThemeColor) -> Unit,
     onUpdateHourFormat: (HourFormat) -> Unit,
 ) = buildScreenContent {
     scaffoldOptions {
-        topBar = { SettingsTopNavBar(nav) }
+        topBar = { SettingsTopNavBar(onBack = onBack) }
     }
 
     content {
@@ -83,7 +82,7 @@ val SettingsScreen = buildScreen {
         val scope = rememberCoroutineScope()
         val preferencesRepo: UserPreferencesRepository = get()
         settingsScreenContent(
-            nav = nav,
+            onBack = { nav.popBackStack() },
             onUpdateThemeColor = { scope.launch { preferencesRepo.updateThemeColor(it) } },
             onUpdateHourFormat = { scope.launch { preferencesRepo.updateHourFormat(it) } })
     }

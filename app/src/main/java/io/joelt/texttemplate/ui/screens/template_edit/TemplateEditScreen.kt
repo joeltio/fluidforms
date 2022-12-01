@@ -12,7 +12,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.*
-import androidx.navigation.compose.rememberNavController
 import io.joelt.texttemplate.AppScaffold
 import io.joelt.texttemplate.R
 import io.joelt.texttemplate.models.Template
