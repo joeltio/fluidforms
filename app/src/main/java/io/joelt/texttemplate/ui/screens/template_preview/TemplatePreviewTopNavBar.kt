@@ -19,7 +19,7 @@ import io.joelt.texttemplate.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TemplatePreviewTopNavBar(
-    nav: NavHostController,
+    onBack: () -> Unit,
     onDeleteTemplate: () -> Unit,
     onEditTemplate: () -> Unit
 ) {
@@ -29,9 +29,7 @@ fun TemplatePreviewTopNavBar(
     TopAppBar(
         title = {},
         navigationIcon = {
-            IconButton(onClick = {
-                nav.popBackStack()
-            }) {
+            IconButton(onClick = onBack) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = stringResource(id = R.string.navbar_back),

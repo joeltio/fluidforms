@@ -16,7 +16,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.*
-import androidx.navigation.compose.rememberNavController
 import io.joelt.texttemplate.AppScaffold
 import io.joelt.texttemplate.R
 import io.joelt.texttemplate.models.Template
@@ -30,28 +29,22 @@ import org.koin.androidx.compose.koinViewModel
 
 fun Route.templatePreview(templateId: Long) = "templates/$templateId"
 
-class TemplatePreviewController {
-    var onEditTemplate = {}
-    var onDeleteTemplate = {}
-    var onCreateDraftWithTemplate = {}
-}
-
-class TemplatePreviewScreen : Screen {
-    private val controller = TemplatePreviewController()
-
-    override val route: String = "templates/{templateId}"
-    override val arguments: List<NamedNavArgument> = listOf(
-        navArgument("templateId") { type = NavType.LongType }
-    )
-
-    @Composable
-    override fun scaffold(nav: NavHostController) = ScaffoldOptions(
+@Composable
+private fun templatePreviewScreenContent(
+    template: Template?,
+    onBack: () -> Unit,
+    onEditTemplate: () -> Unit,
+    onDeleteTemplate: () -> Unit,
+    onCreateDraftWithTemplate: () -> Unit
+) = buildScreenContent {
+    var showConfirmDeleteDialog by remember { mutableStateOf(false) }
+    scaffoldOptions {
         topBar = {
             TemplatePreviewTopNavBar(
-                nav,
-                onEditTemplate = { controller.onEditTemplate() },
-                onDeleteTemplate = { controller.onDeleteTemplate() })
-        },
+                onBack = onBack,
+                onEditTemplate = onEditTemplate,
+                onDeleteTemplate = { showConfirmDeleteDialog = true })
+        }
         floatingActionButton = {
             ExtendedFloatingActionButton(icon = {
                 Icon(
@@ -60,70 +53,59 @@ class TemplatePreviewScreen : Screen {
                 )
             }, text = {
                 Text(text = stringResource(R.string.fill_up_template))
-            }, onClick = { controller.onCreateDraftWithTemplate() })
+            }, onClick = onCreateDraftWithTemplate)
         }
+    }
+
+    content {
+        if (showConfirmDeleteDialog) {
+            AlertDialog(
+                title = { Text(text = stringResource(R.string.template_confirm_delete_title)) },
+                text = { Text(text = stringResource(R.string.template_confirm_delete)) },
+                onDismissRequest = { showConfirmDeleteDialog = false },
+                confirmButton = {
+                    TextButton(onClick = onDeleteTemplate) {
+                        Text(text = stringResource(R.string.dialog_delete))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showConfirmDeleteDialog = false }) {
+                        Text(text = stringResource(R.string.dialog_cancel))
+                    }
+                }
+            )
+        }
+
+        if (template == null) {
+            Spacer(Modifier.height(32.dp))
+            CircularProgressIndicator()
+        } else {
+            TemplatePreview(template = template)
+        }
+    }
+}
+
+val TemplatePreviewScreen = buildScreen {
+    route = "templates/{templateId}"
+    arguments = listOf(
+        navArgument("templateId") { type = NavType.LongType }
     )
 
-    @Composable
-    override fun Composable(backStackEntry: NavBackStackEntry, nav: NavHostController) {
+    contentFactory { backStackEntry, nav ->
         val templateId = backStackEntry.arguments!!.getLong("templateId")
-        TemplatePreviewScreen(nav, controller, templateId)
-    }
-}
+        val viewModel: TemplatePreviewViewModel = koinViewModel()
 
-@Composable
-private fun TemplatePreviewScreenContent(
-    template: Template?,
-) {
-    if (template == null) {
-        Spacer(Modifier.height(32.dp))
-        CircularProgressIndicator()
-        return
-    }
-
-    TemplatePreview(template = template)
-}
-
-@Composable
-private fun TemplatePreviewScreen(
-    nav: NavHostController,
-    screenController: TemplatePreviewController,
-    templateId: Long,
-    viewModel: TemplatePreviewViewModel = koinViewModel()
-) {
-    var showConfirmDeleteDialog by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) {
-        viewModel.loadTemplate(templateId)
-        screenController.onEditTemplate = {
-            nav.navigateClearStack(Route.templateEdit(templateId))
+        LaunchedEffect(Unit) {
+            viewModel.loadTemplate(templateId)
         }
-        screenController.onDeleteTemplate = {
-            showConfirmDeleteDialog = true
-        }
-        screenController.onCreateDraftWithTemplate = {
-            nav.navigateClearStack(Route.createDraft(templateId))
-        }
-    }
 
-    if (showConfirmDeleteDialog) {
-        AlertDialog(
-            title = { Text(text = stringResource(R.string.template_confirm_delete_title)) },
-            text = { Text(text = stringResource(R.string.template_confirm_delete)) },
-            onDismissRequest = { showConfirmDeleteDialog = false },
-            confirmButton = {
-                TextButton(onClick = { viewModel.deleteTemplate(nav) }) {
-                    Text(text = stringResource(R.string.dialog_delete))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showConfirmDeleteDialog = false }) {
-                    Text(text = stringResource(R.string.dialog_cancel))
-                }
-            }
-        )
+        templatePreviewScreenContent(
+            template = viewModel.template,
+            onBack = { nav.popBackStack() },
+            onEditTemplate = { nav.navigateClearStack(Route.templateEdit(templateId)) },
+            onDeleteTemplate = { viewModel.deleteTemplate(nav) },
+            onCreateDraftWithTemplate = { nav.navigateClearStack(Route.createDraft(templateId)) })
     }
-
-    TemplatePreviewScreenContent(viewModel.template)
 }
 
 @Preview(showBackground = true)
@@ -131,11 +113,10 @@ private fun TemplatePreviewScreen(
 private fun TemplateEditScreenPreview() {
     val template = genTemplates(1)[0]
 
-    val screen = TemplatePreviewScreen()
-    val nav = rememberNavController()
+    val screen = templatePreviewScreenContent(template, {}, {}, {}, {})
     TextTemplateTheme {
-        AppScaffold(scaffoldOptions = screen.scaffold(nav)) {
-            TemplatePreviewScreenContent(template)
+        AppScaffold(scaffoldOptions = screen.scaffoldOptions) {
+            screen.content()
         }
     }
 }
