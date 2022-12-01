@@ -5,10 +5,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 
 data class ScaffoldOptions @OptIn(ExperimentalMaterial3Api::class) constructor(
-    val modifier: Modifier = Modifier,
-    val topBar: @Composable () -> Unit = {},
-    val bottomBar: @Composable () -> Unit = {},
-    val snackbarHost: @Composable () -> Unit = {},
-    val floatingActionButton: @Composable () -> Unit = {},
-    val floatingActionButtonPosition: FabPosition = FabPosition.End,
+    var modifier: Modifier = Modifier,
+    var topBar: @Composable () -> Unit = {},
+    var bottomBar: @Composable () -> Unit = {},
+    var snackbarHost: @Composable () -> Unit = {},
+    var floatingActionButton: @Composable () -> Unit = {},
+    var floatingActionButtonPosition: FabPosition = FabPosition.End,
 )
