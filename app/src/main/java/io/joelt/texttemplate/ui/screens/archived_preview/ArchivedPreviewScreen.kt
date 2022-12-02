@@ -72,7 +72,7 @@ private fun archivedPreviewScreenContent(
             Spacer(Modifier.height(32.dp))
             CircularProgressIndicator()
         } else {
-            TemplatePreview(name = archived.name, slots = archived.slots)
+            TemplatePreview(name = archived.name, body = archived.body)
         }
     }
 }

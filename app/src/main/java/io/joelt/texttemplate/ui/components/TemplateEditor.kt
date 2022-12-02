@@ -20,8 +20,8 @@ import io.joelt.texttemplate.models.genTemplates
 import io.joelt.texttemplate.models.slots.PlainTextSlot
 import io.joelt.texttemplate.ui.theme.Typography
 
-data class TemplateEditorState(val templateName: String, val slotsState: SlotsEditorState) {
-    constructor(template: Template) : this(template.name, SlotsEditorState(template.slots))
+data class TemplateEditorState(val templateName: String, val editorState: TemplateBodyEditorState) {
+    constructor(template: Template) : this(template.name, TemplateBodyEditorState(template.body))
 }
 
 @Composable
@@ -29,7 +29,7 @@ fun TemplateEditor(
     state: TemplateEditorState,
     onStateChange: (newState: TemplateEditorState) -> Unit
 ) {
-    val slotsState = state.slotsState
+    val editorState = state.editorState
     TemplateViewLayout(name = {
         PlaceholderTextField(
             modifier = Modifier.fillMaxWidth(),
@@ -43,9 +43,9 @@ fun TemplateEditor(
     }, bottomBar = {
         BottomAppBar(
             actions = {
-                if (slotsState.selectedSlotIndex != null) {
+                if (editorState.selectedSlotIndex != null) {
                     val slot =
-                        (slotsState.slots[slotsState.selectedSlotIndex] as Either.Right).value
+                        (editorState.templateBody[editorState.selectedSlotIndex] as Either.Right).value
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(
                         text = slot.typeName(),
@@ -59,7 +59,7 @@ fun TemplateEditor(
                     )
                 }
             },
-            floatingActionButton = if (slotsState.selectedSlotIndex == null) {
+            floatingActionButton = if (editorState.selectedSlotIndex == null) {
                 {
                     val slotLabel = stringResource(R.string.plain_text_slot_placeholder)
                     FloatingActionButton(
@@ -68,7 +68,7 @@ fun TemplateEditor(
                             slot.label = slotLabel
                             onStateChange(
                                 state.copy(
-                                    slotsState = slotsState.insertSlotAtSelection(
+                                    editorState = editorState.insertSlotAtSelection(
                                         slot
                                     )
                                 )
@@ -85,7 +85,7 @@ fun TemplateEditor(
             }
         )
     }) {
-        val annotatedString = slotsState.annotatedString
+        val annotatedString = editorState.annotatedString
         PlaceholderTextField(
             modifier = Modifier.fillMaxSize(),
             textStyle = LocalTextStyle.current,
@@ -94,10 +94,10 @@ fun TemplateEditor(
                 TransformedText(annotatedString, OffsetMapping.Identity)
             },
             placeholder = stringResource(R.string.template_body_placeholder),
-            value = slotsState.textFieldValue,
+            value = editorState.textFieldValue,
             onValueChange = {
-                val newState = slotsState.withNewTextFieldValue(it)
-                onStateChange(state.copy(slotsState = newState))
+                val newState = editorState.withNewTextFieldValue(it)
+                onStateChange(state.copy(editorState = newState))
             }
         )
     }

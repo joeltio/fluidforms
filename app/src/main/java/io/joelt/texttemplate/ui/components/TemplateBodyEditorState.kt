@@ -7,11 +7,11 @@ import androidx.compose.ui.text.input.TextFieldValue
 import io.joelt.texttemplate.models.Either
 import io.joelt.texttemplate.models.slots.Slot
 
-// Cursors for indexing slots
-private data class Cursor(val slotIndex: Int, val subIndex: Int)
+// Cursors for indexing template body
+private data class Cursor(val itemIndex: Int, val subIndex: Int)
 private data class CursorRange(val start: Cursor, val end: Cursor)
 
-// Slot Extensions
+// Template Body Extensions
 private val Either<String, Slot>.text: String
     get() = when (this) {
         is Either.Left -> this.value
@@ -31,10 +31,10 @@ private fun List<Either<String, Slot>>.cursorAt(index: Int): Cursor {
     }
 
     var offset = 0
-    this.forEachIndexed { slotIndex, either ->
+    this.forEachIndexed { itemIndex, either ->
         val str = either.text
         if (index in offset until offset + str.length) {
-            return Cursor(slotIndex, index - offset)
+            return Cursor(itemIndex, index - offset)
         }
 
         offset += str.length
@@ -64,14 +64,14 @@ private fun <T> List<T>.add(index: Int, item: T): List<T> {
 }
 
 // Other extensions
-private fun TextRange.toCursorRange(slots: List<Either<String, Slot>>): CursorRange =
-    CursorRange(slots.cursorAt(this.start), slots.cursorAt(this.end - 1))
+private fun TextRange.toCursorRange(templateBody: List<Either<String, Slot>>): CursorRange =
+    CursorRange(templateBody.cursorAt(this.start), templateBody.cursorAt(this.end - 1))
 
 private fun String.insert(position: Int, value: String) =
     this.substring(0, position) + value + this.substring(position)
 
-data class SlotsEditorState(
-    val slots: List<Either<String, Slot>>,
+data class TemplateBodyEditorState(
+    val templateBody: List<Either<String, Slot>>,
     val selection: TextRange = TextRange.Zero,
     val composition: TextRange? = null,
     val selectedSlotIndex: Int? = null
@@ -89,50 +89,50 @@ data class SlotsEditorState(
         get() {
             annotatedStringCache?.let { return it }
 
-            return slots.annotateSlotsIndexed { index, slot ->
+            return templateBody.annotateSlotsIndexed { index, slot ->
                 val text = slot.label
                 withSlotStyle(index == selectedSlotIndex) { append(text) }
             }
         }
     val text by lazy {
         annotatedStringCache?.let { return@lazy it.text }
-        slots.annotateSlots {
+        templateBody.annotateSlots {
             append(it.label)
         }.text
     }
     val textFieldValue by lazy { TextFieldValue(text, selection, composition) }
 
     constructor(
-        slots: List<Either<String, Slot>>,
+        body: List<Either<String, Slot>>,
         selection: TextRange = TextRange.Zero,
         composition: TextRange? = null,
         selectedSlotIndex: Int? = null,
         annotatedStringCache: AnnotatedString?
-    ) : this(slots, selection, composition, selectedSlotIndex) {
+    ) : this(body, selection, composition, selectedSlotIndex) {
         this.annotatedStringCache = annotatedStringCache
     }
 
     // Insert, Delete, Replace
     private fun insert(
-        slots: List<Either<String, Slot>>,
+        body: List<Either<String, Slot>>,
         position: Int,
         value: String
     ): List<Either<String, Slot>> {
-        require(slots.isNotEmpty()) {
+        require(body.isNotEmpty()) {
             "insert assumes that slots is not empty"
         }
 
         // If inserting into a slot
         if (selectedSlotIndex != null) {
-            val either = slots[selectedSlotIndex]
-            val cursor = slots.cursorAt(position)
+            val either = body[selectedSlotIndex]
+            val cursor = body.cursorAt(position)
 
-            require(cursor.slotIndex == selectedSlotIndex || cursor.slotIndex == (selectedSlotIndex + 1)) {
+            require(cursor.itemIndex == selectedSlotIndex || cursor.itemIndex == (selectedSlotIndex + 1)) {
                 "Insert position should be at selected slot"
             }
 
             val newEither = either.withNewValue {
-                if (cursor.slotIndex == selectedSlotIndex) {
+                if (cursor.itemIndex == selectedSlotIndex) {
                     it.insert(cursor.subIndex, value)
                 } else {
                     // position == selectedSlotIndex + 1, meaning, insert at the
@@ -141,21 +141,21 @@ data class SlotsEditorState(
                 }
             }
 
-            return slots.replace(selectedSlotIndex, newEither)
+            return body.replace(selectedSlotIndex, newEither)
         }
 
-        val cursor = slots.cursorAt(position)
-        val either = slots[cursor.slotIndex]
+        val cursor = body.cursorAt(position)
+        val either = body[cursor.itemIndex]
 
         // If the either is a string, just insert it in
         if (either is Either.Left) {
             val newStr = either.value.insert(cursor.subIndex, value)
-            return slots.replace(cursor.slotIndex, Either.Left(newStr))
+            return body.replace(cursor.itemIndex, Either.Left(newStr))
         }
 
         // If the either is a slot, and we're inserting behind it
         if (position == text.length) {
-            return slots.add(Either.Left(value))
+            return body.add(Either.Left(value))
         }
 
         require(cursor.subIndex == 0) {
@@ -163,21 +163,21 @@ data class SlotsEditorState(
         }
 
         // The item at the current slotIndex is a Slot
-        val precedingEither = slots.getOrNull(cursor.slotIndex - 1)
+        val precedingEither = body.getOrNull(cursor.itemIndex - 1)
         if (precedingEither == null) {
             // There are no preceding items, insert a string to the start
-            return slots.add(0, Either.Left(value))
+            return body.add(0, Either.Left(value))
         } else if (precedingEither is Either.Right) {
             // The preceding item is a slot, insert a string between the slots
-            return slots.add(cursor.slotIndex, Either.Left(value))
+            return body.add(cursor.itemIndex, Either.Left(value))
         }
 
         // The preceding item is a string
-        return slots.replace(cursor.slotIndex - 1, precedingEither.withNewValue { it + value })
+        return body.replace(cursor.itemIndex - 1, precedingEither.withNewValue { it + value })
     }
 
     private fun delete(selection: TextRange): List<Either<String, Slot>> {
-        require(slots.isNotEmpty()) {
+        require(templateBody.isNotEmpty()) {
             "delete assumes slots is not empty"
         }
 
@@ -185,78 +185,78 @@ data class SlotsEditorState(
             "delete only deletes selections"
         }
 
-        val newSlots = slots.toMutableList()
-        val (start, end) = selection.toCursorRange(slots)
-        if (start.slotIndex == end.slotIndex) {
-            val either = slots[start.slotIndex]
+        val newBody = templateBody.toMutableList()
+        val (start, end) = selection.toCursorRange(templateBody)
+        if (start.itemIndex == end.itemIndex) {
+            val either = templateBody[start.itemIndex]
             val newEither = either.withNewValue {
                 it.substring(0, start.subIndex) + it.substring(end.subIndex + 1)
             }
 
-            newSlots.removeAt(start.slotIndex)
+            newBody.removeAt(start.itemIndex)
             if (newEither.text.isNotEmpty()) {
-                newSlots.add(start.slotIndex, newEither)
+                newBody.add(start.itemIndex, newEither)
             }
-            return newSlots
+            return newBody
         }
 
         // Delete everything between the two slotIndexes
-        for (index in (start.slotIndex + 1) until end.slotIndex) {
-            newSlots.removeAt(start.slotIndex + 1)
+        for (index in (start.itemIndex + 1) until end.itemIndex) {
+            newBody.removeAt(start.itemIndex + 1)
         }
 
         // Delete the subIndexes
-        val newStartSlot = slots[start.slotIndex].withNewValue {
+        val newStartItem = templateBody[start.itemIndex].withNewValue {
             it.substring(0, start.subIndex)
         }
-        val newEndSlot = slots[end.slotIndex].withNewValue {
+        val newEndItem = templateBody[end.itemIndex].withNewValue {
             it.substring(end.subIndex + 1)
         }
 
-        newSlots.removeAt(start.slotIndex + 1)
-        newSlots.removeAt(start.slotIndex)
+        newBody.removeAt(start.itemIndex + 1)
+        newBody.removeAt(start.itemIndex)
 
-        if (newStartSlot is Either.Left && newEndSlot is Either.Left) {
+        if (newStartItem is Either.Left && newEndItem is Either.Left) {
             // Combine the strings
-            newSlots.add(start.slotIndex, Either.Left(newStartSlot.value + newEndSlot.value))
-            if (newSlots[start.slotIndex].text.isEmpty()) {
-                newSlots.removeAt(start.slotIndex)
+            newBody.add(start.itemIndex, Either.Left(newStartItem.value + newEndItem.value))
+            if (newBody[start.itemIndex].text.isEmpty()) {
+                newBody.removeAt(start.itemIndex)
             }
         } else {
-            newSlots.add(start.slotIndex, newStartSlot)
-            newSlots.add(start.slotIndex + 1, newEndSlot)
-            if (newSlots[start.slotIndex + 1].text.isEmpty()) {
-                newSlots.removeAt(start.slotIndex + 1)
+            newBody.add(start.itemIndex, newStartItem)
+            newBody.add(start.itemIndex + 1, newEndItem)
+            if (newBody[start.itemIndex + 1].text.isEmpty()) {
+                newBody.removeAt(start.itemIndex + 1)
             }
-            if (newSlots[start.slotIndex].text.isEmpty()) {
-                newSlots.removeAt(start.slotIndex)
+            if (newBody[start.itemIndex].text.isEmpty()) {
+                newBody.removeAt(start.itemIndex)
             }
         }
 
-        return newSlots
+        return newBody
     }
 
     private fun replace(selection: TextRange, value: String): List<Either<String, Slot>> {
-        require(slots.isNotEmpty()) {
+        require(templateBody.isNotEmpty()) {
             "replace assumes slots is not empty"
         }
 
-        val newSlots = delete(selection).toMutableList()
-        val (start, end) = selection.toCursorRange(slots)
-        if (slots[start.slotIndex] is Either.Right
-            && start.slotIndex == end.slotIndex
+        val newBody = delete(selection).toMutableList()
+        val (start, end) = selection.toCursorRange(templateBody)
+        if (templateBody[start.itemIndex] is Either.Right
+            && start.itemIndex == end.itemIndex
             && start.subIndex == 0
-            && end.subIndex == slots[start.slotIndex].text.lastIndex
+            && end.subIndex == templateBody[start.itemIndex].text.lastIndex
         ) {
             // If the deleted portion is a whole slot, restore it
-            val newSlot = (slots[start.slotIndex] as Either.Right).value.makeCopy(label = value)
-            newSlots.add(start.slotIndex, Either.Right(newSlot))
-            return newSlots
-        } else if (newSlots.isEmpty()) {
+            val newSlot = (templateBody[start.itemIndex] as Either.Right).value.makeCopy(label = value)
+            newBody.add(start.itemIndex, Either.Right(newSlot))
+            return newBody
+        } else if (newBody.isEmpty()) {
             return listOf(Either.Left(value))
         }
 
-        return insert(newSlots, selection.start, value)
+        return insert(newBody, selection.start, value)
     }
 
     private fun shouldSelectSlot(
@@ -313,58 +313,58 @@ data class SlotsEditorState(
         return null
     }
 
-    private fun selectAdjacentSlot(): SlotsEditorState? {
+    private fun selectAdjacentSlot(): TemplateBodyEditorState? {
         if (!isCursor) {
             return null
         }
 
         val position = selection.start
-        var cursor = slots.cursorAt(position)
+        var cursor = templateBody.cursorAt(position)
         if (selectedSlotIndex == null) {
             if (position == text.length) {
-                cursor = Cursor(cursor.slotIndex + 1, 0)
+                cursor = Cursor(cursor.itemIndex + 1, 0)
             } else if (cursor.subIndex != 0) {
                 return null
             }
 
             // Try to select from unselected
-            val precedingEither = slots.getOrNull(cursor.slotIndex - 1)
+            val precedingEither = templateBody.getOrNull(cursor.itemIndex - 1)
             if (precedingEither is Either.Right) {
-                return SlotsEditorState(slots, selection, composition, cursor.slotIndex - 1)
+                return TemplateBodyEditorState(templateBody, selection, composition, cursor.itemIndex - 1)
             }
             return null
         }
 
         // Try to unselect from selected
-        if (cursor.slotIndex == selectedSlotIndex && cursor.subIndex == 0) {
-            return SlotsEditorState(slots, selection, composition, null)
+        if (cursor.itemIndex == selectedSlotIndex && cursor.subIndex == 0) {
+            return TemplateBodyEditorState(templateBody, selection, composition, null)
         }
         return null
     }
 
-    private fun unselectCurrentSlotWhenEnterPressed(newText: String): SlotsEditorState? {
+    private fun unselectCurrentSlotWhenEnterPressed(newText: String): TemplateBodyEditorState? {
         if (selectedSlotIndex == null || newText != "\n") {
             return null
         }
 
-        val cursor = slots.cursorAt(selection.start)
-        val endOfSlot = selection.start + slots[cursor.slotIndex].text.length - cursor.subIndex
-        return SlotsEditorState(slots, TextRange(endOfSlot), null, null)
+        val cursor = templateBody.cursorAt(selection.start)
+        val endOfSlot = selection.start + templateBody[cursor.itemIndex].text.length - cursor.subIndex
+        return TemplateBodyEditorState(templateBody, TextRange(endOfSlot), null, null)
     }
 
     // Change state functions
-    fun withNewTextFieldValue(newTextFieldValue: TextFieldValue): SlotsEditorState {
+    fun withNewTextFieldValue(newTextFieldValue: TextFieldValue): TemplateBodyEditorState {
         val textChanged = newTextFieldValue.text != text
         val lenDiff = newTextFieldValue.text.length - textFieldValue.text.length
-        val newSlots = if (slots.isEmpty()) {
+        val newBody = if (templateBody.isEmpty()) {
             listOf(Either.Left(newTextFieldValue.text))
         } else if (!textChanged) {
-            slots
+            templateBody
         } else if (isCursor && lenDiff > 0) {
             // Insert
             val newText = newTextFieldValue.text.substring(cursor, cursor + lenDiff)
             unselectCurrentSlotWhenEnterPressed(newText)?.let { return it }
-            insert(slots, cursor, newText)
+            insert(templateBody, cursor, newText)
         } else if ((isCursor && lenDiff < 0) || (isSelection && selection.length == -lenDiff)) {
             // Delete
             // Select the adjacent slot if that is an option
@@ -386,13 +386,13 @@ data class SlotsEditorState(
         }
 
         val newSelectedSlotIndex = if (textChanged || selection != newTextFieldValue.selection) {
-            findSelectedSlot(newTextFieldValue.selection, selectedSlotIndex, newSlots)
+            findSelectedSlot(newTextFieldValue.selection, selectedSlotIndex, newBody)
         } else {
             selectedSlotIndex
         }
 
-        return SlotsEditorState(
-            newSlots,
+        return TemplateBodyEditorState(
+            newBody,
             newTextFieldValue.selection,
             newTextFieldValue.composition,
             newSelectedSlotIndex,
@@ -404,14 +404,14 @@ data class SlotsEditorState(
         )
     }
 
-    fun insertSlotAtSelection(slot: Slot): SlotsEditorState {
+    fun insertSlotAtSelection(slot: Slot): TemplateBodyEditorState {
         // Don't insert any slots if there is already a selected slot
         if (selectedSlotIndex != null) {
             return this
         }
 
-        if (slots.isEmpty()) {
-            return SlotsEditorState(
+        if (templateBody.isEmpty()) {
+            return TemplateBodyEditorState(
                 listOf(Either.Right(slot)),
                 TextRange(0, slot.label.length),
                 null,
@@ -420,38 +420,38 @@ data class SlotsEditorState(
         }
 
         // Delete if there is a selection
-        val newSlots = if (isSelection) {
+        val newBody = if (isSelection) {
             delete(selection)
         } else {
-            slots
+            templateBody
         }.toMutableList()
 
         // Insert the slot
-        val cursor = slots.cursorAt(selection.start)
+        val cursor = templateBody.cursorAt(selection.start)
         if (cursor.subIndex == 0) {
             // Insert on the left of the slotIndex
-            newSlots.add(cursor.slotIndex, Either.Right(slot))
-            return SlotsEditorState(
-                newSlots,
+            newBody.add(cursor.itemIndex, Either.Right(slot))
+            return TemplateBodyEditorState(
+                newBody,
                 TextRange(selection.start, selection.start + slot.label.length),
                 null,
-                cursor.slotIndex
+                cursor.itemIndex
             )
         }
 
         // Split the string at slotIndex
-        val beforeStr = newSlots[cursor.slotIndex].text.substring(0, cursor.subIndex)
-        val afterStr = newSlots[cursor.slotIndex].text.substring(cursor.subIndex)
-        newSlots.removeAt(cursor.slotIndex)
-        newSlots.add(cursor.slotIndex, Either.Left(beforeStr))
-        newSlots.add(cursor.slotIndex + 1, Either.Right(slot))
-        newSlots.add(cursor.slotIndex + 2, Either.Left(afterStr))
+        val beforeStr = newBody[cursor.itemIndex].text.substring(0, cursor.subIndex)
+        val afterStr = newBody[cursor.itemIndex].text.substring(cursor.subIndex)
+        newBody.removeAt(cursor.itemIndex)
+        newBody.add(cursor.itemIndex, Either.Left(beforeStr))
+        newBody.add(cursor.itemIndex + 1, Either.Right(slot))
+        newBody.add(cursor.itemIndex + 2, Either.Left(afterStr))
 
-        return SlotsEditorState(
-            newSlots,
+        return TemplateBodyEditorState(
+            newBody,
             TextRange(selection.start, selection.start + slot.label.length),
             null,
-            cursor.slotIndex + 1
+            cursor.itemIndex + 1
         )
     }
 }

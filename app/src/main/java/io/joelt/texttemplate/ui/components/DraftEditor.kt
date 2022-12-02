@@ -17,16 +17,16 @@ import io.joelt.texttemplate.models.*
 import io.joelt.texttemplate.models.slots.Slot
 import io.joelt.texttemplate.ui.components.slot_editors.SlotEditor
 
-enum class SlotsMode {
+enum class EditorMode {
     NAVIGATION,
     EDIT
 }
 
 data class DraftEditorState(
     val name: String,
-    val slots: List<Either<String, Slot>>,
+    val body: List<Either<String, Slot>>,
 ) {
-    constructor(draft: Draft) : this(draft.name, draft.slots)
+    constructor(draft: Draft) : this(draft.name, draft.body)
 }
 
 @Composable
@@ -35,10 +35,10 @@ fun DraftEditor(
     onStateChange: (newState: DraftEditorState) -> Unit
 ) {
     var selectedIndex by remember {
-        mutableStateOf(state.slots.indexOfFirst { it is Either.Right })
+        mutableStateOf(state.body.indexOfFirst { it is Either.Right })
     }
     var mode by remember {
-        mutableStateOf(SlotsMode.NAVIGATION)
+        mutableStateOf(EditorMode.NAVIGATION)
     }
 
     TemplateViewLayout(name = {
@@ -52,8 +52,8 @@ fun DraftEditor(
                 onStateChange(state.copy(name = it))
             })
     }, bottomBar = {
-        val nextIndex = state.slots.nextSlot(selectedIndex)
-        val prevIndex = state.slots.prevSlot(selectedIndex)
+        val nextIndex = state.body.nextSlot(selectedIndex)
+        val prevIndex = state.body.prevSlot(selectedIndex)
 
         BottomAppBar(
             actions = {
@@ -70,16 +70,16 @@ fun DraftEditor(
                 // Slot Editor
                 AnimatedVisibility(
                     modifier = Modifier.weight(1f),
-                    visible = mode == SlotsMode.EDIT
+                    visible = mode == EditorMode.EDIT
                 ) {
                     SlotEditor(
                         modifier = Modifier.weight(1f),
-                        slot = (state.slots[selectedIndex] as Either.Right).value,
+                        slot = (state.body[selectedIndex] as Either.Right).value,
                         onSlotChanged = {
-                            val newSlots = state.slots.toMutableList()
+                            val newSlots = state.body.toMutableList()
                             newSlots.removeAt(selectedIndex)
                             newSlots.add(selectedIndex, Either.Right(it))
-                            onStateChange(state.copy(slots = newSlots))
+                            onStateChange(state.copy(body = newSlots))
                         })
                 }
 
@@ -93,12 +93,12 @@ fun DraftEditor(
                     )
                 }
             },
-            floatingActionButton = if (mode == SlotsMode.EDIT) {
+            floatingActionButton = if (mode == EditorMode.EDIT) {
                 null
             } else {
                 {
                     FloatingActionButton(onClick = {
-                        mode = SlotsMode.EDIT
+                        mode = EditorMode.EDIT
                     }) {
                         Icon(
                             imageVector = Icons.Default.Edit,
@@ -111,8 +111,8 @@ fun DraftEditor(
             }
         )
     }) {
-        SlotsPreview(
-            slots = state.slots, selectedSlotIndex = if (selectedIndex == -1) {
+        TemplateBodyPreview(
+            body = state.body, selectedSlotIndex = if (selectedIndex == -1) {
                 null
             } else {
                 selectedIndex
@@ -126,7 +126,7 @@ fun DraftEditor(
 private fun DraftEditorPreview() {
     val template = genTemplates(1)[0]
     var state by remember {
-        mutableStateOf(DraftEditorState(template.name, template.slots))
+        mutableStateOf(DraftEditorState(template.name, template.body))
     }
 
     Column {

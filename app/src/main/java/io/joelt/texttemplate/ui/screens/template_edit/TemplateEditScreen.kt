@@ -38,7 +38,7 @@ data class TemplateEditState(
         copy(
             template = template.copy(
                 name = editorState.templateName,
-                slots = editorState.slotsState.slots
+                body = editorState.editorState.templateBody
             ),
             editorState = editorState
         )

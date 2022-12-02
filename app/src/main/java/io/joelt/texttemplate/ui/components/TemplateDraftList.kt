@@ -42,7 +42,7 @@ fun TemplateList(templates: List<Template>?, onItemClick: (Template) -> Unit) {
     TemplateListLayout(templates) {
         TemplateRow(
             name = it.name,
-            slots = it.slots,
+            body = it.body,
             modifier = Modifier.fillMaxWidth(),
             onClick = { onItemClick(it) })
     }
@@ -53,7 +53,7 @@ fun DraftList(drafts: List<Draft>?, onItemClick: (Draft) -> Unit) {
     TemplateListLayout(drafts) {
         TemplateRow(
             name = it.name,
-            slots = it.slots,
+            body = it.body,
             modifier = Modifier.fillMaxWidth(),
             onClick = { onItemClick(it) },
             dateTime = it.lastEditedOn

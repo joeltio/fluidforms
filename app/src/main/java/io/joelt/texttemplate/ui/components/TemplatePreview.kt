@@ -11,15 +11,15 @@ import io.joelt.texttemplate.models.slots.Slot
 
 @Composable
 fun TemplatePreview(template: Template) {
-    TemplatePreview(name = template.name, slots = template.slots)
+    TemplatePreview(name = template.name, body = template.body)
 }
 
 @Composable
-fun TemplatePreview(name: String, slots: List<Either<String, Slot>>) {
+fun TemplatePreview(name: String, body: List<Either<String, Slot>>) {
     TemplateViewLayout(contentScrollable = true, name = {
         Text(text = name, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }) {
-        SlotsPreview(slots = slots)
+        TemplateBodyPreview(body = body)
     }
 }
 

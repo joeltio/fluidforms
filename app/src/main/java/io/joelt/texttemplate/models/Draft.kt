@@ -8,7 +8,7 @@ data class Draft(
     val createdOn: LocalDateTime = LocalDateTime.now(),
     val archived: Boolean = false,
     val name: String,
-    val slots: List<Either<String, Slot>>,
+    val body: List<Either<String, Slot>>,
     val lastEditedIndex: Int,
     val lastEditedOn: LocalDateTime
 ) {
@@ -20,7 +20,7 @@ data class Draft(
         text: String,
         lastEditedIndex: Int,
         lastEditedOn: LocalDateTime
-    ) : this(id, createdOn, archived, name, text.toTemplateSlot(), lastEditedIndex, lastEditedOn)
+    ) : this(id, createdOn, archived, name, text.toTemplateBody(), lastEditedIndex, lastEditedOn)
 
     constructor(template: Template) : this(
         0,
@@ -33,6 +33,6 @@ data class Draft(
     )
 
     val text: String by lazy {
-        serializeTemplate(slots)
+        serializeTemplate(body)
     }
 }

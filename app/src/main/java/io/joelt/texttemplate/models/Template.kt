@@ -7,7 +7,7 @@ data class Template(
     val id: Long = 0,
     val createdOn: LocalDateTime = LocalDateTime.now(),
     val name: String,
-    val slots: List<Either<String, Slot>>,
+    val body: List<Either<String, Slot>>,
 ) {
     constructor(
         id: Long = 0,
@@ -18,10 +18,10 @@ data class Template(
         id,
         createdOn,
         name,
-        text.toTemplateSlot(),
+        text.toTemplateBody(),
     )
 
     val text: String by lazy {
-        serializeTemplate(slots)
+        serializeTemplate(body)
     }
 }
