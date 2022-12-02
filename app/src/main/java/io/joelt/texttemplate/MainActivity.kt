@@ -98,7 +98,12 @@ class MainActivity : ComponentActivity() {
                                             Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
                                     }
 
-                                    scaffoldOptions = screenContent.scaffoldOptions
+                                    // Run this only once. If put outside, it will trigger an
+                                    // infinite loop of recomposing and setting the scaffold options
+                                    LaunchedEffect(Unit) {
+                                        scaffoldOptions = screenContent.scaffoldOptions
+                                    }
+
                                     screenContent.content()
                                 }
                             }
