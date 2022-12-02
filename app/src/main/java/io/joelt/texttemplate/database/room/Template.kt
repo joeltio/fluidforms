@@ -10,11 +10,11 @@ data class Template(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo(name = "created_on") val createdOn: LocalDateTime,
     @ColumnInfo(name = "name") val name: String,
-    @ColumnInfo(name = "template") val template: String
+    @ColumnInfo(name = "body") val body: String
 )
 
 fun ModelTemplate.toRoom(overrideId: Long = this.id): Template =
     Template(overrideId, this.createdOn, this.name, this.text)
 
 fun Template.toModel(): ModelTemplate =
-    ModelTemplate(this.id, this.createdOn, this.name, this.template)
+    ModelTemplate(this.id, this.createdOn, this.name, this.body)

@@ -3,11 +3,8 @@ package io.joelt.texttemplate.database.room
 import io.joelt.texttemplate.database.TemplatesRepository
 import io.joelt.texttemplate.models.Draft
 import io.joelt.texttemplate.models.Template
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlin.coroutines.CoroutineContext
-
 
 class RoomRepository(
     private val database: AppDatabase
