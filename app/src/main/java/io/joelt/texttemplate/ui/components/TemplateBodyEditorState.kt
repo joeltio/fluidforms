@@ -31,8 +31,8 @@ private fun List<Either<String, Slot>>.cursorAt(index: Int): Cursor {
     }
 
     var offset = 0
-    this.forEachIndexed { itemIndex, either ->
-        val str = either.text
+    this.forEachIndexed { itemIndex, item ->
+        val str = item.text
         if (index in offset until offset + str.length) {
             return Cursor(itemIndex, index - offset)
         }
@@ -124,14 +124,14 @@ data class TemplateBodyEditorState(
 
         // If inserting into a slot
         if (selectedSlotIndex != null) {
-            val either = body[selectedSlotIndex]
+            val item = body[selectedSlotIndex]
             val cursor = body.cursorAt(position)
 
             require(cursor.itemIndex == selectedSlotIndex || cursor.itemIndex == (selectedSlotIndex + 1)) {
                 "Insert position should be at selected slot"
             }
 
-            val newEither = either.withNewValue {
+            val newItem = item.withNewValue {
                 if (cursor.itemIndex == selectedSlotIndex) {
                     it.insert(cursor.subIndex, value)
                 } else {
@@ -141,19 +141,19 @@ data class TemplateBodyEditorState(
                 }
             }
 
-            return body.replace(selectedSlotIndex, newEither)
+            return body.replace(selectedSlotIndex, newItem)
         }
 
         val cursor = body.cursorAt(position)
-        val either = body[cursor.itemIndex]
+        val item = body[cursor.itemIndex]
 
         // If the either is a string, just insert it in
-        if (either is Either.Left) {
-            val newStr = either.value.insert(cursor.subIndex, value)
+        if (item is Either.Left) {
+            val newStr = item.value.insert(cursor.subIndex, value)
             return body.replace(cursor.itemIndex, Either.Left(newStr))
         }
 
-        // If the either is a slot, and we're inserting behind it
+        // If the item is a slot, and we're inserting behind it
         if (position == text.length) {
             return body.add(Either.Left(value))
         }
@@ -163,17 +163,17 @@ data class TemplateBodyEditorState(
         }
 
         // The item at the current slotIndex is a Slot
-        val precedingEither = body.getOrNull(cursor.itemIndex - 1)
-        if (precedingEither == null) {
+        val precedingItem = body.getOrNull(cursor.itemIndex - 1)
+        if (precedingItem == null) {
             // There are no preceding items, insert a string to the start
             return body.add(0, Either.Left(value))
-        } else if (precedingEither is Either.Right) {
+        } else if (precedingItem is Either.Right) {
             // The preceding item is a slot, insert a string between the slots
             return body.add(cursor.itemIndex, Either.Left(value))
         }
 
         // The preceding item is a string
-        return body.replace(cursor.itemIndex - 1, precedingEither.withNewValue { it + value })
+        return body.replace(cursor.itemIndex - 1, precedingItem.withNewValue { it + value })
     }
 
     private fun delete(selection: TextRange): List<Either<String, Slot>> {
@@ -188,14 +188,14 @@ data class TemplateBodyEditorState(
         val newBody = templateBody.toMutableList()
         val (start, end) = selection.toCursorRange(templateBody)
         if (start.itemIndex == end.itemIndex) {
-            val either = templateBody[start.itemIndex]
-            val newEither = either.withNewValue {
+            val item = templateBody[start.itemIndex]
+            val newItem = item.withNewValue {
                 it.substring(0, start.subIndex) + it.substring(end.subIndex + 1)
             }
 
             newBody.removeAt(start.itemIndex)
-            if (newEither.text.isNotEmpty()) {
-                newBody.add(start.itemIndex, newEither)
+            if (newItem.text.isNotEmpty()) {
+                newBody.add(start.itemIndex, newItem)
             }
             return newBody
         }
@@ -328,8 +328,8 @@ data class TemplateBodyEditorState(
             }
 
             // Try to select from unselected
-            val precedingEither = templateBody.getOrNull(cursor.itemIndex - 1)
-            if (precedingEither is Either.Right) {
+            val precedingItem = templateBody.getOrNull(cursor.itemIndex - 1)
+            if (precedingItem is Either.Right) {
                 return TemplateBodyEditorState(templateBody, selection, composition, cursor.itemIndex - 1)
             }
             return null
