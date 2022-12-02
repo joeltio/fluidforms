@@ -25,7 +25,7 @@ private tailrec fun parse(text: String, currentTag: String?, acc: MutableList<Ei
     return parse(textAfterTag, null, acc)
 }
 
-fun String.toTemplateSlot(): List<Either<String, Slot>> = parse(this, null, mutableListOf())
+fun String.toTemplateBody(): List<Either<String, Slot>> = parse(this, null, mutableListOf())
 
 fun serializeTemplate(template: List<Either<String, Slot>>): String {
     val sb = StringBuilder()

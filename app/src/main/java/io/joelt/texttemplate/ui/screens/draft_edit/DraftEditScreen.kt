@@ -91,7 +91,7 @@ private fun draftEditScreenContent(
             CircularProgressIndicator()
         } else {
             DraftEditor(state = DraftEditorState(draft), onStateChange = {
-                onDraftChange(draft.copy(name = it.name, slots = it.slots))
+                onDraftChange(draft.copy(name = it.name, body = it.body))
             })
         }
     }
@@ -129,7 +129,7 @@ val DraftEditScreen = buildScreen {
             onDelete = { viewModel.deleteDraft(nav) },
             onCopyToClipboard = {
                 viewModel.draft?.let { draft ->
-                    draft.slots.joinToString {
+                    draft.body.joinToString {
                         when (it) {
                             is Either.Left -> it.value
                             is Either.Right -> it.value.toDisplayString()

@@ -17,7 +17,6 @@ import io.joelt.texttemplate.database.LocalPreferences
 import io.joelt.texttemplate.models.Either
 import io.joelt.texttemplate.models.genTemplates
 import io.joelt.texttemplate.models.slots.Slot
-import io.joelt.texttemplate.models.toTemplateSlot
 import io.joelt.texttemplate.ui.theme.TextTemplateTheme
 import io.joelt.texttemplate.ui.theme.Typography
 import java.time.LocalDateTime
@@ -45,7 +44,7 @@ fun formatDateTime(dateTime: LocalDateTime): String {
 @Composable
 fun TemplateRow(
     name: String,
-    slots: List<Either<String, Slot>>,
+    body: List<Either<String, Slot>>,
     modifier: Modifier = Modifier,
     dateTime: LocalDateTime? = null,
     onClick: () -> Unit = {}
@@ -62,8 +61,8 @@ fun TemplateRow(
             overflow = TextOverflow.Ellipsis
         )
         Spacer(modifier = Modifier.height(4.dp))
-        SlotsPreview(
-            slots = slots,
+        TemplateBodyPreview(
+            body = body,
             style = Typography.bodyMedium,
             maxLines = 3
         )
@@ -85,7 +84,7 @@ private fun TemplateRowExample() {
     TextTemplateTheme {
         Column {
             genTemplates(4).forEach {
-                TemplateRow(it.name, it.slots)
+                TemplateRow(it.name, it.body)
                 Divider()
             }
         }

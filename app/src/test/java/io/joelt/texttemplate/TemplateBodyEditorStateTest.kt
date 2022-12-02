@@ -5,7 +5,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import io.joelt.texttemplate.models.Either
 import io.joelt.texttemplate.models.slots.PlainTextSlot
 import io.joelt.texttemplate.models.slots.Slot
-import io.joelt.texttemplate.ui.components.SlotsEditorState
+import io.joelt.texttemplate.ui.components.TemplateBodyEditorState
 import org.junit.Assert.*
 import org.junit.Test
 
@@ -28,7 +28,7 @@ private fun slotBuilder(block: SlotBuilder.() -> Unit): List<Either<String, Slot
     return builder.build()
 }
 
-class SlotsEditorStateTest {
+class TemplateBodyEditorStateTest {
     private fun asLeft(value: Either<String, Slot>): String = (value as Either.Left).value
     private fun asRight(value: Either<String, Slot>): Slot = (value as Either.Right).value
     private fun slotLabel(value: Either<String, Slot>): String = asRight(value).label
@@ -37,10 +37,10 @@ class SlotsEditorStateTest {
     @Test
     fun insert_from_empty() {
         val slots = slotBuilder {}
-        val startState = SlotsEditorState(slots, TextRange(0))
+        val startState = TemplateBodyEditorState(slots, TextRange(0))
         val input = TextFieldValue("h", TextRange(13))
         val newState = startState.withNewTextFieldValue(input)
-        assertEquals("h", asLeft(newState.slots[0]))
+        assertEquals("h", asLeft(newState.templateBody[0]))
         assertNull(newState.selectedSlotIndex)
     }
 
@@ -51,12 +51,12 @@ class SlotsEditorStateTest {
             plainSlot("Name")
             string("!")
         }
-        val startState = SlotsEditorState(slots, TextRange(12))
+        val startState = TemplateBodyEditorState(slots, TextRange(12))
         val input = TextFieldValue("hello, Name! ", TextRange(13))
         val newState = startState.withNewTextFieldValue(input)
-        assertEquals("hello, ", asLeft(newState.slots[0]))
-        assertEquals("Name", slotLabel(newState.slots[1]))
-        assertEquals("! ", asLeft(newState.slots[2]))
+        assertEquals("hello, ", asLeft(newState.templateBody[0]))
+        assertEquals("Name", slotLabel(newState.templateBody[1]))
+        assertEquals("! ", asLeft(newState.templateBody[2]))
         assertNull(newState.selectedSlotIndex)
     }
 
@@ -68,13 +68,13 @@ class SlotsEditorStateTest {
             string("! ")
             plainSlot("Name")
         }
-        val startState = SlotsEditorState(slots, TextRange(9), null, 1)
+        val startState = TemplateBodyEditorState(slots, TextRange(9), null, 1)
         val input = TextFieldValue("hello, Naame! Name", TextRange(10))
         val newState = startState.withNewTextFieldValue(input)
-        assertEquals("hello, ", asLeft(newState.slots[0]))
-        assertEquals("Naame", slotLabel(newState.slots[1]))
-        assertEquals("! ", asLeft(newState.slots[2]))
-        assertEquals("Name", slotLabel(newState.slots[3]))
+        assertEquals("hello, ", asLeft(newState.templateBody[0]))
+        assertEquals("Naame", slotLabel(newState.templateBody[1]))
+        assertEquals("! ", asLeft(newState.templateBody[2]))
+        assertEquals("Name", slotLabel(newState.templateBody[3]))
         assertEquals(1, newState.selectedSlotIndex)
     }
 
@@ -86,13 +86,13 @@ class SlotsEditorStateTest {
             string("! ")
             plainSlot("Name")
         }
-        val startState = SlotsEditorState(slots, TextRange(7), null, null)
+        val startState = TemplateBodyEditorState(slots, TextRange(7), null, null)
         val input = TextFieldValue("hello, aName! Name", TextRange(8))
         val newState = startState.withNewTextFieldValue(input)
-        assertEquals("hello, a", asLeft(newState.slots[0]))
-        assertEquals("Name", slotLabel(newState.slots[1]))
-        assertEquals("! ", asLeft(newState.slots[2]))
-        assertEquals("Name", slotLabel(newState.slots[3]))
+        assertEquals("hello, a", asLeft(newState.templateBody[0]))
+        assertEquals("Name", slotLabel(newState.templateBody[1]))
+        assertEquals("! ", asLeft(newState.templateBody[2]))
+        assertEquals("Name", slotLabel(newState.templateBody[3]))
         assertNull(newState.selectedSlotIndex)
     }
 
@@ -104,13 +104,13 @@ class SlotsEditorStateTest {
             string("! ")
             plainSlot("Name")
         }
-        val startState = SlotsEditorState(slots, TextRange(11), null, null)
+        val startState = TemplateBodyEditorState(slots, TextRange(11), null, null)
         val input = TextFieldValue("hello, Namea! Name", TextRange(12))
         val newState = startState.withNewTextFieldValue(input)
-        assertEquals("hello, ", asLeft(newState.slots[0]))
-        assertEquals("Name", slotLabel(newState.slots[1]))
-        assertEquals("a! ", asLeft(newState.slots[2]))
-        assertEquals("Name", slotLabel(newState.slots[3]))
+        assertEquals("hello, ", asLeft(newState.templateBody[0]))
+        assertEquals("Name", slotLabel(newState.templateBody[1]))
+        assertEquals("a! ", asLeft(newState.templateBody[2]))
+        assertEquals("Name", slotLabel(newState.templateBody[3]))
         assertNull(newState.selectedSlotIndex)
     }
 
@@ -122,13 +122,13 @@ class SlotsEditorStateTest {
             string("! ")
             plainSlot("Name")
         }
-        val startState = SlotsEditorState(slots, TextRange(7), null, 1)
+        val startState = TemplateBodyEditorState(slots, TextRange(7), null, 1)
         val input = TextFieldValue("hello, aName! Name", TextRange(8))
         val newState = startState.withNewTextFieldValue(input)
-        assertEquals("hello, ", asLeft(newState.slots[0]))
-        assertEquals("aName", slotLabel(newState.slots[1]))
-        assertEquals("! ", asLeft(newState.slots[2]))
-        assertEquals("Name", slotLabel(newState.slots[3]))
+        assertEquals("hello, ", asLeft(newState.templateBody[0]))
+        assertEquals("aName", slotLabel(newState.templateBody[1]))
+        assertEquals("! ", asLeft(newState.templateBody[2]))
+        assertEquals("Name", slotLabel(newState.templateBody[3]))
         assertEquals(1, newState.selectedSlotIndex)
     }
 
@@ -140,13 +140,13 @@ class SlotsEditorStateTest {
             string("! ")
             plainSlot("Name")
         }
-        val startState = SlotsEditorState(slots, TextRange(11), null, 1)
+        val startState = TemplateBodyEditorState(slots, TextRange(11), null, 1)
         val input = TextFieldValue("hello, Namea! Name", TextRange(12))
         val newState = startState.withNewTextFieldValue(input)
-        assertEquals("hello, ", asLeft(newState.slots[0]))
-        assertEquals("Namea", slotLabel(newState.slots[1]))
-        assertEquals("! ", asLeft(newState.slots[2]))
-        assertEquals("Name", slotLabel(newState.slots[3]))
+        assertEquals("hello, ", asLeft(newState.templateBody[0]))
+        assertEquals("Namea", slotLabel(newState.templateBody[1]))
+        assertEquals("! ", asLeft(newState.templateBody[2]))
+        assertEquals("Name", slotLabel(newState.templateBody[3]))
         assertEquals(1, newState.selectedSlotIndex)
     }
 
@@ -156,12 +156,12 @@ class SlotsEditorStateTest {
             plainSlot("Name")
             plainSlot("Name")
         }
-        val startState = SlotsEditorState(slots, TextRange(4), null, null)
+        val startState = TemplateBodyEditorState(slots, TextRange(4), null, null)
         val input = TextFieldValue("NameXName", TextRange(5))
         val newState = startState.withNewTextFieldValue(input)
-        assertEquals("Name", slotLabel(newState.slots[0]))
-        assertEquals("X", asLeft(newState.slots[1]))
-        assertEquals("Name", slotLabel(newState.slots[2]))
+        assertEquals("Name", slotLabel(newState.templateBody[0]))
+        assertEquals("X", asLeft(newState.templateBody[1]))
+        assertEquals("Name", slotLabel(newState.templateBody[2]))
         assertNull(newState.selectedSlotIndex)
     }
 
@@ -170,10 +170,10 @@ class SlotsEditorStateTest {
         val slots = slotBuilder {
             string("hello")
         }
-        val startState = SlotsEditorState(slots, TextRange(5))
+        val startState = TemplateBodyEditorState(slots, TextRange(5))
         val input = TextFieldValue("hellox", TextRange(6))
         val newState = startState.withNewTextFieldValue(input)
-        assertEquals("hellox", asLeft(newState.slots[0]))
+        assertEquals("hellox", asLeft(newState.templateBody[0]))
         assertNull(newState.selectedSlotIndex)
     }
 
@@ -183,18 +183,18 @@ class SlotsEditorStateTest {
             plainSlot("hello")
         }
         // Insert with slot selected
-        var startState = SlotsEditorState(slots, TextRange(5), null, 0)
+        var startState = TemplateBodyEditorState(slots, TextRange(5), null, 0)
         val input = TextFieldValue("hellox", TextRange(6))
         startState.withNewTextFieldValue(input).let {
-            assertEquals("hellox", slotLabel(it.slots[0]))
+            assertEquals("hellox", slotLabel(it.templateBody[0]))
             assertEquals(0, it.selectedSlotIndex)
         }
 
         // Insert without slot selected
-        startState = SlotsEditorState(slots, TextRange(5), null, null)
+        startState = TemplateBodyEditorState(slots, TextRange(5), null, null)
         startState.withNewTextFieldValue(input).let {
-            assertEquals("hello", slotLabel(it.slots[0]))
-            assertEquals("x", asLeft(it.slots[1]))
+            assertEquals("hello", slotLabel(it.templateBody[0]))
+            assertEquals("x", asLeft(it.templateBody[1]))
             assertNull(it.selectedSlotIndex)
         }
     }
@@ -206,12 +206,12 @@ class SlotsEditorStateTest {
             plainSlot("Name")
             string("!")
         }
-        val startState = SlotsEditorState(slots, TextRange(0, 5))
+        val startState = TemplateBodyEditorState(slots, TextRange(0, 5))
         val input = TextFieldValue("goodbye, Name!", TextRange(7))
         val newState = startState.withNewTextFieldValue(input)
-        assertEquals("goodbye, ", asLeft(newState.slots[0]))
-        assertEquals("Name", slotLabel(newState.slots[1]))
-        assertEquals("!", asLeft(newState.slots[2]))
+        assertEquals("goodbye, ", asLeft(newState.templateBody[0]))
+        assertEquals("Name", slotLabel(newState.templateBody[1]))
+        assertEquals("!", asLeft(newState.templateBody[2]))
         assertNull(newState.selectedSlotIndex)
     }
 
@@ -222,12 +222,12 @@ class SlotsEditorStateTest {
             plainSlot("Name")
             string("!")
         }
-        val startState = SlotsEditorState(slots, TextRange(3, 9))
+        val startState = TemplateBodyEditorState(slots, TextRange(3, 9))
         val input = TextFieldValue("helCHANGme!", TextRange(8))
         val newState = startState.withNewTextFieldValue(input)
-        assertEquals("helCHANG", asLeft(newState.slots[0]))
-        assertEquals("me", slotLabel(newState.slots[1]))
-        assertEquals("!", asLeft(newState.slots[2]))
+        assertEquals("helCHANG", asLeft(newState.templateBody[0]))
+        assertEquals("me", slotLabel(newState.templateBody[1]))
+        assertEquals("!", asLeft(newState.templateBody[2]))
         assertNull(newState.selectedSlotIndex)
     }
 
@@ -238,10 +238,10 @@ class SlotsEditorStateTest {
             plainSlot("Name")
             string("!")
         }
-        val startState = SlotsEditorState(slots, TextRange(6, 12))
+        val startState = TemplateBodyEditorState(slots, TextRange(6, 12))
         val input = TextFieldValue("hello,there", TextRange(6))
         val newState = startState.withNewTextFieldValue(input)
-        assertEquals("hello,there", asLeft(newState.slots[0]))
+        assertEquals("hello,there", asLeft(newState.templateBody[0]))
         assertNull(newState.selectedSlotIndex)
     }
 
@@ -252,12 +252,12 @@ class SlotsEditorStateTest {
             plainSlot("Name")
             string("!")
         }
-        val startState = SlotsEditorState(slots, TextRange(8, 10), null, 1)
+        val startState = TemplateBodyEditorState(slots, TextRange(8, 10), null, 1)
         val input = TextFieldValue("hello, Nxe!", TextRange(9))
         val newState = startState.withNewTextFieldValue(input)
-        assertEquals("hello, ", asLeft(newState.slots[0]))
-        assertEquals("Nxe", slotLabel(newState.slots[1]))
-        assertEquals("!", asLeft(newState.slots[2]))
+        assertEquals("hello, ", asLeft(newState.templateBody[0]))
+        assertEquals("Nxe", slotLabel(newState.templateBody[1]))
+        assertEquals("!", asLeft(newState.templateBody[2]))
         assertEquals(1, newState.selectedSlotIndex)
     }
 
@@ -268,12 +268,12 @@ class SlotsEditorStateTest {
             plainSlot("Name")
             string("!")
         }
-        val startState = SlotsEditorState(slots, TextRange(7, 11), null, 1)
+        val startState = TemplateBodyEditorState(slots, TextRange(7, 11), null, 1)
         val input = TextFieldValue("hello, Age!", TextRange(10))
         val newState = startState.withNewTextFieldValue(input)
-        assertEquals("hello, ", asLeft(newState.slots[0]))
-        assertEquals("Age", slotLabel(newState.slots[1]))
-        assertEquals("!", asLeft(newState.slots[2]))
+        assertEquals("hello, ", asLeft(newState.templateBody[0]))
+        assertEquals("Age", slotLabel(newState.templateBody[1]))
+        assertEquals("!", asLeft(newState.templateBody[2]))
         assertEquals(1, newState.selectedSlotIndex)
     }
 
@@ -282,10 +282,10 @@ class SlotsEditorStateTest {
         val slots = slotBuilder {
             plainSlot("Name")
         }
-        val startState = SlotsEditorState(slots, TextRange(0, 4), null, 0)
+        val startState = TemplateBodyEditorState(slots, TextRange(0, 4), null, 0)
         val input = TextFieldValue("X", TextRange(10))
         val newState = startState.withNewTextFieldValue(input)
-        assertEquals("X", slotLabel(newState.slots[0]))
+        assertEquals("X", slotLabel(newState.templateBody[0]))
         assertEquals(0, newState.selectedSlotIndex)
     }
 
@@ -296,12 +296,12 @@ class SlotsEditorStateTest {
             plainSlot("Name")
             string("!")
         }
-        val startState = SlotsEditorState(slots, TextRange(7, 9), null, 1)
+        val startState = TemplateBodyEditorState(slots, TextRange(7, 9), null, 1)
         val input = TextFieldValue("hello, Xme!", TextRange(10))
         val newState = startState.withNewTextFieldValue(input)
-        assertEquals("hello, ", asLeft(newState.slots[0]))
-        assertEquals("Xme", slotLabel(newState.slots[1]))
-        assertEquals("!", asLeft(newState.slots[2]))
+        assertEquals("hello, ", asLeft(newState.templateBody[0]))
+        assertEquals("Xme", slotLabel(newState.templateBody[1]))
+        assertEquals("!", asLeft(newState.templateBody[2]))
         assertEquals(1, newState.selectedSlotIndex)
     }
 
@@ -312,12 +312,12 @@ class SlotsEditorStateTest {
             plainSlot("Name")
             string("!")
         }
-        val startState = SlotsEditorState(slots, TextRange(9, 11), null, 1)
+        val startState = TemplateBodyEditorState(slots, TextRange(9, 11), null, 1)
         val input = TextFieldValue("hello, NaX!", TextRange(10))
         val newState = startState.withNewTextFieldValue(input)
-        assertEquals("hello, ", asLeft(newState.slots[0]))
-        assertEquals("NaX", slotLabel(newState.slots[1]))
-        assertEquals("!", asLeft(newState.slots[2]))
+        assertEquals("hello, ", asLeft(newState.templateBody[0]))
+        assertEquals("NaX", slotLabel(newState.templateBody[1]))
+        assertEquals("!", asLeft(newState.templateBody[2]))
         assertEquals(1, newState.selectedSlotIndex)
     }
 
@@ -327,10 +327,10 @@ class SlotsEditorStateTest {
             string("hello, world! ")
             plainSlot("Name")
         }
-        val startState = SlotsEditorState(slots, TextRange(0, 18))
+        val startState = TemplateBodyEditorState(slots, TextRange(0, 18))
         val input = TextFieldValue("ABC", TextRange(3))
         val newState = startState.withNewTextFieldValue(input)
-        assertEquals("ABC", asLeft(newState.slots[0]))
+        assertEquals("ABC", asLeft(newState.templateBody[0]))
     }
 
     @Test
@@ -340,12 +340,12 @@ class SlotsEditorStateTest {
             plainSlot("Name")
             string("!")
         }
-        val startState = SlotsEditorState(slots, TextRange(0, 5))
+        val startState = TemplateBodyEditorState(slots, TextRange(0, 5))
         val input = TextFieldValue(", Name!", TextRange(0))
         val newState = startState.withNewTextFieldValue(input)
-        assertEquals(", ", asLeft(newState.slots[0]))
-        assertEquals("Name", slotLabel(newState.slots[1]))
-        assertEquals("!", asLeft(newState.slots[2]))
+        assertEquals(", ", asLeft(newState.templateBody[0]))
+        assertEquals("Name", slotLabel(newState.templateBody[1]))
+        assertEquals("!", asLeft(newState.templateBody[2]))
         assertNull(newState.selectedSlotIndex)
     }
 
@@ -355,10 +355,10 @@ class SlotsEditorStateTest {
             string("hello, ")
             plainSlot("Name")
         }
-        val startState = SlotsEditorState(slots, TextRange(0, 11))
+        val startState = TemplateBodyEditorState(slots, TextRange(0, 11))
         val input = TextFieldValue("", TextRange(0))
         val newState = startState.withNewTextFieldValue(input)
-        assertEquals(0, newState.slots.size)
+        assertEquals(0, newState.templateBody.size)
         assertNull(newState.selectedSlotIndex)
     }
 
@@ -369,12 +369,12 @@ class SlotsEditorStateTest {
             plainSlot("Name")
             string("!")
         }
-        val startState = SlotsEditorState(slots, TextRange(12))
+        val startState = TemplateBodyEditorState(slots, TextRange(12))
         val input = TextFieldValue("hello, Name", TextRange(11))
         val newState = startState.withNewTextFieldValue(input)
-        assertEquals(2, newState.slots.size)
-        assertEquals("hello, ", asLeft(newState.slots[0]))
-        assertEquals("Name", slotLabel(newState.slots[1]))
+        assertEquals(2, newState.templateBody.size)
+        assertEquals("hello, ", asLeft(newState.templateBody[0]))
+        assertEquals("Name", slotLabel(newState.templateBody[1]))
         assertNull(newState.selectedSlotIndex)
     }
 
@@ -385,13 +385,13 @@ class SlotsEditorStateTest {
             plainSlot("Name")
             string("!")
         }
-        val startState = SlotsEditorState(slots, TextRange(11), null, 1)
+        val startState = TemplateBodyEditorState(slots, TextRange(11), null, 1)
         val input = TextFieldValue("hello, Nam!", TextRange(10))
         val newState = startState.withNewTextFieldValue(input)
         assertEquals(1, newState.selectedSlotIndex)
-        assertEquals("hello, ", asLeft(newState.slots[0]))
-        assertEquals("Nam", slotLabel(newState.slots[1]))
-        assertEquals("!", asLeft(newState.slots[2]))
+        assertEquals("hello, ", asLeft(newState.templateBody[0]))
+        assertEquals("Nam", slotLabel(newState.templateBody[1]))
+        assertEquals("!", asLeft(newState.templateBody[2]))
         assertEquals(1, newState.selectedSlotIndex)
     }
 
@@ -404,12 +404,12 @@ class SlotsEditorStateTest {
             plainSlot("Name")
             string(".")
         }
-        val startState = SlotsEditorState(slots, TextRange(3, 15))
+        val startState = TemplateBodyEditorState(slots, TextRange(3, 15))
         val input = TextFieldValue("helce to meet you. I am Name.", TextRange(3))
         val newState = startState.withNewTextFieldValue(input)
-        assertEquals("helce to meet you. I am ", asLeft(newState.slots[0]))
-        assertEquals("Name", slotLabel(newState.slots[1]))
-        assertEquals(".", asLeft(newState.slots[2]))
+        assertEquals("helce to meet you. I am ", asLeft(newState.templateBody[0]))
+        assertEquals("Name", slotLabel(newState.templateBody[1]))
+        assertEquals(".", asLeft(newState.templateBody[2]))
         assertNull(newState.selectedSlotIndex)
     }
 
@@ -421,7 +421,7 @@ class SlotsEditorStateTest {
             plainSlot("Name")
             string("!")
         }
-        val startState = SlotsEditorState(slots, TextRange(0))
+        val startState = TemplateBodyEditorState(slots, TextRange(0))
         val input = TextFieldValue("hello, Name!", TextRange(9))
         val newState = startState.withNewTextFieldValue(input)
         assertEquals(1, newState.selectedSlotIndex)
@@ -436,14 +436,14 @@ class SlotsEditorStateTest {
             plainSlot("Age")
         }
         // Move cursor left and right of slot
-        var startState = SlotsEditorState(slots, TextRange(0), null, null)
+        var startState = TemplateBodyEditorState(slots, TextRange(0), null, null)
         var input = TextFieldValue("hello, Name! Age", TextRange(7))
         assertNull(startState.withNewTextFieldValue(input).selectedSlotIndex)
         input = TextFieldValue("hello, Name! Age", TextRange(11))
         assertNull(startState.withNewTextFieldValue(input).selectedSlotIndex)
 
         // Select other slot and move cursor left and right
-        startState = SlotsEditorState(slots, TextRange(14), null, 3)
+        startState = TemplateBodyEditorState(slots, TextRange(14), null, 3)
         input = TextFieldValue("hello, Name! Age", TextRange(7))
         assertNull(startState.withNewTextFieldValue(input).selectedSlotIndex)
         input = TextFieldValue("hello, Name! Age", TextRange(11))
@@ -459,7 +459,7 @@ class SlotsEditorStateTest {
             plainSlot("Age")
         }
         // Move cursor left and right of slot
-        val startState = SlotsEditorState(slots, TextRange(9), null, 1)
+        val startState = TemplateBodyEditorState(slots, TextRange(9), null, 1)
         var input = TextFieldValue("hello, Name! Age", TextRange(7))
         assertEquals(1, startState.withNewTextFieldValue(input).selectedSlotIndex)
         input = TextFieldValue("hello, Name! Age", TextRange(11))
@@ -474,36 +474,36 @@ class SlotsEditorStateTest {
         }
 
         // Press enter inside slot
-        var startState = SlotsEditorState(slots, TextRange(9), null, 1)
+        var startState = TemplateBodyEditorState(slots, TextRange(9), null, 1)
         var input = TextFieldValue("hello, Na\nme", TextRange(10))
         startState.withNewTextFieldValue(input).let {
             assertNull(it.selectedSlotIndex)
             assertEquals(11, it.selection.start)
             assertEquals(11, it.selection.end)
-            assertEquals("hello, ", asLeft(it.slots[0]))
-            assertEquals("Name", slotLabel(it.slots[1]))
+            assertEquals("hello, ", asLeft(it.templateBody[0]))
+            assertEquals("Name", slotLabel(it.templateBody[1]))
         }
 
         // Press enter while selecting inside a slot
-        startState = SlotsEditorState(slots, TextRange(8, 10), null, 1)
+        startState = TemplateBodyEditorState(slots, TextRange(8, 10), null, 1)
         input = TextFieldValue("hello, N\ne", TextRange(9))
         startState.withNewTextFieldValue(input).let {
             assertNull(it.selectedSlotIndex)
             assertEquals(11, it.selection.start)
             assertEquals(11, it.selection.end)
-            assertEquals("hello, ", asLeft(it.slots[0]))
-            assertEquals("Name", slotLabel(it.slots[1]))
+            assertEquals("hello, ", asLeft(it.templateBody[0]))
+            assertEquals("Name", slotLabel(it.templateBody[1]))
         }
 
         // Press enter at the end of the slot
-        startState = SlotsEditorState(slots, TextRange(11), null, 1)
+        startState = TemplateBodyEditorState(slots, TextRange(11), null, 1)
         input = TextFieldValue("hello, Name\n", TextRange(12))
         startState.withNewTextFieldValue(input).let {
             assertNull(it.selectedSlotIndex)
             assertEquals(11, it.selection.start)
             assertEquals(11, it.selection.end)
-            assertEquals("hello, ", asLeft(it.slots[0]))
-            assertEquals("Name", slotLabel(it.slots[1]))
+            assertEquals("hello, ", asLeft(it.templateBody[0]))
+            assertEquals("Name", slotLabel(it.templateBody[1]))
         }
     }
 
@@ -515,13 +515,13 @@ class SlotsEditorStateTest {
         }
 
         // Press enter inside slot
-        val startState = SlotsEditorState(slots, TextRange(4), null, null)
+        val startState = TemplateBodyEditorState(slots, TextRange(4), null, null)
         val input = TextFieldValue("hell\no, Name", TextRange(5))
         startState.withNewTextFieldValue(input).let {
             assertEquals(5, it.selection.start)
             assertEquals(5, it.selection.end)
-            assertEquals("hell\no, ", asLeft(it.slots[0]))
-            assertEquals("Name", slotLabel(it.slots[1]))
+            assertEquals("hell\no, ", asLeft(it.templateBody[0]))
+            assertEquals("Name", slotLabel(it.templateBody[1]))
         }
     }
 
@@ -532,7 +532,7 @@ class SlotsEditorStateTest {
             plainSlot("Name")
             string("!")
         }
-        val startState = SlotsEditorState(slots, TextRange(0), null, null)
+        val startState = TemplateBodyEditorState(slots, TextRange(0), null, null)
         val input = TextFieldValue("hello, Name!", TextRange(8, 10))
         assertEquals(1, startState.withNewTextFieldValue(input).selectedSlotIndex)
     }
@@ -544,7 +544,7 @@ class SlotsEditorStateTest {
             plainSlot("Name")
             string("!")
         }
-        val startState = SlotsEditorState(slots, TextRange(0), null, null)
+        val startState = TemplateBodyEditorState(slots, TextRange(0), null, null)
         val input = TextFieldValue("hello, Name!", TextRange(6, 8))
         assertNull(startState.withNewTextFieldValue(input).selectedSlotIndex)
     }
@@ -558,43 +558,43 @@ class SlotsEditorStateTest {
         }
 
         // Unselected to selected
-        var startState = SlotsEditorState(slots, TextRange(11), null, null)
+        var startState = TemplateBodyEditorState(slots, TextRange(11), null, null)
         var input = TextFieldValue("hello, Nam!", TextRange(10))
         startState.withNewTextFieldValue(input).let {
             assertEquals(1, it.selectedSlotIndex)
-            assertEquals("hello, ", asLeft(it.slots[0]))
-            assertEquals("Name", slotLabel(it.slots[1]))
-            assertEquals("!", asLeft(it.slots[2]))
+            assertEquals("hello, ", asLeft(it.templateBody[0]))
+            assertEquals("Name", slotLabel(it.templateBody[1]))
+            assertEquals("!", asLeft(it.templateBody[2]))
         }
 
         // Selected to unselected
-        startState = SlotsEditorState(slots, TextRange(7), null, 1)
+        startState = TemplateBodyEditorState(slots, TextRange(7), null, 1)
         input = TextFieldValue("hello,Name!", TextRange(7))
         startState.withNewTextFieldValue(input).let {
             assertNull(it.selectedSlotIndex)
-            assertEquals("hello, ", asLeft(it.slots[0]))
-            assertEquals("Name", slotLabel(it.slots[1]))
-            assertEquals("!", asLeft(it.slots[2]))
+            assertEquals("hello, ", asLeft(it.templateBody[0]))
+            assertEquals("Name", slotLabel(it.templateBody[1]))
+            assertEquals("!", asLeft(it.templateBody[2]))
         }
 
         // Outside the slot
-        startState = SlotsEditorState(slots, TextRange(12), null, null)
+        startState = TemplateBodyEditorState(slots, TextRange(12), null, null)
         input = TextFieldValue("hello, Name", TextRange(11))
         startState.withNewTextFieldValue(input).let {
             assertNull(it.selectedSlotIndex)
-            assertEquals("hello, ", asLeft(it.slots[0]))
-            assertEquals("Name", slotLabel(it.slots[1]))
+            assertEquals("hello, ", asLeft(it.templateBody[0]))
+            assertEquals("Name", slotLabel(it.templateBody[1]))
         }
 
         // With nothing after slot
         slots = slotBuilder {
             plainSlot("Name")
         }
-        startState = SlotsEditorState(slots, TextRange(4), null, null)
+        startState = TemplateBodyEditorState(slots, TextRange(4), null, null)
         input = TextFieldValue("Nam", TextRange(3))
         startState.withNewTextFieldValue(input).let {
             assertEquals(0, it.selectedSlotIndex)
-            assertEquals("Name", slotLabel(it.slots[0]))
+            assertEquals("Name", slotLabel(it.templateBody[0]))
         }
     }
 
@@ -606,7 +606,7 @@ class SlotsEditorStateTest {
             string("!")
         }
 
-        val startState = SlotsEditorState(slots, TextRange(5), null, null)
+        val startState = TemplateBodyEditorState(slots, TextRange(5), null, null)
         val newSlot = PlainTextSlot("").apply { label = "Text" }
         startState.insertSlotAtSelection(newSlot).let {
             assertEquals(it.selectedSlotIndex, 1)
@@ -614,11 +614,11 @@ class SlotsEditorStateTest {
             assertEquals(5, it.selection.start)
             assertEquals(9, it.selection.end)
 
-            assertEquals("hello", asLeft(it.slots[0]))
-            assertEquals("Text", slotLabel(it.slots[1]))
-            assertEquals(", ", asLeft(it.slots[2]))
-            assertEquals("Name", slotLabel(it.slots[3]))
-            assertEquals("!", asLeft(it.slots[4]))
+            assertEquals("hello", asLeft(it.templateBody[0]))
+            assertEquals("Text", slotLabel(it.templateBody[1]))
+            assertEquals(", ", asLeft(it.templateBody[2]))
+            assertEquals("Name", slotLabel(it.templateBody[3]))
+            assertEquals("!", asLeft(it.templateBody[4]))
         }
     }
 
@@ -630,7 +630,7 @@ class SlotsEditorStateTest {
             string("! Nice to meet you")
         }
 
-        val startState = SlotsEditorState(slots, TextRange(3, 14), null, null)
+        val startState = TemplateBodyEditorState(slots, TextRange(3, 14), null, null)
         val newSlot = PlainTextSlot("").apply { label = "Text" }
         startState.insertSlotAtSelection(newSlot).let {
             assertEquals(it.selectedSlotIndex, 1)
@@ -638,9 +638,9 @@ class SlotsEditorStateTest {
             assertEquals(3, it.selection.start)
             assertEquals(7, it.selection.end)
 
-            assertEquals("hel", asLeft(it.slots[0]))
-            assertEquals("Text", slotLabel(it.slots[1]))
-            assertEquals("ice to meet you", asLeft(it.slots[2]))
+            assertEquals("hel", asLeft(it.templateBody[0]))
+            assertEquals("Text", slotLabel(it.templateBody[1]))
+            assertEquals("ice to meet you", asLeft(it.templateBody[2]))
         }
     }
 }

@@ -20,14 +20,14 @@ import io.joelt.texttemplate.ui.theme.TextTemplateTheme
 private const val SLOT_TAG = "Slot"
 
 @Composable
-fun SlotsPreview(
-    slots: List<Either<String, Slot>>,
+fun TemplateBodyPreview(
+    body: List<Either<String, Slot>>,
     selectedSlotIndex: Int? = null,
     style: TextStyle = LocalTextStyle.current,
     maxLines: Int = Int.MAX_VALUE,
     onSlotClick: ((slotIndex: Int) -> Unit)? = null
 ) {
-    val annotatedString = slots.annotateSlotsIndexed { index, it ->
+    val annotatedString = body.annotateSlotsIndexed { index, it ->
         pushStringAnnotation(SLOT_TAG, index.toString())
         withSlotStyle(selectedSlotIndex == index) {
             append(it.toDisplayString())
@@ -81,13 +81,13 @@ private fun SlotsPreviewExample() {
         """.trimIndent()
     )
 
-    var slots by remember { mutableStateOf(template.slots) }
+    var body by remember { mutableStateOf(template.body) }
     var currentSlot by remember {
         mutableStateOf<Int?>(null)
     }
     TextTemplateTheme {
         Column {
-            SlotsPreview(slots, currentSlot) {
+            TemplateBodyPreview(body, currentSlot) {
                 currentSlot = it
             }
         }

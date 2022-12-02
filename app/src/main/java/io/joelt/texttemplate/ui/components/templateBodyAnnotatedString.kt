@@ -11,8 +11,9 @@ import io.joelt.texttemplate.models.Either
 import io.joelt.texttemplate.models.slots.Slot
 
 /**
- * Create an AnnotatedString from slots. Iterate through the slots in the list.
- * For each slot in the list (does not include Strings), provides:
+ * Create an AnnotatedString from a template body. Iterate through the slots in
+ * the list.
+ * For each slot in the list, provides:
  * start: the starting index in the final AnnotatedString, inclusive
  * slotIndex: the index of the slot in the list
  * slot: the slot
