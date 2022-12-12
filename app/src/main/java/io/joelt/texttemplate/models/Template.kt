@@ -8,20 +8,4 @@ data class Template(
     val createdOn: LocalDateTime = LocalDateTime.now(),
     val name: String,
     val body: List<Either<String, Slot>>,
-) {
-    constructor(
-        id: Long = 0,
-        createdOn: LocalDateTime = LocalDateTime.now(),
-        name: String,
-        text: String
-    ) : this(
-        id,
-        createdOn,
-        name,
-        text.toTemplateBody(),
-    )
-
-    val text: String by lazy {
-        serializeTemplate(body)
-    }
-}
+)

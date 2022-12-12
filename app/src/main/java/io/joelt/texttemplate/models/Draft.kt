@@ -12,27 +12,15 @@ data class Draft(
     val lastEditedIndex: Int,
     val lastEditedOn: LocalDateTime
 ) {
-    constructor(
-        id: Long = 0,
-        createdOn: LocalDateTime = LocalDateTime.now(),
-        archived: Boolean = false,
-        name: String,
-        text: String,
-        lastEditedIndex: Int,
-        lastEditedOn: LocalDateTime
-    ) : this(id, createdOn, archived, name, text.toTemplateBody(), lastEditedIndex, lastEditedOn)
-
-    constructor(template: Template) : this(
-        0,
-        LocalDateTime.now(),
-        false,
-        template.name,
-        template.text,
-        0,
-        LocalDateTime.now()
-    )
-
-    val text: String by lazy {
-        serializeTemplate(body)
+    companion object {
+        fun fromTemplate(template: Template) = Draft(
+            0,
+            LocalDateTime.now(),
+            false,
+            template.name,
+            template.body,
+            0,
+            LocalDateTime.now()
+        )
     }
 }
