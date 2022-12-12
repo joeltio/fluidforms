@@ -6,7 +6,7 @@ import org.junit.Test
 
 import org.junit.Assert.*
 
-class TemplateTextSerializerUnitTest {
+class TemplateBodySerializerUnitTest {
     @Test
     fun serialize_without_slot() {
         val text = "Lorem ipsum dolor"
