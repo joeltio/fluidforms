@@ -86,9 +86,9 @@ class TemplateBodyDeserializerUnitTest {
 
     @Test
     fun deserialize_missing_closing_tag() {
-        assertThrows(DeserializeException::class.java) {
-            "{% text hello".deserialize()
-        }
+        // This is ok because the whole string is treated as normal text
+        val deserialized = "{% text hello".deserialize()
+        assertEquals(lValue(deserialized[0]), "{% text hello")
 
         assertThrows(DeserializeException::class.java) {
             "{% text %}hello{% end".deserialize()
@@ -105,11 +105,14 @@ class TemplateBodyDeserializerUnitTest {
     @Test
     fun deserialize_modifier_extra_or_too_few_quotes() {
         // This is ok, "label "" is the first modifier's name
+        // We cannot confirm this because useless modifiers are dropped on slot creation
         "{% text | label \"= \"hello\" %}hello{% end %}".deserialize()
 
-        assertThrows(DeserializeException::class.java) {
-            "{% text | label =\" \"hello\" %}hello{% end %}".deserialize()
-        }
+        // This is ok, because only the outermost quotes are used
+        val deserialized = "{% text | label =\" \"hello\" %}hello{% end %}".deserialize()
+        val slot = (rValue(deserialized[0]) as PlainTextSlot)
+        assertEquals(" \"hello", slot.displayLabel)
+
         assertThrows(DeserializeException::class.java) {
             "{% text | label = \"hello %}hello{% end %}".deserialize()
         }

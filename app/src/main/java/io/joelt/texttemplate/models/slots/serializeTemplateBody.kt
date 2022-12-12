@@ -35,6 +35,11 @@ private tailrec fun tailRecDeserializeTemplateBody(text: EscapedString, currentT
         acc.add(Either.Left(unescapeText(textBeforeTag)))
     }
 
+    if (currentTag != null && tag == null) {
+        // Missing end tag
+        throw DeserializeException("tag was not closed for tag $currentTag")
+    }
+
     // Tag found is a start tag
     if (tag != END_TAG) {
         return tailRecDeserializeTemplateBody(textAfterTag, tag, acc)
