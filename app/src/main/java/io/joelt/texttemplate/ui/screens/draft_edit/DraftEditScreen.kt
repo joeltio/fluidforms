@@ -132,7 +132,7 @@ val DraftEditScreen = buildScreen {
                     draft.body.joinToString {
                         when (it) {
                             is Either.Left -> it.value
-                            is Either.Right -> it.value.toDisplayString()
+                            is Either.Right -> it.value.displayDefault()
                         }
                     }
                 }

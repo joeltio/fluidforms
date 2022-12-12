@@ -25,7 +25,7 @@ class DraftEditViewModel(
     fun createDraft(templateId: Long) {
         viewModelScope.launch {
             val template = repository.getTemplate(templateId)
-            val newDraft = Draft(template)
+            val newDraft = Draft.fromTemplate(template)
             val draftId = repository.createDraft(newDraft)
             draft = newDraft.copy(id = draftId)
         }

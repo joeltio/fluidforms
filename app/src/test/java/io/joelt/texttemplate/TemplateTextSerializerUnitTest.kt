@@ -14,7 +14,7 @@ class TemplateTextSerializerUnitTest {
             Either.Left(text)
         )
 
-        val serialized = serializeTemplate(template)
+        val serialized = serializeTemplateBody(template)
         assertEquals(text, serialized)
     }
 
@@ -22,25 +22,24 @@ class TemplateTextSerializerUnitTest {
     fun serialize_with_slots() {
         var template = listOf<Either<String, Slot>>(
             Either.Left("hello"),
-            Either.Right(PlainTextSlot("text val  ").apply {
-                label = "my label"
-            }),
+            Either.Right(PlainTextSlot("my label", EscapedString("text val  "))),
             Either.Left("world"),
         )
 
-        var serialized = serializeTemplate(template)
-        assertEquals("hello{% text | label = \"my label\" %}text val  {% end %}world", serialized)
+        var serialized = serializeTemplateBody(template)
+        assertEquals("hello{%text|label=\"my label\"%}text val  {%end%}world", serialized)
 
         template = listOf(
             Either.Left("hello"),
-            Either.Right(PlainTextSlot("text val  ").apply {
-                label = "  space "
-            }),
+            Either.Right(PlainTextSlot("  space ", EscapedString("text val  "))),
             Either.Left("world"),
-            Either.Right(PlainTextSlot("")),
+            Either.Right(PlainTextSlot("", EscapedString(""))),
         )
 
-        serialized = serializeTemplate(template)
-        assertEquals("hello{% text | label = \"  space \" %}text val  {% end %}world{% text %}{% end %}", serialized)
+        serialized = serializeTemplateBody(template)
+        assertEquals(
+            "hello{%text|label=\"  space \"%}text val  {%end%}world{%text%}{%end%}",
+            serialized
+        )
     }
 }

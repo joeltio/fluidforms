@@ -103,7 +103,7 @@ val ArchivedPreviewScreen = buildScreen {
 @Composable
 private fun ArchivedPreviewScreenPreview() {
     val template = genTemplates(1)[0]
-    val archived = Draft(template)
+    val archived = Draft.fromTemplate(template)
 
     val screen = archivedPreviewScreenContent(archived, {}, {}, {})
     TextTemplateTheme {

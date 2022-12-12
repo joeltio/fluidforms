@@ -17,6 +17,7 @@ import io.joelt.texttemplate.R
 import io.joelt.texttemplate.models.Either
 import io.joelt.texttemplate.models.Template
 import io.joelt.texttemplate.models.genTemplates
+import io.joelt.texttemplate.models.slots.EscapedString
 import io.joelt.texttemplate.models.slots.PlainTextSlot
 import io.joelt.texttemplate.ui.theme.Typography
 
@@ -48,7 +49,7 @@ fun TemplateEditor(
                         (editorState.templateBody[editorState.selectedSlotIndex] as Either.Right).value
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(
-                        text = slot.typeName(),
+                        text = slot.displaySlotType(),
                         style = Typography.titleMedium,
                     )
                     Spacer(modifier = Modifier.width(16.dp))
@@ -64,8 +65,7 @@ fun TemplateEditor(
                     val slotLabel = stringResource(R.string.plain_text_slot_placeholder)
                     FloatingActionButton(
                         onClick = {
-                            val slot = PlainTextSlot("")
-                            slot.label = slotLabel
+                            val slot = PlainTextSlot(slotLabel, EscapedString(""))
                             onStateChange(
                                 state.copy(
                                     editorState = editorState.insertSlotAtSelection(

@@ -1,27 +1,41 @@
 package io.joelt.texttemplate.models
 
+import io.joelt.texttemplate.models.slots.EscapedString
+import io.joelt.texttemplate.models.slots.deserializeTemplateBody
 import java.time.LocalDateTime
 
+fun createTemplateExample(
+    id: Long = 0,
+    createdOn: LocalDateTime = LocalDateTime.now(),
+    name: String,
+    body: String,
+) = Template(
+    id,
+    createdOn,
+    name,
+    deserializeTemplateBody(EscapedString(body))
+)
+
 private val templates = listOf(
-    Template(
+    createTemplateExample(
         0,
         LocalDateTime.of(2022, 2, 23, 18, 12, 46, 0),
         "Server Maintenance",
         "Hi all, the server is going to be down from {% text | label = 'start' %}{% end %} until {% text | label = 'end' %}{% end %}. Sorry for the inconvenience caused."
     ),
-    Template(
+    createTemplateExample(
         0,
         LocalDateTime.of(2022, 4, 9, 8, 30, 0, 0),
         "Calling in Sick",
         "Hey boss, I'm feeling quite unwell this morning, I think I'm down with {% text | label = 'sickness' %}{% end %}. I'm going to see a doctor soon and will be back as soon as I'm well."
     ),
-    Template(
+    createTemplateExample(
         0,
         LocalDateTime.of(2022, 4, 23, 18, 12, 46, 0),
         "Swimming Practice",
         "Hey swimmers, this week I would like you to practice {% text | label = 'strokes' %}{% end %}. We will be doing {% text | label = 'X'} laps."
     ),
-    Template(
+    createTemplateExample(
         0,
         LocalDateTime.of(2022, 6, 1, 8, 57, 46, 0),
         "Work Weekly Meeting",
@@ -32,7 +46,7 @@ private val templates = listOf(
                 "Time: {% text %}{% end %}\n" +
                 "Remember: Being on time is respecting everybody's time!"
     ),
-    Template(
+    createTemplateExample(
         0,
         LocalDateTime.of(2022, 4, 23, 18, 12, 46, 0),
         "Weekly Forecast",

@@ -3,6 +3,9 @@ package io.joelt.texttemplate.database.room
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import io.joelt.texttemplate.models.slots.EscapedString
+import io.joelt.texttemplate.models.slots.deserializeTemplateBody
+import io.joelt.texttemplate.models.slots.serializeTemplateBody
 import java.time.LocalDateTime
 
 @Entity
@@ -17,7 +20,23 @@ data class Draft(
 )
 
 fun ModelDraft.toRoom(overrideId: Long = this.id): Draft =
-    Draft(overrideId, this.createdOn, this.archived, this.name, this.text, this.lastEditedIndex, this.lastEditedOn)
+    Draft(
+        overrideId,
+        this.createdOn,
+        this.archived,
+        this.name,
+        serializeTemplateBody(this.body),
+        this.lastEditedIndex,
+        this.lastEditedOn
+    )
 
 fun Draft.toModel(): ModelDraft =
-    ModelDraft(this.id, this.createdOn, this.archived, this.name, this.body, this.lastEditedIndex, this.lastEditedOn)
+    ModelDraft(
+        this.id,
+        this.createdOn,
+        this.archived,
+        this.name,
+        deserializeTemplateBody(EscapedString(this.body)),
+        this.lastEditedIndex,
+        this.lastEditedOn
+    )
