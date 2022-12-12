@@ -1,10 +1,7 @@
 package io.joelt.texttemplate
 
 import io.joelt.texttemplate.models.Either
-import io.joelt.texttemplate.models.slots.EscapedString
-import io.joelt.texttemplate.models.slots.PlainTextSlot
-import io.joelt.texttemplate.models.slots.Slot
-import io.joelt.texttemplate.models.slots.deserializeTemplateBody
+import io.joelt.texttemplate.models.slots.*
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -77,5 +74,58 @@ class TemplateBodyDeserializerUnitTest {
         assertEquals(" hello ", (rValue(deserialized[0]) as PlainTextSlot).value())
         assertEquals(" middle text ", lValue(deserialized[1]))
         assertEquals(" goodbye", (rValue(deserialized[2]) as PlainTextSlot).value())
+    }
+
+    // Error handling
+    @Test
+    fun deserialize_missing_end_tag() {
+        assertThrows(DeserializeException::class.java) {
+            "{% text %}hello".deserialize()
+        }
+    }
+
+    @Test
+    fun deserialize_missing_closing_tag() {
+        assertThrows(DeserializeException::class.java) {
+            "{% text hello".deserialize()
+        }
+
+        assertThrows(DeserializeException::class.java) {
+            "{% text %}hello{% end".deserialize()
+        }
+    }
+
+    @Test
+    fun deserialize_nonsense_tags() {
+        assertThrows(DeserializeException::class.java) {
+            "{% asdfgh %}hello{% end %}".deserialize()
+        }
+    }
+
+    @Test
+    fun deserialize_modifier_extra_or_too_few_quotes() {
+        // This is ok, "label "" is the first modifier's name
+        "{% text | label \"= \"hello\" %}hello{% end %}".deserialize()
+
+        assertThrows(DeserializeException::class.java) {
+            "{% text | label =\" \"hello\" %}hello{% end %}".deserialize()
+        }
+        assertThrows(DeserializeException::class.java) {
+            "{% text | label = \"hello %}hello{% end %}".deserialize()
+        }
+    }
+
+    @Test
+    fun deserialize_modifier_extra_pipe() {
+        assertThrows(DeserializeException::class.java) {
+            "{% text || label = \"hello\" %}hello{% end %}".deserialize()
+        }
+    }
+
+    @Test
+    fun deserialize_modifier_extra_equals() {
+        assertThrows(DeserializeException::class.java) {
+            "{% text | label == \"hello\" %}hello{% end %}".deserialize()
+        }
     }
 }
