@@ -45,8 +45,12 @@ private tailrec fun tailRecDeserializeTemplateBody(text: EscapedString, currentT
         return tailRecDeserializeTemplateBody(textAfterTag, tag, acc)
     }
 
+    if (currentTag == null) {
+        throw DeserializeException("End tag found when there is no current start tag")
+    }
+
     // The tag found is an end tag
-    acc.add(Either.Right(deserializeSlot(currentTag!!, textBeforeTag)))
+    acc.add(Either.Right(deserializeSlot(currentTag, textBeforeTag)))
     return tailRecDeserializeTemplateBody(textAfterTag, null, acc)
 }
 

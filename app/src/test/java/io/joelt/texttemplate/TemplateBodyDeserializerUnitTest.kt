@@ -78,6 +78,13 @@ class TemplateBodyDeserializerUnitTest {
 
     // Error handling
     @Test
+    fun deserialize_missing_start_tag() {
+        assertThrows(DeserializeException::class.java) {
+            "hello{% end %}".deserialize()
+        }
+    }
+
+    @Test
     fun deserialize_missing_end_tag() {
         assertThrows(DeserializeException::class.java) {
             "{% text %}hello".deserialize()
