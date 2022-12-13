@@ -15,13 +15,13 @@ private data class CursorRange(val start: Cursor, val end: Cursor)
 private val Either<String, Slot>.text: String
     get() = when (this) {
         is Either.Left -> this.value
-        is Either.Right -> this.value.label
+        is Either.Right -> this.value.displayLabel
     }
 
 private fun Either<String, Slot>.withNewValue(value: (String) -> String): Either<String, Slot> =
     when (this) {
         is Either.Left -> Either.Left(value(this.text))
-        is Either.Right -> Either.Right(this.value.makeCopy(label = value(this.text)))
+        is Either.Right -> Either.Right(this.value.makeCopy(displayLabel = value(this.text)))
     }
 
 // Cursor extensions
@@ -90,14 +90,14 @@ data class TemplateBodyEditorState(
             annotatedStringCache?.let { return it }
 
             return templateBody.annotateSlotsIndexed { index, slot ->
-                val text = slot.label
+                val text = slot.displayLabel
                 withSlotStyle(index == selectedSlotIndex) { append(text) }
             }
         }
     val text by lazy {
         annotatedStringCache?.let { return@lazy it.text }
         templateBody.annotateSlots {
-            append(it.label)
+            append(it.displayLabel)
         }.text
     }
     val textFieldValue by lazy { TextFieldValue(text, selection, composition) }
@@ -249,7 +249,7 @@ data class TemplateBodyEditorState(
             && end.subIndex == templateBody[start.itemIndex].text.lastIndex
         ) {
             // If the deleted portion is a whole slot, restore it
-            val newSlot = (templateBody[start.itemIndex] as Either.Right).value.makeCopy(label = value)
+            val newSlot = (templateBody[start.itemIndex] as Either.Right).value.makeCopy(displayLabel = value)
             newBody.add(start.itemIndex, Either.Right(newSlot))
             return newBody
         } else if (newBody.isEmpty()) {
@@ -301,14 +301,14 @@ data class TemplateBodyEditorState(
                     selection,
                     selectedSlotIndex,
                     start,
-                    start + slot.label.length,
+                    start + slot.displayLabel.length,
                     slotIndex
                 )
             ) {
                 return slotIndex
             }
 
-            slot.label.length
+            slot.displayLabel.length
         }
         return null
     }
@@ -413,7 +413,7 @@ data class TemplateBodyEditorState(
         if (templateBody.isEmpty()) {
             return TemplateBodyEditorState(
                 listOf(Either.Right(slot)),
-                TextRange(0, slot.label.length),
+                TextRange(0, slot.displayLabel.length),
                 null,
                 0
             )
@@ -433,7 +433,7 @@ data class TemplateBodyEditorState(
             newBody.add(cursor.itemIndex, Either.Right(slot))
             return TemplateBodyEditorState(
                 newBody,
-                TextRange(selection.start, selection.start + slot.label.length),
+                TextRange(selection.start, selection.start + slot.displayLabel.length),
                 null,
                 cursor.itemIndex
             )
@@ -449,7 +449,7 @@ data class TemplateBodyEditorState(
 
         return TemplateBodyEditorState(
             newBody,
-            TextRange(selection.start, selection.start + slot.label.length),
+            TextRange(selection.start, selection.start + slot.displayLabel.length),
             null,
             cursor.itemIndex + 1
         )

@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import io.joelt.texttemplate.models.Template
 import io.joelt.texttemplate.database.TemplatesRepository
+import io.joelt.texttemplate.models.slots.serializeTemplateBody
 import io.joelt.texttemplate.navigation.Route
 import io.joelt.texttemplate.ui.screens.templates.templates
 import kotlinx.coroutines.*
@@ -20,7 +21,7 @@ class TemplateEditViewModel(
 
     fun loadTemplate(id: Long, defaultName: String) {
         if (id == 0L) {
-            TemplateEditState(Template(name = defaultName, text = "")).let {
+            TemplateEditState(Template(name = defaultName, body = emptyList())).let {
                 screenState = it
                 initialTemplate = it.template
             }
@@ -52,7 +53,9 @@ class TemplateEditViewModel(
 
     fun templateChanged(): Boolean {
         screenState?.let {
-            return initialTemplate.name != it.template.name || initialTemplate.text != it.template.text
+            return initialTemplate.name != it.template.name || serializeTemplateBody(initialTemplate.body) != serializeTemplateBody(
+                it.template.body
+            )
         }
         return false
     }

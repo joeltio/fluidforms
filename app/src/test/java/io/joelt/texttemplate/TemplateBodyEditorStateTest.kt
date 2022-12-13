@@ -3,6 +3,7 @@ package io.joelt.texttemplate
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import io.joelt.texttemplate.models.Either
+import io.joelt.texttemplate.models.slots.EscapedString
 import io.joelt.texttemplate.models.slots.PlainTextSlot
 import io.joelt.texttemplate.models.slots.Slot
 import io.joelt.texttemplate.ui.components.TemplateBodyEditorState
@@ -16,7 +17,7 @@ private class SlotBuilder {
     }
 
     fun plainSlot(label: String) {
-        slots.add(Either.Right(PlainTextSlot("").apply { this.label = label }))
+        slots.add(Either.Right(PlainTextSlot(label, EscapedString(""))))
     }
 
     fun build(): List<Either<String, Slot>> = slots
@@ -31,7 +32,7 @@ private fun slotBuilder(block: SlotBuilder.() -> Unit): List<Either<String, Slot
 class TemplateBodyEditorStateTest {
     private fun asLeft(value: Either<String, Slot>): String = (value as Either.Left).value
     private fun asRight(value: Either<String, Slot>): Slot = (value as Either.Right).value
-    private fun slotLabel(value: Either<String, Slot>): String = asRight(value).label
+    private fun slotLabel(value: Either<String, Slot>): String = asRight(value).displayLabel
 
     // Text insertion, replace, delete
     @Test
@@ -607,7 +608,7 @@ class TemplateBodyEditorStateTest {
         }
 
         val startState = TemplateBodyEditorState(slots, TextRange(5), null, null)
-        val newSlot = PlainTextSlot("").apply { label = "Text" }
+        val newSlot = PlainTextSlot("Text", EscapedString(""))
         startState.insertSlotAtSelection(newSlot).let {
             assertEquals(it.selectedSlotIndex, 1)
 
@@ -631,7 +632,7 @@ class TemplateBodyEditorStateTest {
         }
 
         val startState = TemplateBodyEditorState(slots, TextRange(3, 14), null, null)
-        val newSlot = PlainTextSlot("").apply { label = "Text" }
+        val newSlot = PlainTextSlot("Text", EscapedString(""))
         startState.insertSlotAtSelection(newSlot).let {
             assertEquals(it.selectedSlotIndex, 1)
 

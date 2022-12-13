@@ -14,6 +14,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import io.joelt.texttemplate.models.Either
 import io.joelt.texttemplate.models.Template
+import io.joelt.texttemplate.models.createTemplateExample
 import io.joelt.texttemplate.models.slots.Slot
 import io.joelt.texttemplate.ui.theme.TextTemplateTheme
 
@@ -30,7 +31,7 @@ fun TemplateBodyPreview(
     val annotatedString = body.annotateSlotsIndexed { index, it ->
         pushStringAnnotation(SLOT_TAG, index.toString())
         withSlotStyle(selectedSlotIndex == index) {
-            append(it.toDisplayString())
+            append(it.displayDefault())
         }
         pop()
     }
@@ -68,9 +69,9 @@ fun TemplateBodyPreview(
 @Preview
 @Composable
 private fun SlotsPreviewExample() {
-    val template = Template(
+    val template = createTemplateExample(
         name = "My Sample Template",
-        text = """
+        body = """
             Be kind to your {% text %}{% end %}-footed {% text %}{% end %}
             For a duck may be somebody's {% text %}{% end %},
             Be kind to your {% text %}{% end %} in {% text %}{% end %}
@@ -81,7 +82,7 @@ private fun SlotsPreviewExample() {
         """.trimIndent()
     )
 
-    var body by remember { mutableStateOf(template.body) }
+    val body by remember { mutableStateOf(template.body) }
     var currentSlot by remember {
         mutableStateOf<Int?>(null)
     }
