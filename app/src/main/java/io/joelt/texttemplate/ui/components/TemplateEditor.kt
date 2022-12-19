@@ -8,7 +8,9 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,17 +25,21 @@ import io.joelt.texttemplate.ui.theme.Typography
 
 data class TemplateEditorState(val templateName: String, val editorState: TemplateBodyEditorState) {
     constructor(template: Template) : this(template.name, TemplateBodyEditorState(template.body))
+
+    fun moveCursorToEnd() = this.copy(editorState = editorState.moveCursorToEnd())
 }
 
 @Composable
 fun TemplateEditor(
+    nameModifier: Modifier = Modifier,
+    bodyModifier: Modifier = Modifier,
     state: TemplateEditorState,
     onStateChange: (newState: TemplateEditorState) -> Unit
 ) {
     val editorState = state.editorState
     TemplateViewLayout(name = {
         PlaceholderTextField(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = nameModifier.fillMaxWidth(),
             value = state.templateName,
             textStyle = LocalTextStyle.current,
             singleLine = true,
@@ -87,7 +93,7 @@ fun TemplateEditor(
     }) {
         val annotatedString = editorState.annotatedString
         PlaceholderTextField(
-            modifier = Modifier.fillMaxSize(),
+            modifier = bodyModifier.fillMaxSize(),
             textStyle = LocalTextStyle.current,
             visualTransformation = {
                 // Apply the styles from the annotatedString through visualTransformation instead
@@ -112,7 +118,7 @@ private fun TemplateEditorPreview() {
     }
 
     Column {
-        TemplateEditor(state, onStateChange = {
+        TemplateEditor(state = state, onStateChange = {
             state = it
         })
     }
