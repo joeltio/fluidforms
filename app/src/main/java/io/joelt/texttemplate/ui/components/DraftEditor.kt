@@ -93,7 +93,7 @@ fun DraftEditor(
                     )
                 }
             },
-            floatingActionButton = if (mode == EditorMode.EDIT) {
+            floatingActionButton = if (mode == EditorMode.EDIT || selectedIndex == -1) {
                 null
             } else {
                 {

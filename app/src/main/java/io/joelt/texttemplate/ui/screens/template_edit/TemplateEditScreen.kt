@@ -7,7 +7,11 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -19,6 +23,7 @@ import io.joelt.texttemplate.models.genTemplates
 import io.joelt.texttemplate.navigation.*
 import io.joelt.texttemplate.ui.components.*
 import io.joelt.texttemplate.ui.theme.TextTemplateTheme
+import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 
 fun Route.templateEdit(templateId: Long) = "templates/$templateId/edit"
@@ -44,8 +49,10 @@ data class TemplateEditState(
         )
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun templateEditScreenContent(
+    routeKey: String?,
     state: TemplateEditState?,
     onStateChange: (TemplateEditState) -> Unit,
     templateChanged: Boolean,
@@ -91,7 +98,21 @@ private fun templateEditScreenContent(
             Spacer(Modifier.height(32.dp))
             CircularProgressIndicator()
         } else {
+            val focusRequester = remember { FocusRequester() }
+            val kb = LocalSoftwareKeyboardController.current
+
+            LaunchedEffect(focusRequester) {
+                focusRequester.requestFocus()
+                // This delay has to be here, not sure why
+                // See: https://stackoverflow.com/questions/71412537/how-to-show-keyboard-with-jetpack-compose
+                delay(100)
+                kb?.show()
+
+                onStateChange(state.withEditorState(state.editorState.moveCursorToEnd()))
+            }
+
             TemplateEditor(
+                bodyModifier = Modifier.focusRequester(focusRequester),
                 state = state.editorState,
                 onStateChange = { onStateChange(state.withEditorState(it)) })
         }
@@ -118,6 +139,7 @@ val TemplateEditScreen = buildScreen {
         }
 
         templateEditScreenContent(
+            nav.currentRouteAsState(),
             viewModel.screenState,
             onStateChange = { viewModel.screenState = it },
             viewModel.templateChanged(),
@@ -137,6 +159,7 @@ private fun TemplateEditScreenPreview() {
     var screenState by remember { mutableStateOf(TemplateEditState(template)) }
 
     val screen = templateEditScreenContent(
+        null,
         state = screenState,
         onStateChange = { screenState = it },
         templateChanged = true,

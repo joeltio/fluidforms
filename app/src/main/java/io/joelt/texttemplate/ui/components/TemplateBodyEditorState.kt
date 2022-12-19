@@ -454,4 +454,6 @@ data class TemplateBodyEditorState(
             cursor.itemIndex + 1
         )
     }
+
+    fun moveCursorToEnd() = this.copy(selection = TextRange(text.length))
 }
