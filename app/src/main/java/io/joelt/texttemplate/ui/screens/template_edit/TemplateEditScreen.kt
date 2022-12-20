@@ -52,7 +52,6 @@ data class TemplateEditState(
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun templateEditScreenContent(
-    routeKey: String?,
     state: TemplateEditState?,
     onStateChange: (TemplateEditState) -> Unit,
     templateChanged: Boolean,
@@ -139,7 +138,6 @@ val TemplateEditScreen = buildScreen {
         }
 
         templateEditScreenContent(
-            nav.currentRouteAsState(),
             viewModel.screenState,
             onStateChange = { viewModel.screenState = it },
             viewModel.templateChanged(),
@@ -159,7 +157,6 @@ private fun TemplateEditScreenPreview() {
     var screenState by remember { mutableStateOf(TemplateEditState(template)) }
 
     val screen = templateEditScreenContent(
-        null,
         state = screenState,
         onStateChange = { screenState = it },
         templateChanged = true,
