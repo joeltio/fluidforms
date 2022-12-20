@@ -116,7 +116,8 @@ fun DraftEditor(
                 null
             } else {
                 selectedIndex
-            }
+            },
+            onSlotClick = { selectedIndex = it }
         )
     }
 }
