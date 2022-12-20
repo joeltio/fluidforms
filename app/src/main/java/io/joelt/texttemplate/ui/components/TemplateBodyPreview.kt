@@ -1,7 +1,9 @@
 package io.joelt.texttemplate.ui.components
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -9,11 +11,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import io.joelt.texttemplate.models.Either
-import io.joelt.texttemplate.models.Template
 import io.joelt.texttemplate.models.createTemplateExample
 import io.joelt.texttemplate.models.slots.Slot
 import io.joelt.texttemplate.ui.theme.TextTemplateTheme
@@ -41,17 +43,22 @@ fun TemplateBodyPreview(
         // Text will. For example, when this ClickableText is used in a row
         // item, clicks events on the ClickableText will not propagate to the
         // parent
+        val overflow = if (maxLines == Int.MAX_VALUE) {
+            TextOverflow.Clip
+        } else { TextOverflow.Ellipsis }
         if (onSlotClick == null) {
             Text(
+                modifier = Modifier.fillMaxWidth(),
                 text = annotatedString,
                 style = style,
                 maxLines = maxLines,
-                overflow = TextOverflow.Ellipsis
+                overflow = overflow
             )
         } else {
             ClickableText(
+                modifier = Modifier.fillMaxWidth(),
                 text = annotatedString,
-                style = style,
+                style = style.merge(TextStyle(color = LocalContentColor.current)),
                 onClick = { offset ->
                     annotatedString.getStringAnnotations(
                         tag = SLOT_TAG, offset, offset
@@ -60,7 +67,7 @@ fun TemplateBodyPreview(
                     }
                 },
                 maxLines = maxLines,
-                overflow = TextOverflow.Ellipsis
+                overflow = overflow
             )
         }
     }
