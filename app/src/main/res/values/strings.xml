@@ -43,6 +43,16 @@
     <string name="dialog_discard">Discard</string>
     <string name="dialog_cancel">Cancel</string>
 
+    <!-- Empty list text -->
+    <string name="empty_archived_title">You have no archived drafts!</string>
+    <string name="empty_archived_description">Drafts will show up here if they have not been modified for more than a month.</string>
+
+    <string name="empty_drafts_title">You have no drafts!</string>
+    <string name="empty_drafts_description">Drafts can be created by selecting \"Fill Up Template\" in the template you want to use.</string>
+
+    <string name="empty_templates_title">You have no templates!</string>
+    <string name="empty_templates_description">Create a template by clicking on the \"+\" button on this screen.</string>
+
     <!-- Settings -->
     <string name="look_and_feel_title">Look and Feel</string>
 
