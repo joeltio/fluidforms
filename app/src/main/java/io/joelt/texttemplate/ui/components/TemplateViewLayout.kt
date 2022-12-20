@@ -1,8 +1,7 @@
 package io.joelt.texttemplate.ui.components
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
@@ -14,27 +13,26 @@ import io.joelt.texttemplate.ui.theme.Typography
 
 @Composable
 fun TemplateViewLayout(
-    contentScrollable: Boolean = false,
     name: @Composable ColumnScope.() -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
     body: @Composable ColumnScope.() -> Unit = {},
 ) {
     Column {
-        var modifier = Modifier
-            .padding(16.dp)
-            .weight(1f)
-
-        if (contentScrollable) {
-            modifier = modifier.verticalScroll(rememberScrollState())
-        }
-
-        Column(modifier = modifier) {
-            ProvideTextStyle(value = Typography.headlineLarge) {
-                name()
+        LazyColumn(
+            modifier = Modifier
+                .padding(16.dp)
+                .weight(1f)
+        ) {
+            item {
+                ProvideTextStyle(value = Typography.headlineLarge) {
+                    name()
+                }
+                Spacer(modifier = Modifier.height(16.dp))
             }
-            Spacer(modifier = Modifier.height(16.dp))
-            ProvideTextStyle(value = Typography.bodyLarge) {
-                body()
+            item {
+                ProvideTextStyle(value = Typography.bodyLarge) {
+                    body()
+                }
             }
         }
 

@@ -16,7 +16,7 @@ fun TemplatePreview(template: Template) {
 
 @Composable
 fun TemplatePreview(name: String, body: List<Either<String, Slot>>) {
-    TemplateViewLayout(contentScrollable = true, name = {
+    TemplateViewLayout(name = {
         Text(text = name, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }) {
         TemplateBodyPreview(body = body)
