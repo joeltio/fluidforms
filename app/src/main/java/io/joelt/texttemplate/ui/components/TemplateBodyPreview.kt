@@ -6,11 +6,7 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
@@ -24,11 +20,13 @@ private const val SLOT_TAG = "Slot"
 
 @Composable
 fun TemplateBodyPreview(
+    modifier: Modifier = Modifier,
     body: List<Either<String, Slot>>,
     selectedSlotIndex: Int? = null,
     style: TextStyle = LocalTextStyle.current,
     maxLines: Int = Int.MAX_VALUE,
-    onSlotClick: ((slotIndex: Int) -> Unit)? = null
+    onRequestScroll: suspend ((offset: Float, height: Int) -> Unit) = { _, _ -> },
+    onSlotClick: ((slotIndex: Int) -> Unit)? = null,
 ) {
     val annotatedString = body.annotateSlotsIndexed { index, it ->
         pushStringAnnotation(SLOT_TAG, index.toString())
@@ -36,6 +34,16 @@ fun TemplateBodyPreview(
             append(it.displayDefault())
         }
         pop()
+    }
+
+    var lineBottoms by remember { mutableStateOf<Map<Int, Float>>(emptyMap()) }
+    var height by remember { mutableStateOf(0) }
+
+    LaunchedEffect(selectedSlotIndex) {
+        if (selectedSlotIndex == null) {
+            return@LaunchedEffect
+        }
+        onRequestScroll(lineBottoms[selectedSlotIndex]!!, height)
     }
 
     Column {
@@ -48,15 +56,16 @@ fun TemplateBodyPreview(
         } else { TextOverflow.Ellipsis }
         if (onSlotClick == null) {
             Text(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = modifier
+                    .fillMaxWidth(),
                 text = annotatedString,
                 style = style,
                 maxLines = maxLines,
-                overflow = overflow
+                overflow = overflow,
             )
         } else {
             ClickableText(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = modifier.fillMaxWidth(),
                 text = annotatedString,
                 style = style.merge(TextStyle(color = LocalContentColor.current)),
                 onClick = { offset ->
@@ -67,7 +76,18 @@ fun TemplateBodyPreview(
                     }
                 },
                 maxLines = maxLines,
-                overflow = overflow
+                overflow = overflow,
+                onTextLayout = { layoutResult ->
+                    val annotations = annotatedString.getStringAnnotations(tag = SLOT_TAG, 0, annotatedString.length)
+                    val bottoms = mutableMapOf<Int, Float>()
+
+                    annotations.forEach { range ->
+                        val lineIndex = layoutResult.getLineForOffset(range.end)
+                        bottoms[range.item.toInt()] = layoutResult.getLineBottom(lineIndex)
+                    }
+                    lineBottoms = bottoms
+                    height = layoutResult.size.height
+                }
             )
         }
     }
@@ -95,7 +115,7 @@ private fun SlotsPreviewExample() {
     }
     TextTemplateTheme {
         Column {
-            TemplateBodyPreview(body, currentSlot) {
+            TemplateBodyPreview(body = body, selectedSlotIndex = currentSlot) {
                 currentSlot = it
             }
         }

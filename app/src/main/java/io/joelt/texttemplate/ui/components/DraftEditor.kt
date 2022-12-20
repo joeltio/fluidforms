@@ -41,83 +41,90 @@ fun DraftEditor(
         mutableStateOf(EditorMode.NAVIGATION)
     }
 
-    TemplateViewLayout(name = {
-        PlaceholderTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = state.name,
-            textStyle = LocalTextStyle.current,
-            singleLine = true,
-            placeholder = stringResource(R.string.template_name_placeholder),
-            onValueChange = {
-                onStateChange(state.copy(name = it))
-            })
-    }, bottomBar = {
-        val nextIndex = state.body.nextSlot(selectedIndex)
-        val prevIndex = state.body.prevSlot(selectedIndex)
+    val viewLayoutState = rememberTemplateViewLayoutState()
+    TemplateViewLayout(
+        state = viewLayoutState,
+        name = {
+            PlaceholderTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = state.name,
+                textStyle = LocalTextStyle.current,
+                singleLine = true,
+                placeholder = stringResource(R.string.template_name_placeholder),
+                onValueChange = {
+                    onStateChange(state.copy(name = it))
+                })
+        }, bottomBar = {
+            val nextIndex = state.body.nextSlot(selectedIndex)
+            val prevIndex = state.body.prevSlot(selectedIndex)
 
-        BottomAppBar(
-            actions = {
-                // Previous Button
-                IconButton(enabled = prevIndex != -1, onClick = {
-                    selectedIndex = prevIndex
-                }) {
-                    androidx.compose.material3.Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = stringResource(R.string.previous_slot)
-                    )
-                }
-
-                // Slot Editor
-                AnimatedVisibility(
-                    modifier = Modifier.weight(1f),
-                    visible = mode == EditorMode.EDIT
-                ) {
-                    SlotEditor(
-                        modifier = Modifier.weight(1f),
-                        slot = (state.body[selectedIndex] as Either.Right).value,
-                        onSlotChanged = {
-                            val newSlots = state.body.toMutableList()
-                            newSlots.removeAt(selectedIndex)
-                            newSlots.add(selectedIndex, Either.Right(it))
-                            onStateChange(state.copy(body = newSlots))
-                        })
-                }
-
-                // Next Button
-                IconButton(enabled = nextIndex != -1, onClick = {
-                    selectedIndex = nextIndex
-                }) {
-                    androidx.compose.material3.Icon(
-                        imageVector = Icons.Default.ArrowForward,
-                        contentDescription = stringResource(R.string.next_slot)
-                    )
-                }
-            },
-            floatingActionButton = if (mode == EditorMode.EDIT || selectedIndex == -1) {
-                null
-            } else {
-                {
-                    FloatingActionButton(onClick = {
-                        mode = EditorMode.EDIT
+            BottomAppBar(
+                actions = {
+                    // Previous Button
+                    IconButton(enabled = prevIndex != -1, onClick = {
+                        selectedIndex = prevIndex
                     }) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = stringResource(
-                                R.string.edit_slot
-                            )
+                        androidx.compose.material3.Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = stringResource(R.string.previous_slot)
                         )
                     }
+
+                    // Slot Editor
+                    AnimatedVisibility(
+                        modifier = Modifier.weight(1f),
+                        visible = mode == EditorMode.EDIT
+                    ) {
+                        SlotEditor(
+                            modifier = Modifier.weight(1f),
+                            slot = (state.body[selectedIndex] as Either.Right).value,
+                            onSlotChanged = {
+                                val newSlots = state.body.toMutableList()
+                                newSlots.removeAt(selectedIndex)
+                                newSlots.add(selectedIndex, Either.Right(it))
+                                onStateChange(state.copy(body = newSlots))
+                            })
+                    }
+
+                    // Next Button
+                    IconButton(enabled = nextIndex != -1, onClick = {
+                        selectedIndex = nextIndex
+                    }) {
+                        androidx.compose.material3.Icon(
+                            imageVector = Icons.Default.ArrowForward,
+                            contentDescription = stringResource(R.string.next_slot)
+                        )
+                    }
+                },
+                floatingActionButton = if (mode == EditorMode.EDIT || selectedIndex == -1) {
+                    null
+                } else {
+                    {
+                        FloatingActionButton(onClick = {
+                            mode = EditorMode.EDIT
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = stringResource(
+                                    R.string.edit_slot
+                                )
+                            )
+                        }
+                    }
                 }
-            }
-        )
-    }) {
+            )
+        }) {
         TemplateBodyPreview(
-            body = state.body, selectedSlotIndex = if (selectedIndex == -1) {
+            body = state.body,
+            selectedSlotIndex = if (selectedIndex == -1) {
                 null
             } else {
                 selectedIndex
             },
-            onSlotClick = { selectedIndex = it }
+            onSlotClick = { selectedIndex = it },
+            onRequestScroll = { offset, height ->
+                viewLayoutState.scrollBodyToTopOfBottomBar(offset, height)
+            }
         )
     }
 }
