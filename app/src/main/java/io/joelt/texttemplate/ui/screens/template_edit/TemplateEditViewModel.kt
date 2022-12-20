@@ -10,6 +10,7 @@ import io.joelt.texttemplate.models.Template
 import io.joelt.texttemplate.database.TemplatesRepository
 import io.joelt.texttemplate.models.slots.serializeTemplateBody
 import io.joelt.texttemplate.navigation.Route
+import io.joelt.texttemplate.ui.screens.template_preview.templatePreview
 import io.joelt.texttemplate.ui.screens.templates.templates
 import kotlinx.coroutines.*
 
@@ -42,12 +43,12 @@ class TemplateEditViewModel(
                 if (template.id == 0L) {
                     val templateId = repository.createTemplate(template)
                     screenState = it.copy(template = template.copy(id = templateId))
+                    nav.navigate(Route.templatePreview(templateId))
                 } else {
                     repository.updateTemplate(template)
+                    nav.navigate(Route.templatePreview(template.id))
                 }
             }
-
-            nav.navigate(Route.templates)
         }
     }
 

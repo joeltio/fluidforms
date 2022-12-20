@@ -24,6 +24,7 @@ import io.joelt.texttemplate.navigation.*
 import io.joelt.texttemplate.ui.components.TemplatePreview
 import io.joelt.texttemplate.ui.screens.draft_edit.createDraft
 import io.joelt.texttemplate.ui.screens.template_edit.templateEdit
+import io.joelt.texttemplate.ui.screens.templates.templates
 import io.joelt.texttemplate.ui.theme.TextTemplateTheme
 import org.koin.androidx.compose.koinViewModel
 
@@ -101,7 +102,7 @@ val TemplatePreviewScreen = buildScreen {
 
         templatePreviewScreenContent(
             template = viewModel.template,
-            onBack = { nav.popBackStack() },
+            onBack = { nav.navigateClearStack(Route.templates) },
             onEditTemplate = { nav.navigateClearStack(Route.templateEdit(templateId)) },
             onDeleteTemplate = { viewModel.deleteTemplate(nav) },
             onCreateDraftWithTemplate = { nav.navigateClearStack(Route.createDraft(templateId)) })
