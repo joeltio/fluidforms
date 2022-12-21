@@ -8,6 +8,11 @@ import io.joelt.texttemplate.database.TemplatesRepository
 import io.joelt.texttemplate.database.room.AppDatabase
 import io.joelt.texttemplate.database.room.RoomRepository
 import io.joelt.texttemplate.models.Draft
+import io.joelt.texttemplate.models.Either
+import io.joelt.texttemplate.models.slots.EscapedString
+import io.joelt.texttemplate.models.slots.Slot
+import io.joelt.texttemplate.models.slots.deserializeTemplateBody
+import io.joelt.texttemplate.models.slots.serializeTemplateBody
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -22,6 +27,8 @@ import java.time.LocalDateTime
 class DraftReadWriteTest {
     private lateinit var db: AppDatabase
     private lateinit var repo: TemplatesRepository
+    private fun String.deserialize() = deserializeTemplateBody(EscapedString(this))
+    private fun List<Either<String, Slot>>.serialize() = serializeTemplateBody(this)
 
     @Before
     fun createDb() {
@@ -44,7 +51,7 @@ class DraftReadWriteTest {
         lastEditedOn: LocalDateTime = LocalDateTime.now()
     ): Draft = Draft(
         name = name,
-        text = text,
+        body = text.deserialize(),
         lastEditedIndex = lastEditedIndex,
         lastEditedOn = lastEditedOn
     )
@@ -77,7 +84,7 @@ class DraftReadWriteTest {
         val drafts = repo.getDrafts()
         assertEquals(drafts.size, 3)
         assertEquals(drafts[0].name, "my draft")
-        assertEquals(drafts[0].text, "hello world!")
+        assertEquals(drafts[0].body.serialize(), "hello world\\!")
     }
 
     @Test

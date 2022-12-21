@@ -7,7 +7,12 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.joelt.texttemplate.database.TemplatesRepository
 import io.joelt.texttemplate.database.room.AppDatabase
 import io.joelt.texttemplate.database.room.RoomRepository
+import io.joelt.texttemplate.models.Either
 import io.joelt.texttemplate.models.Template
+import io.joelt.texttemplate.models.slots.EscapedString
+import io.joelt.texttemplate.models.slots.Slot
+import io.joelt.texttemplate.models.slots.deserializeTemplateBody
+import io.joelt.texttemplate.models.slots.serializeTemplateBody
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -22,6 +27,8 @@ import java.time.LocalDateTime
 class TemplateReadWriteTest {
     private lateinit var db: AppDatabase
     private lateinit var repo: TemplatesRepository
+    private fun String.deserialize() = deserializeTemplateBody(EscapedString(this))
+    private fun List<Either<String, Slot>>.serialize() = serializeTemplateBody(this)
 
     @Before
     fun createDb() {
@@ -39,7 +46,7 @@ class TemplateReadWriteTest {
     @Test
     fun saveAndRetrieveDate() = runTest {
         val date = LocalDateTime.now()
-        val template = Template(createdOn = date, name = "my template", text = "hello world!")
+        val template = Template(createdOn = date, name = "my template", body = "hello world!".deserialize())
 
         val id = repo.createTemplate(template)
         val dbDate = repo.getTemplate(id).createdOn
@@ -55,7 +62,7 @@ class TemplateReadWriteTest {
 
     @Test
     fun createAndReadTemplates() = runTest {
-        val template = Template(name = "my template", text = "hello world!")
+        val template = Template(name = "my template", body = "hello world!".deserialize())
 
         repo.createTemplate(template)
         repo.createTemplate(template)
@@ -64,12 +71,12 @@ class TemplateReadWriteTest {
         val templates = repo.getTemplates()
         assertEquals(templates.size, 3)
         assertEquals(templates[0].name, "my template")
-        assertEquals(templates[0].text, "hello world!")
+        assertEquals(templates[0].body.serialize(), "hello world\\!")
     }
 
     @Test
     fun deleteTemplates() = runTest {
-        val template = Template(name = "my template", text = "hello world!")
+        val template = Template(name = "my template", body = "hello world!".deserialize())
 
         repo.createTemplate(template)
         repo.createTemplate(template)
@@ -86,7 +93,7 @@ class TemplateReadWriteTest {
 
     @Test
     fun updateTemplate() = runTest {
-        val template = Template(name = "my template", text = "hello world!")
+        val template = Template(name = "my template", body = "hello world!".deserialize())
 
         repo.createTemplate(template)
         val templateId = repo.createTemplate(template)
