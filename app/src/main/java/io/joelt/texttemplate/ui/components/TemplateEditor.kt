@@ -83,7 +83,7 @@ fun TemplateEditor(
                         containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
                         elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
                     ) {
-                        Icon(imageVector = Icons.Default.Add, contentDescription = "Add")
+                        Icon(imageVector = Icons.Default.Add, contentDescription = stringResource(R.string.add_slot))
                     }
                 }
             } else {

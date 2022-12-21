@@ -19,6 +19,7 @@
     <string name="next_slot">Next Slot</string>
     <string name="edit_slot">Edit Slot</string>
     <string name="text_copied_to_clipboard">Text copied to clipboard!</string>
+    <string name="add_slot">Add a slot</string>
 
     <string name="plain_text_slot_placeholder">Text</string>
     <string name="plain_text_slot_type_name">TEXT</string>
