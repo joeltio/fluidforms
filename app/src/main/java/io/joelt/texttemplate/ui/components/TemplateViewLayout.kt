@@ -9,23 +9,36 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.joelt.texttemplate.ui.theme.Typography
 
-data class TemplateViewLayoutState(val listState: LazyListState) {
+class TemplateViewLayoutState(val listState: LazyListState, nameHeightState: MutableState<Int>) {
+    var nameHeight by nameHeightState
+
     suspend fun scrollBodyToTopOfBottomBar(relativeOffset: Float) {
         val visibleHeight = listState.layoutInfo.viewportSize.height
         // Calculation:
         // - Scroll up by name's height
         // - Scroll up by visible height
         // - Scroll down by relative offset
-        listState.animateScrollToItem(1, (relativeOffset - visibleHeight).toInt())
+        // - Cap the scroll amount to -nameHeight. The scrolling should never be less than
+        //   -nameHeight
+        var scrollAmount = (relativeOffset - visibleHeight).toInt()
+        if (nameHeight != -1) {
+            scrollAmount = maxOf(scrollAmount, -nameHeight)
+        }
+        listState.animateScrollToItem(1, scrollAmount)
     }
 }
 
 @Composable
-fun rememberTemplateViewLayoutState() = TemplateViewLayoutState(rememberLazyListState(0))
+fun rememberTemplateViewLayoutState(): TemplateViewLayoutState {
+    val nameHeight = remember { mutableStateOf(-1) }
+    val listState = rememberLazyListState()
+    return TemplateViewLayoutState(listState, nameHeight)
+}
 
 @Composable
 fun TemplateViewLayout(
@@ -41,10 +54,14 @@ fun TemplateViewLayout(
                 .weight(1f)
         ) {
             item {
-                ProvideTextStyle(value = Typography.headlineLarge) {
-                    name()
+                Column(modifier = Modifier.onGloballyPositioned {
+                    state.nameHeight = it.size.height
+                }) {
+                    ProvideTextStyle(value = Typography.headlineLarge) {
+                        name()
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
-                Spacer(modifier = Modifier.height(16.dp))
             }
             item {
                 ProvideTextStyle(value = Typography.bodyLarge) {
