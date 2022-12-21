@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import io.joelt.texttemplate.R
@@ -37,11 +38,20 @@ fun DraftEditor(
     var selectedIndex by remember {
         mutableStateOf(state.body.indexOfFirst { it is Either.Right })
     }
-    var mode by remember {
-        mutableStateOf(EditorMode.NAVIGATION)
+    var scrollOffsets by remember { mutableStateOf<Map<Int, Float>>(emptyMap()) }
+    var mode by remember { mutableStateOf(EditorMode.NAVIGATION) }
+    val viewLayoutState = rememberTemplateViewLayoutState()
+
+    // TODO: Constantly updating on every scroll is not optimal, but currently there is no way to
+    //  track when the ime animation finishes. This feature is introduced only in compose-foundation
+    //  1.4.0-alpha01 as WindowInsets.imeAnimationTarget
+    LaunchedEffect(selectedIndex, WindowInsets.ime.getBottom(LocalDensity.current)) {
+        if (selectedIndex == -1) {
+            return@LaunchedEffect
+        }
+        viewLayoutState.scrollBodyToTopOfBottomBar(scrollOffsets[selectedIndex]!!)
     }
 
-    val viewLayoutState = rememberTemplateViewLayoutState()
     TemplateViewLayout(
         state = viewLayoutState,
         name = {
@@ -122,9 +132,7 @@ fun DraftEditor(
                 selectedIndex
             },
             onSlotClick = { selectedIndex = it },
-            onRequestScroll = { offset, height ->
-                viewLayoutState.scrollBodyToTopOfBottomBar(offset, height)
-            }
+            onScrollOffsetCalculated = { scrollOffsets = it },
         )
     }
 }

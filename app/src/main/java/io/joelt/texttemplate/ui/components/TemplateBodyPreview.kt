@@ -25,7 +25,7 @@ fun TemplateBodyPreview(
     selectedSlotIndex: Int? = null,
     style: TextStyle = LocalTextStyle.current,
     maxLines: Int = Int.MAX_VALUE,
-    onRequestScroll: suspend ((offset: Float, height: Int) -> Unit) = { _, _ -> },
+    onScrollOffsetCalculated: (offsets: Map<Int, Float>) -> Unit = {},
     onSlotClick: ((slotIndex: Int) -> Unit)? = null,
 ) {
     val annotatedString = body.annotateSlotsIndexed { index, it ->
@@ -36,16 +36,6 @@ fun TemplateBodyPreview(
         pop()
     }
 
-    var lineBottoms by remember { mutableStateOf<Map<Int, Float>>(emptyMap()) }
-    var height by remember { mutableStateOf(0) }
-
-    LaunchedEffect(selectedSlotIndex) {
-        if (selectedSlotIndex == null) {
-            return@LaunchedEffect
-        }
-        onRequestScroll(lineBottoms[selectedSlotIndex]!!, height)
-    }
-
     Column {
         // This is needed as ClickableText will not respond to parent clicks but
         // Text will. For example, when this ClickableText is used in a row
@@ -53,7 +43,9 @@ fun TemplateBodyPreview(
         // parent
         val overflow = if (maxLines == Int.MAX_VALUE) {
             TextOverflow.Clip
-        } else { TextOverflow.Ellipsis }
+        } else {
+            TextOverflow.Ellipsis
+        }
         if (onSlotClick == null) {
             Text(
                 modifier = modifier
@@ -78,15 +70,18 @@ fun TemplateBodyPreview(
                 maxLines = maxLines,
                 overflow = overflow,
                 onTextLayout = { layoutResult ->
-                    val annotations = annotatedString.getStringAnnotations(tag = SLOT_TAG, 0, annotatedString.length)
-                    val bottoms = mutableMapOf<Int, Float>()
+                    val annotations = annotatedString.getStringAnnotations(
+                        tag = SLOT_TAG,
+                        0,
+                        annotatedString.length
+                    )
+                    val offsets = mutableMapOf<Int, Float>()
 
                     annotations.forEach { range ->
                         val lineIndex = layoutResult.getLineForOffset(range.end)
-                        bottoms[range.item.toInt()] = layoutResult.getLineBottom(lineIndex)
+                        offsets[range.item.toInt()] = layoutResult.getLineBottom(lineIndex)
                     }
-                    lineBottoms = bottoms
-                    height = layoutResult.size.height
+                    onScrollOffsetCalculated(offsets)
                 }
             )
         }

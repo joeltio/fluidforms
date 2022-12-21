@@ -13,42 +13,42 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.joelt.texttemplate.ui.theme.Typography
 
-class TemplateViewLayoutState(val listState: LazyListState) {
-    suspend fun scrollBodyToTopOfBottomBar(relativeOffset: Float, bodyHeight: Int) {
-        listState.scrollToItem(0, (bodyHeight - relativeOffset).toInt())
+data class TemplateViewLayoutState(val listState: LazyListState) {
+    suspend fun scrollBodyToTopOfBottomBar(relativeOffset: Float) {
+        val visibleHeight = listState.layoutInfo.viewportSize.height
+        // Calculation:
+        // - Scroll up by name's height
+        // - Scroll up by visible height
+        // - Scroll down by relative offset
+        listState.animateScrollToItem(1, (relativeOffset - visibleHeight).toInt())
     }
 }
 
 @Composable
-fun rememberTemplateViewLayoutState() = TemplateViewLayoutState(rememberLazyListState(1))
+fun rememberTemplateViewLayoutState() = TemplateViewLayoutState(rememberLazyListState(0))
 
 @Composable
 fun TemplateViewLayout(
     state: TemplateViewLayoutState = rememberTemplateViewLayoutState(),
-    name: @Composable ColumnScope.() -> Unit = {},
+    name: @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
-    body: @Composable ColumnScope.() -> Unit = {},
+    body: @Composable () -> Unit = {},
 ) {
     Column {
         LazyColumn(
-            // This column is reversed so that scrolling items to above the bottom bar can be
-            // implemented. Since the layout is reversed, scroll offset starts from the bottom, so
-            // it is easier to align things to the bottom
-            reverseLayout = true,
             state = state.listState,
             modifier = Modifier
-                .padding(16.dp)
                 .weight(1f)
         ) {
             item {
-                ProvideTextStyle(value = Typography.bodyLarge) {
-                    body()
-                }
-            }
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
                 ProvideTextStyle(value = Typography.headlineLarge) {
                     name()
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+            item {
+                ProvideTextStyle(value = Typography.bodyLarge) {
+                    body()
                 }
             }
         }
@@ -76,6 +76,6 @@ private fun TemplateViewLayoutPreview() {
         })
     }) {
         val text = "hello world! This is the start." + "\n".repeat(30) + "This is the end."
-        Text(modifier = Modifier.weight(1f), text = text)
+        Text(text = text)
     }
 }
