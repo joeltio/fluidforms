@@ -6,10 +6,17 @@ import io.joelt.texttemplate.models.slots.PlainTextSlot
 import io.joelt.texttemplate.models.slots.Slot
 
 @Composable
-fun SlotEditor(modifier: Modifier = Modifier, slot: Slot, onSlotChanged: (Slot) -> Unit) {
+fun SlotEditor(
+    modifier: Modifier = Modifier,
+    slot: Slot,
+    onSlotChanged: (Slot) -> Unit,
+    hasNext: Boolean,
+    onNext: () -> Unit,
+    onDone: () -> Unit
+) {
     when (slot) {
         is PlainTextSlot -> {
-            PlainTextSlotEditor(modifier, slot, onSlotChanged)
+            PlainTextSlotEditor(modifier, slot, onSlotChanged, hasNext, onNext, onDone)
         }
     }
 }

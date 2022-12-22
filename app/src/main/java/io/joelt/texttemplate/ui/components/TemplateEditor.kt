@@ -2,15 +2,15 @@ package io.joelt.texttemplate.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.tooling.preview.Preview
@@ -42,6 +42,7 @@ fun TemplateEditor(
             modifier = nameModifier.fillMaxWidth(),
             value = state.templateName,
             textStyle = LocalTextStyle.current,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             singleLine = true,
             placeholder = stringResource(R.string.template_name_placeholder),
             onValueChange = {

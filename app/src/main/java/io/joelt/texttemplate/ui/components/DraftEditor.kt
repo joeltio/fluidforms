@@ -2,6 +2,8 @@ package io.joelt.texttemplate.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -12,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import io.joelt.texttemplate.R
 import io.joelt.texttemplate.models.*
@@ -59,6 +62,13 @@ fun DraftEditor(
                 modifier = Modifier.fillMaxWidth(),
                 value = state.name,
                 textStyle = LocalTextStyle.current,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(onNext = {
+                    if (mode == EditorMode.NAVIGATION && selectedIndex != -1) {
+                        mode = EditorMode.EDIT
+                    }
+                    return@KeyboardActions this.defaultKeyboardAction(ImeAction.Next)
+                }),
                 singleLine = true,
                 placeholder = stringResource(R.string.template_name_placeholder),
                 onValueChange = {
@@ -93,6 +103,13 @@ fun DraftEditor(
                                 newSlots.removeAt(selectedIndex)
                                 newSlots.add(selectedIndex, Either.Right(it))
                                 onStateChange(state.copy(body = newSlots))
+                            },
+                            hasNext = nextIndex != -1,
+                            onNext = {
+                                selectedIndex = nextIndex
+                            },
+                            onDone = {
+                                mode = EditorMode.NAVIGATION
                             })
                     }
 
