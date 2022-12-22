@@ -472,11 +472,12 @@ class TemplateBodyEditorStateTest {
         val slots = slotBuilder {
             string("hello, ")
             plainSlot("Name")
+            string(", nice to meet you")
         }
 
         // Press enter inside slot
         var startState = TemplateBodyEditorState(slots, TextRange(9), null, 1)
-        var input = TextFieldValue("hello, Na\nme", TextRange(10))
+        var input = TextFieldValue("hello, Na\nme, nice to meet you", TextRange(10))
         startState.withNewTextFieldValue(input).let {
             assertNull(it.selectedSlotIndex)
             assertEquals(11, it.selection.start)
@@ -487,7 +488,7 @@ class TemplateBodyEditorStateTest {
 
         // Press enter while selecting inside a slot
         startState = TemplateBodyEditorState(slots, TextRange(8, 10), null, 1)
-        input = TextFieldValue("hello, N\ne", TextRange(9))
+        input = TextFieldValue("hello, N\ne, nice to meet you", TextRange(9))
         startState.withNewTextFieldValue(input).let {
             assertNull(it.selectedSlotIndex)
             assertEquals(11, it.selection.start)
@@ -498,7 +499,7 @@ class TemplateBodyEditorStateTest {
 
         // Press enter at the end of the slot
         startState = TemplateBodyEditorState(slots, TextRange(11), null, 1)
-        input = TextFieldValue("hello, Name\n", TextRange(12))
+        input = TextFieldValue("hello, Name\n, nice to meet you", TextRange(12))
         startState.withNewTextFieldValue(input).let {
             assertNull(it.selectedSlotIndex)
             assertEquals(11, it.selection.start)

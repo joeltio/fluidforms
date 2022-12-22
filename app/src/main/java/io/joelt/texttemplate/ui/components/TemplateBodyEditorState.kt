@@ -249,7 +249,8 @@ data class TemplateBodyEditorState(
             && end.subIndex == templateBody[start.itemIndex].text.lastIndex
         ) {
             // If the deleted portion is a whole slot, restore it
-            val newSlot = (templateBody[start.itemIndex] as Either.Right).value.makeCopy(displayLabel = value)
+            val newSlot =
+                (templateBody[start.itemIndex] as Either.Right).value.makeCopy(displayLabel = value)
             newBody.add(start.itemIndex, Either.Right(newSlot))
             return newBody
         } else if (newBody.isEmpty()) {
@@ -330,7 +331,12 @@ data class TemplateBodyEditorState(
             // Try to select from unselected
             val precedingItem = templateBody.getOrNull(cursor.itemIndex - 1)
             if (precedingItem is Either.Right) {
-                return TemplateBodyEditorState(templateBody, selection, composition, cursor.itemIndex - 1)
+                return TemplateBodyEditorState(
+                    templateBody,
+                    selection,
+                    composition,
+                    cursor.itemIndex - 1
+                )
             }
             return null
         }
@@ -348,7 +354,15 @@ data class TemplateBodyEditorState(
         }
 
         val cursor = templateBody.cursorAt(selection.start)
-        val endOfSlot = selection.start + templateBody[cursor.itemIndex].text.length - cursor.subIndex
+        val endOfSlot = if (selectedSlotIndex != cursor.itemIndex) {
+            check(cursor.subIndex == 0) {
+                "If there is a currently selected slot, the cursor is expected to be either in the slot or in the next item but with a subIndex of 0."
+            }
+            selection.start
+        } else {
+            selection.start + templateBody[cursor.itemIndex].text.length - cursor.subIndex
+        }
+
         return TemplateBodyEditorState(templateBody, TextRange(endOfSlot), null, null)
     }
 
