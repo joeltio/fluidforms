@@ -51,6 +51,7 @@ fun TemplateViewLayout(
         LazyColumn(
             state = state.listState,
             modifier = Modifier
+                .padding(horizontal = 16.dp)
                 .weight(1f)
         ) {
             item {
