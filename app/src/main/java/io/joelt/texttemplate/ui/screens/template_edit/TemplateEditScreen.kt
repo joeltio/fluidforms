@@ -54,7 +54,7 @@ data class TemplateEditState(
 private fun templateEditScreenContent(
     state: TemplateEditState?,
     onStateChange: (TemplateEditState) -> Unit,
-    templateChanged: Boolean,
+    hasTemplateChanged: () -> Boolean,
     onSave: () -> Unit,
     onBack: () -> Unit,
 ) = buildScreenContent {
@@ -64,7 +64,7 @@ private fun templateEditScreenContent(
             TemplateEditTopNavBar(
                 onSave = onSave,
                 onBack = {
-                    if (templateChanged) {
+                    if (hasTemplateChanged()) {
                         showConfirmDiscardDialog = true
                     } else {
                         onBack()
@@ -138,9 +138,9 @@ val TemplateEditScreen = buildScreen {
         }
 
         templateEditScreenContent(
-            viewModel.screenState,
+            state = viewModel.screenState,
             onStateChange = { viewModel.screenState = it },
-            viewModel.templateChanged(),
+            hasTemplateChanged = { viewModel.templateChanged() },
             onSave = {
                 viewModel.saveTemplate(nav)
             },
@@ -159,7 +159,7 @@ private fun TemplateEditScreenPreview() {
     val screen = templateEditScreenContent(
         state = screenState,
         onStateChange = { screenState = it },
-        templateChanged = true,
+        hasTemplateChanged = { true },
         onSave = {},
         onBack = {})
     TextTemplateTheme {
