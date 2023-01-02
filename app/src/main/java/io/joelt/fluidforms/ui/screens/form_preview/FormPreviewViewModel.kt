@@ -8,6 +8,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import io.joelt.fluidforms.models.Form
 import io.joelt.fluidforms.database.FormsRepository
+import io.joelt.fluidforms.navigation.Route
+import io.joelt.fluidforms.navigation.navigateClearStack
+import io.joelt.fluidforms.ui.screens.forms.forms
 import kotlinx.coroutines.*
 
 class FormPreviewViewModel(
@@ -26,7 +29,7 @@ class FormPreviewViewModel(
             form?.let {
                 repository.deleteForm(it.id)
             }
-            nav.popBackStack()
+            nav.navigateClearStack(Route.forms)
         }
     }
 }
