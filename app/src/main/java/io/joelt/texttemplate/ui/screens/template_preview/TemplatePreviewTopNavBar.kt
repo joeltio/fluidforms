@@ -39,7 +39,7 @@ fun TemplatePreviewTopNavBar(
             IconButton(onClick = onDeleteTemplate) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = stringResource(R.string.template_preview_delete_template)
+                    contentDescription = stringResource(R.string.form_preview_delete_form)
                 )
             }
             IconButton(onClick = {
@@ -47,18 +47,18 @@ fun TemplatePreviewTopNavBar(
             }) {
                 Icon(
                     imageVector = Icons.Default.MoreVert,
-                    contentDescription = stringResource(R.string.template_preview_show_menu),
+                    contentDescription = stringResource(R.string.form_preview_show_menu),
                 )
             }
             DropdownMenu(expanded = showMenu, onDismissRequest = {
                 showMenu = false
             }) {
                 DropdownMenuItem(text = {
-                    Text(text = stringResource(R.string.template_preview_edit_template))
+                    Text(text = stringResource(R.string.form_preview_edit_form))
                 }, onClick = onEditTemplate, leadingIcon = {
                     Icon(
                         imageVector = Icons.Outlined.Edit,
-                        contentDescription = stringResource(R.string.template_preview_edit_template)
+                        contentDescription = stringResource(R.string.form_preview_edit_form)
                     )
                 })
             }

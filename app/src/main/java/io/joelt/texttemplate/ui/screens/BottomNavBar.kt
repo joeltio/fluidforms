@@ -24,7 +24,7 @@ private data class NavItem(
 fun BottomNavBar(nav: NavHostController) {
     val items = listOf(
         NavItem(
-            stringResource(id = R.string.home_nav_templates),
+            stringResource(id = R.string.home_nav_forms),
             painterResource(id = R.drawable.ic_baseline_description_24),
             Route.templates
         ),

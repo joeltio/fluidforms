@@ -31,7 +31,7 @@ fun TemplateEditTopNavBar(onSave: () -> Unit, onBack: () -> Unit) {
             }) {
                 Icon(
                     imageVector = Icons.Default.Done,
-                    contentDescription = stringResource(R.string.template_edit_save_template),
+                    contentDescription = stringResource(R.string.form_edit_save_form),
                 )
             }
         },

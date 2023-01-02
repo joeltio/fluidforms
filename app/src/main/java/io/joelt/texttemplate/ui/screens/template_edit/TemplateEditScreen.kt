@@ -77,8 +77,8 @@ private fun templateEditScreenContent(
     content {
         if (showConfirmDiscardDialog) {
             AlertDialog(
-                title = { Text(text = stringResource(R.string.template_edit_confirm_discard_title)) },
-                text = { Text(text = stringResource(R.string.template_edit_confirm_discard_description)) },
+                title = { Text(text = stringResource(R.string.form_edit_confirm_discard_title)) },
+                text = { Text(text = stringResource(R.string.form_edit_confirm_discard_description)) },
                 onDismissRequest = { showConfirmDiscardDialog = false },
                 confirmButton = {
                     TextButton(onClick = onBack) {
@@ -125,7 +125,7 @@ val TemplateEditScreen = buildScreen {
     )
 
     contentFactory { backStackEntry, nav ->
-        val defaultName = stringResource(R.string.template_edit_new_template_name)
+        val defaultName = stringResource(R.string.form_edit_new_form_name)
         val templateId = backStackEntry.arguments!!.getLong("templateId")
         val viewModel: TemplateEditViewModel = koinViewModel()
 

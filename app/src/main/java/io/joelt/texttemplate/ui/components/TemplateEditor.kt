@@ -69,7 +69,7 @@ fun TemplateEditor(
             },
             floatingActionButton = if (editorState.selectedSlotIndex == null) {
                 {
-                    val slotLabel = stringResource(R.string.template_editor_plain_text_slot_placeholder)
+                    val slotLabel = stringResource(R.string.form_editor_plain_text_slot_placeholder)
                     FloatingActionButton(
                         onClick = {
                             val slot = PlainTextSlot(slotLabel, EscapedString(""))
@@ -84,7 +84,7 @@ fun TemplateEditor(
                         containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
                         elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
                     ) {
-                        Icon(imageVector = Icons.Default.Add, contentDescription = stringResource(R.string.template_editor_add_slot))
+                        Icon(imageVector = Icons.Default.Add, contentDescription = stringResource(R.string.form_editor_add_slot))
                     }
                 }
             } else {
@@ -100,7 +100,7 @@ fun TemplateEditor(
                 // Apply the styles from the annotatedString through visualTransformation instead
                 TransformedText(annotatedString, OffsetMapping.Identity)
             },
-            placeholder = stringResource(R.string.template_editor_body_placeholder),
+            placeholder = stringResource(R.string.form_editor_body_placeholder),
             value = editorState.textFieldValue,
             onValueChange = {
                 val newState = editorState.withNewTextFieldValue(it)
