@@ -19,7 +19,7 @@ fun TopNavBar(nav: NavHostController, scrollBehaviour: TopAppBarScrollBehavior? 
         }) {
             Icon(
                 imageVector = Icons.Default.Settings,
-                contentDescription = stringResource(id = R.string.navbar_settings),
+                contentDescription = stringResource(id = R.string.home_nav_settings),
             )
         }
     }

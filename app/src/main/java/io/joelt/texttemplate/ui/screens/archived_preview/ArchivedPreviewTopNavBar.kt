@@ -18,7 +18,7 @@ fun ArchivedPreviewTopNavBar(onBack: () -> Unit, onDeleteArchived: () -> Unit) {
         IconButton(onClick = onBack) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
-                contentDescription = stringResource(id = R.string.navbar_back),
+                contentDescription = stringResource(id = R.string.all_nav_back),
             )
         }
     }
@@ -27,7 +27,7 @@ fun ArchivedPreviewTopNavBar(onBack: () -> Unit, onDeleteArchived: () -> Unit) {
         navigationIcon = backIconBtn,
         actions = {
             IconButton(onClick = onDeleteArchived) {
-                Icon(imageVector = Icons.Default.Delete, contentDescription = stringResource(R.string.delete_archived))
+                Icon(imageVector = Icons.Default.Delete, contentDescription = stringResource(R.string.archived_preview_delete_archived))
             }
         }
     )

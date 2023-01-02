@@ -13,7 +13,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavHostController
 import io.joelt.texttemplate.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,7 +31,7 @@ fun TemplatePreviewTopNavBar(
             IconButton(onClick = onBack) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
-                    contentDescription = stringResource(id = R.string.navbar_back),
+                    contentDescription = stringResource(id = R.string.all_nav_back),
                 )
             }
         },
@@ -40,7 +39,7 @@ fun TemplatePreviewTopNavBar(
             IconButton(onClick = onDeleteTemplate) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = stringResource(R.string.delete_template)
+                    contentDescription = stringResource(R.string.template_preview_delete_template)
                 )
             }
             IconButton(onClick = {
@@ -48,18 +47,18 @@ fun TemplatePreviewTopNavBar(
             }) {
                 Icon(
                     imageVector = Icons.Default.MoreVert,
-                    contentDescription = stringResource(R.string.menu_show_menu),
+                    contentDescription = stringResource(R.string.template_preview_show_menu),
                 )
             }
             DropdownMenu(expanded = showMenu, onDismissRequest = {
                 showMenu = false
             }) {
                 DropdownMenuItem(text = {
-                    Text(text = stringResource(R.string.menu_edit_template))
+                    Text(text = stringResource(R.string.template_preview_edit_template))
                 }, onClick = onEditTemplate, leadingIcon = {
                     Icon(
                         imageVector = Icons.Outlined.Edit,
-                        contentDescription = stringResource(R.string.menu_edit_template)
+                        contentDescription = stringResource(R.string.template_preview_edit_template)
                     )
                 })
             }

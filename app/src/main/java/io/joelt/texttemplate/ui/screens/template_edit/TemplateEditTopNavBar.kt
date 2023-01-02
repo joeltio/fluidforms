@@ -9,7 +9,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavHostController
 import io.joelt.texttemplate.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -19,7 +18,7 @@ fun TemplateEditTopNavBar(onSave: () -> Unit, onBack: () -> Unit) {
         IconButton(onClick = onBack) {
             Icon(
                 imageVector = Icons.Default.Close,
-                contentDescription = stringResource(id = R.string.navbar_back),
+                contentDescription = stringResource(id = R.string.all_nav_back),
             )
         }
     }
@@ -32,7 +31,7 @@ fun TemplateEditTopNavBar(onSave: () -> Unit, onBack: () -> Unit) {
             }) {
                 Icon(
                     imageVector = Icons.Default.Done,
-                    contentDescription = stringResource(R.string.save_template),
+                    contentDescription = stringResource(R.string.template_edit_save_template),
                 )
             }
         },

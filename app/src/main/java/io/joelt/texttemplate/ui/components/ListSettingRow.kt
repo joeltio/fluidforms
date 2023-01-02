@@ -2,18 +2,14 @@ package io.joelt.texttemplate.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import io.joelt.texttemplate.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,7 +60,7 @@ fun ListSettingRow(
             },
             confirmButton = {
                 TextButton(onClick = { showDialog = false }) {
-                    Text(text = stringResource(R.string.dialog_done))
+                    Text(text = stringResource(R.string.all_dialog_done))
                 }
             }
         )

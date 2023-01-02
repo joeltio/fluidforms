@@ -8,7 +8,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.joelt.texttemplate.R
 import io.joelt.texttemplate.models.Draft
@@ -27,9 +26,9 @@ private fun EmptyArchivedMessage() {
         Modifier
             .fillMaxWidth()
             .padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = stringResource(R.string.empty_archived_title), style = Typography.headlineSmall, textAlign = TextAlign.Center)
+        Text(text = stringResource(R.string.archived_empty_title), style = Typography.headlineSmall, textAlign = TextAlign.Center)
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = stringResource(R.string.empty_archived_description), style = Typography.bodyMedium, textAlign = TextAlign.Center)
+        Text(text = stringResource(R.string.archived_empty_description), style = Typography.bodyMedium, textAlign = TextAlign.Center)
     }
 }
 

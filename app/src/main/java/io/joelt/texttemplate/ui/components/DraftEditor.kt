@@ -70,7 +70,7 @@ fun DraftEditor(
                     return@KeyboardActions this.defaultKeyboardAction(ImeAction.Next)
                 }),
                 singleLine = true,
-                placeholder = stringResource(R.string.template_name_placeholder),
+                placeholder = stringResource(R.string.editor_name_placeholder),
                 onValueChange = {
                     onStateChange(state.copy(name = it))
                 })
@@ -86,7 +86,7 @@ fun DraftEditor(
                     }) {
                         androidx.compose.material3.Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = stringResource(R.string.previous_slot)
+                            contentDescription = stringResource(R.string.draft_editor_previous_slot)
                         )
                     }
 
@@ -119,7 +119,7 @@ fun DraftEditor(
                     }) {
                         androidx.compose.material3.Icon(
                             imageVector = Icons.Default.ArrowForward,
-                            contentDescription = stringResource(R.string.next_slot)
+                            contentDescription = stringResource(R.string.draft_editor_next_slot)
                         )
                     }
                 },
@@ -133,7 +133,7 @@ fun DraftEditor(
                             Icon(
                                 imageVector = Icons.Default.Edit,
                                 contentDescription = stringResource(
-                                    R.string.edit_slot
+                                    R.string.draft_editor_edit_slot
                                 )
                             )
                         }

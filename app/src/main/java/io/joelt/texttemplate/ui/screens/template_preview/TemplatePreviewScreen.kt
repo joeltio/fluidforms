@@ -50,10 +50,10 @@ private fun templatePreviewScreenContent(
             ExtendedFloatingActionButton(icon = {
                 Icon(
                     imageVector = Icons.Default.Edit,
-                    contentDescription = stringResource(R.string.fill_up_template)
+                    contentDescription = stringResource(R.string.template_preview_fill_template)
                 )
             }, text = {
-                Text(text = stringResource(R.string.fill_up_template))
+                Text(text = stringResource(R.string.template_preview_fill_template))
             }, onClick = onCreateDraftWithTemplate)
         }
     }
@@ -61,17 +61,17 @@ private fun templatePreviewScreenContent(
     content {
         if (showConfirmDeleteDialog) {
             AlertDialog(
-                title = { Text(text = stringResource(R.string.template_confirm_delete_title)) },
-                text = { Text(text = stringResource(R.string.template_confirm_delete)) },
+                title = { Text(text = stringResource(R.string.template_preview_confirm_delete_title)) },
+                text = { Text(text = stringResource(R.string.template_preview_confirm_delete_description)) },
                 onDismissRequest = { showConfirmDeleteDialog = false },
                 confirmButton = {
                     TextButton(onClick = onDeleteTemplate) {
-                        Text(text = stringResource(R.string.dialog_delete))
+                        Text(text = stringResource(R.string.all_dialog_delete))
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { showConfirmDeleteDialog = false }) {
-                        Text(text = stringResource(R.string.dialog_cancel))
+                        Text(text = stringResource(R.string.all_dialog_cancel))
                     }
                 }
             )

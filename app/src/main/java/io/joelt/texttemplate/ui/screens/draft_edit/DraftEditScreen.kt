@@ -45,7 +45,7 @@ private fun draftEditScreenContent(
     val snackbarHostState = remember { SnackbarHostState() }
     val clipboardManager = LocalClipboardManager.current
     val scope = rememberCoroutineScope()
-    val clipboardMessage = stringResource(R.string.text_copied_to_clipboard)
+    val clipboardMessage = stringResource(R.string.draft_edit_snackbar_copied_to_clipboard)
     var showConfirmDeleteDialog by remember { mutableStateOf(false) }
 
     scaffoldOptions {
@@ -70,17 +70,17 @@ private fun draftEditScreenContent(
     content {
         if (showConfirmDeleteDialog) {
             AlertDialog(
-                title = { Text(text = stringResource(R.string.draft_confirm_delete_title)) },
-                text = { Text(text = stringResource(R.string.draft_confirm_delete)) },
+                title = { Text(text = stringResource(R.string.draft_edit_confirm_delete_title)) },
+                text = { Text(text = stringResource(R.string.draft_edit_confirm_delete_description)) },
                 onDismissRequest = { showConfirmDeleteDialog = false },
                 confirmButton = {
                     TextButton(onClick = onDelete) {
-                        Text(text = stringResource(R.string.dialog_delete))
+                        Text(text = stringResource(R.string.all_dialog_delete))
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { showConfirmDeleteDialog = false }) {
-                        Text(text = stringResource(R.string.dialog_cancel))
+                        Text(text = stringResource(R.string.all_dialog_cancel))
                     }
                 }
             )

@@ -27,7 +27,7 @@ data class PlainTextSlot(override val displayLabel: String, val serializedValue:
     override fun displayValue(): String = lazyDisplayValue
 
     @Composable
-    override fun displaySlotType() = stringResource(R.string.plain_text_slot_type_name)
+    override fun displaySlotType() = stringResource(R.string.template_editor_plain_text_slot_type_name)
 
     override fun makeCopy(displayLabel: String) = copy(displayLabel = displayLabel)
 }

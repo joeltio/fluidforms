@@ -47,24 +47,24 @@ private fun settingsScreenContent(
         Column {
             val currentSettings = LocalPreferences.current
 
-            SettingTitle(text = stringResource(R.string.look_and_feel_title))
+            SettingTitle(text = stringResource(R.string.settings_look_and_feel_title))
             ListSettingRow(
-                title = stringResource(R.string.theme_color_title),
-                subtitle = stringResource(R.string.theme_color_subtitle),
-                options = stringArrayResource(R.array.theme_color_options),
-                optionValues = stringArrayResource(R.array.theme_color_values),
+                title = stringResource(R.string.settings_theme_color_title),
+                subtitle = stringResource(R.string.settings_theme_color_subtitle),
+                options = stringArrayResource(R.array.settings_theme_color_options),
+                optionValues = stringArrayResource(R.array.settings_theme_color_values),
                 selectedOption = currentSettings.themeColor.name,
                 onSelectedOptionChange = {
                     onUpdateThemeColor(ThemeColor.valueOf(it))
                 }
             )
 
-            SettingTitle(text = stringResource(R.string.date_and_time_title))
+            SettingTitle(text = stringResource(R.string.settings_date_and_time_title))
             ListSettingRow(
-                title = stringResource(R.string.hour_format_title),
-                subtitle = stringResource(R.string.hour_format_subtitle),
-                options = stringArrayResource(R.array.hour_format_options),
-                optionValues = stringArrayResource(R.array.hour_format_values),
+                title = stringResource(R.string.settings_hour_format_title),
+                subtitle = stringResource(R.string.settings_hour_format_subtitle),
+                options = stringArrayResource(R.array.settings_hour_format_options),
+                optionValues = stringArrayResource(R.array.settings_hour_format_values),
                 selectedOption = currentSettings.hourFormat.name,
                 onSelectedOptionChange = {
                     onUpdateHourFormat(HourFormat.valueOf(it))

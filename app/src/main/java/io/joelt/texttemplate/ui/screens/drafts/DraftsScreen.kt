@@ -26,9 +26,9 @@ private fun EmptyDraftsMessage() {
         Modifier
             .fillMaxWidth()
             .padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = stringResource(R.string.empty_drafts_title), style = Typography.headlineSmall, textAlign = TextAlign.Center)
+        Text(text = stringResource(R.string.drafts_empty_title), style = Typography.headlineSmall, textAlign = TextAlign.Center)
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = stringResource(R.string.empty_drafts_description), style = Typography.bodyMedium, textAlign = TextAlign.Center)
+        Text(text = stringResource(R.string.drafts_empty_description), style = Typography.bodyMedium, textAlign = TextAlign.Center)
     }
 }
 

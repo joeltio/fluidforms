@@ -19,14 +19,14 @@ fun SettingsTopNavBar(onBack: () -> Unit) {
         IconButton(onBack) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
-                contentDescription = stringResource(id = R.string.navbar_back),
+                contentDescription = stringResource(id = R.string.all_nav_back),
             )
         }
     }
     TopAppBar(
         title = {
             Text(
-                stringResource(id = R.string.navbar_settings),
+                stringResource(id = R.string.home_nav_settings),
                 style = Typography.titleLarge,
             )
         },

@@ -20,7 +20,7 @@ fun DraftEditTopNavBar(onBack: () -> Unit, onSave: () -> Unit, onDelete: () -> U
         IconButton(onClick = onBack) {
             Icon(
                 imageVector = Icons.Default.Close,
-                contentDescription = stringResource(id = R.string.navbar_back),
+                contentDescription = stringResource(id = R.string.all_nav_back),
             )
         }
     }
@@ -32,19 +32,19 @@ fun DraftEditTopNavBar(onBack: () -> Unit, onSave: () -> Unit, onDelete: () -> U
             IconButton(onClick = onDelete) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = stringResource(R.string.delete_draft)
+                    contentDescription = stringResource(R.string.draft_edit_delete_draft)
                 )
             }
             IconButton(onClick = onCopyToClipboard) {
                 Icon(
                     painter = painterResource(R.drawable.ic_baseline_content_copy_24),
-                    contentDescription = stringResource(R.string.save_draft)
+                    contentDescription = stringResource(R.string.draft_edit_copy_to_clipboard)
                 )
             }
             IconButton(onClick = onSave) {
                 Icon(
                     imageVector = Icons.Default.Done,
-                    contentDescription = stringResource(R.string.save_draft)
+                    contentDescription = stringResource(R.string.draft_edit_save_draft)
                 )
             }
         }

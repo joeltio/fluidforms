@@ -35,9 +35,9 @@ private fun EmptyTemplatesMessage() {
         Modifier
             .fillMaxWidth()
             .padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = stringResource(R.string.empty_templates_title), style = Typography.headlineSmall, textAlign = TextAlign.Center)
+        Text(text = stringResource(R.string.templates_empty_title), style = Typography.headlineSmall, textAlign = TextAlign.Center)
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = stringResource(R.string.empty_templates_description), style = Typography.bodyMedium, textAlign = TextAlign.Center)
+        Text(text = stringResource(R.string.templates_empty_description), style = Typography.bodyMedium, textAlign = TextAlign.Center)
     }
 }
 
@@ -52,7 +52,7 @@ private fun templatesScreenContent(
             FloatingActionButton(onClick = { nav.navigate(Route.createTemplate) }) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(id = R.string.add_template)
+                    contentDescription = stringResource(id = R.string.home_new_template)
                 )
             }
         }
