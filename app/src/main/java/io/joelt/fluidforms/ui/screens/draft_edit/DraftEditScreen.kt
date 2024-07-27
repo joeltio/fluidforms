@@ -129,7 +129,7 @@ val DraftEditScreen = buildScreen {
             onDelete = { viewModel.deleteDraft(nav) },
             onCopyToClipboard = {
                 viewModel.draft?.let { draft ->
-                    draft.body.joinToString {
+                    draft.body.joinToString("") {
                         when (it) {
                             is Either.Left -> it.value
                             is Either.Right -> it.value.displayDefault()
