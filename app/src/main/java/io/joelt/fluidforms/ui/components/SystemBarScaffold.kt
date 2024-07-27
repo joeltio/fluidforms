@@ -47,7 +47,7 @@ fun SystemBarScaffold(
             Box(
                 modifier = Modifier
                     .padding(innerPadding)
-                    .consumedWindowInsets(innerPadding)
+                    .consumeWindowInsets(innerPadding)
             ) {
                 content()
             }

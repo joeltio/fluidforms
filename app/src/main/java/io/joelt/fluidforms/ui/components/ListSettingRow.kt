@@ -25,8 +25,8 @@ fun ListSettingRow(
     var showDialog by remember { mutableStateOf(false) }
     ListItem(
         modifier = Modifier.clickable { showDialog = true },
-        headlineText = { Text(text = title) },
-        supportingText = subtitle?.let { { Text(text = subtitle) } },
+        headlineContent = { Text(text = title) },
+        supportingContent = subtitle?.let { { Text(text = subtitle) } },
     )
     if (showDialog) {
         AlertDialog(
@@ -51,7 +51,7 @@ fun ListSettingRow(
                             leadingContent = {
                                 RadioButton(selected = selected, onClick = null)
                             },
-                            headlineText = {
+                            headlineContent = {
                                 Text(text = optionName)
                             }
                         )
